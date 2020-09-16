@@ -1,0 +1,19 @@
+<resources>
+    <string name="app_name">MemeDom</string>
+    <string name="tab_profile">Profile</string>
+    <string name="tab_home">Home</string>
+    <string name="tab_notifications">Notifications</string>
+    <string name="tab_messages">Messages</string>
+    <string name="home_signup">Signup</string>
+    <string name="home_login">Login</string>
+    <string name="credential_email">Email</string>
+    <string name="credential_phone">Number</string>
+    <string name="credential_view_icon">Credential View Icon</string>
+    <string name="icon_in_credential">Icon in Credential</string>
+    <string name="hint_email">Email</string>
+    <string name="hint_password">Password</string>
+    <string name="next">Next</string>
+
+    <string name="facebook_app_id">358457825283050</string>
+    <string name="fb_login_protocol_scheme">fb358457825283050</string>
+</resources>

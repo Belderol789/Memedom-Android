@@ -1,0 +1,40 @@
+{
+  "project_info": {
+    "project_number": "804524524268",
+    "firebase_url": "https://memedom-fb37b.firebaseio.com",
+    "project_id": "memedom-fb37b",
+    "storage_bucket": "memedom-fb37b.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:804524524268:android:9961fff46bf11bf61d9bc9",
+        "android_client_info": {
+          "package_name": "com.kratsapps.memedom"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "804524524268-7kenglunhnibq9o6iu8ckjmd6rb4mhae.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCVWGRPxC-jTTPspXABSQvZHosr9EPVAlU"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "804524524268-7kenglunhnibq9o6iu8ckjmd6rb4mhae.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
