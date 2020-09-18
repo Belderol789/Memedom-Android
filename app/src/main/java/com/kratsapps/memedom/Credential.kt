@@ -13,10 +13,12 @@ import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseUser
 import kotlinx.android.synthetic.main.activity_credential.*
 import org.json.JSONException
+import java.io.Serializable
 
 
 class Credential : AppCompatActivity() {
 
+    var user: MemeDomUser = MemeDomUser()
     var isSignup: Boolean = false
     private lateinit var auth: FirebaseAuth
 
@@ -48,8 +50,9 @@ class Credential : AppCompatActivity() {
             override fun onSuccess(loginResult: LoginResult) {
                 Log.d("Authentication", "facebook:onSuccess:$loginResult")
                 val accessToken = loginResult.accessToken
-                getFbInfo()
-                handleFacebookAccessToken(accessToken)
+                getFbInfo {
+                    handleFacebookAccessToken(accessToken)
+                }
             }
 
             override fun onCancel() {
@@ -69,22 +72,19 @@ class Credential : AppCompatActivity() {
         })
     }
 
-    private fun getFbInfo() {
+    private fun getFbInfo(callback: () -> Unit) {
         val request = GraphRequest.newMeRequest(
             AccessToken.getCurrentAccessToken()
         ) { `object`, response ->
             try {
-                Log.d("Authentication", "fb json object: $`object`")
-                Log.d("Authentication", "fb graph response: $response")
+                user.birthday = `object`.getString("birthday")
                 val id = `object`.getString("id")
-                val first_name = `object`.getString("first_name")
-                val last_name = `object`.getString("last_name")
-                val gender = `object`.getString("gender")
-                val birthday = `object`.getString("birthday")
-                val image_url = "http://graph.facebook.com/$id/picture?type=large"
+                user.name = `object`.getString("first_name")
+                user.profilePhoto = "http://graph.facebook.com/$id/picture?type=large"
+
                 val email: String
                 if (`object`.has("email")) {
-                    email = `object`.getString("email")
+                    user.email = `object`.getString("email")
                 }
             } catch (e: JSONException) {
                 e.printStackTrace()
@@ -93,11 +93,11 @@ class Credential : AppCompatActivity() {
         val parameters = Bundle()
         parameters.putString(
             "fields",
-            "id,first_name,last_name,email,gender,birthday, picture.type(large)"
+            "id,first_name,email,gender,birthday, picture.type(large)"
         ) // id,first_name,last_name,email,gender,birthday,cover, picture.type(large)
         request.parameters = parameters
         request.executeAsync()
-
+        callback.invoke()
         Log.d("Authentication","fb parameters ${parameters}")
     }
 
@@ -119,14 +119,17 @@ class Credential : AppCompatActivity() {
                         baseContext, "Authentication failed.",
                         Toast.LENGTH_SHORT
                     ).show()
-                    updateUI(null)
                 }
-
                 // ...
             }
     }
 
-    fun updateUI(user: FirebaseUser?) {
+    fun updateUI(firebaseUser: FirebaseUser?) {
+        Log.d("Firestore", "Adding New User")
+        if (firebaseUser != null) {
+            user.uid = firebaseUser.uid
+            navigateToSignup(false)
+        }
         // Proceed to next signup steps
     }
 
@@ -139,6 +142,7 @@ class Credential : AppCompatActivity() {
     private fun navigateToSignup(isEmail: Boolean) {
         val intent: Intent = Intent(this, Signup::class.java)
         intent.putExtra("AUTH_METHOD", isEmail)
+        intent.putExtra("MEMEDOM_USER", user as Serializable)
         startActivity(intent)
     }
 

@@ -16,7 +16,7 @@
         app:layout_constraintTop_toTopOf="parent" />
 
     <LinearLayout
-        android:id="@+id/linearLayout3"
+        android:id="@+id/authentication_layout"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginBottom="20dp"
@@ -39,9 +39,9 @@
 
             <ImageView
                 android:id="@+id/email_imageview"
-                android:layout_width="45dp"
-                android:layout_height="45dp"
-                android:contentDescription="Icon for email"
+                android:layout_width="55dp"
+                android:layout_height="55dp"
+                android:contentDescription="@string/icon_for_email"
                 app:srcCompat="@mipmap/ic_launcher" />
 
             <com.google.android.material.textfield.TextInputLayout
@@ -69,9 +69,9 @@
 
             <ImageView
                 android:id="@+id/email_password"
-                android:layout_width="45dp"
-                android:layout_height="45dp"
-                android:contentDescription="Icon for password"
+                android:layout_width="55dp"
+                android:layout_height="55dp"
+                android:contentDescription="@string/icon_for_password"
                 app:srcCompat="@mipmap/ic_launcher" />
 
             <com.google.android.material.textfield.TextInputLayout
@@ -91,6 +91,44 @@
 
     </LinearLayout>
 
+    <LinearLayout
+        android:id="@+id/username_layout"
+        android:visibility="gone"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="16dp"
+        android:layout_marginEnd="16dp"
+        android:layout_marginBottom="20dp"
+        android:divider="@drawable/divider_vertical"
+        android:gravity="center"
+        android:orientation="horizontal"
+        android:showDividers="middle"
+        app:layout_constraintBottom_toTopOf="@+id/next_authentication"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent">
+
+        <ImageView
+            android:id="@+id/username_imageview"
+            android:layout_width="55dp"
+            android:layout_height="55dp"
+            android:contentDescription="@string/icon_for_username"
+            app:srcCompat="@mipmap/ic_launcher" />
+
+        <com.google.android.material.textfield.TextInputLayout
+            android:id="@+id/username_field"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+
+            <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/username_input"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:hint="@string/hint_username"
+                android:textAppearance="@style/TextAppearance.AppCompat.Body1" />
+        </com.google.android.material.textfield.TextInputLayout>
+
+    </LinearLayout>
+
     <Button
         android:id="@+id/next_authentication"
         android:layout_width="0dp"
@@ -103,5 +141,7 @@
         app:layout_constraintEnd_toEndOf="@+id/authentication_view"
         app:layout_constraintStart_toStartOf="@+id/authentication_view"
         app:layout_constraintTop_toTopOf="@+id/authentication_view" />
+
+    <include layout="@layout/include_progress_overlay"/>
 
 </androidx.constraintlayout.widget.ConstraintLayout>
