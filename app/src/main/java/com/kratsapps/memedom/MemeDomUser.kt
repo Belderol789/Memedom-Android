@@ -5,7 +5,7 @@ import android.os.Parcelable
 import java.io.Serializable
 
 class MemeDomUser: Serializable {
-    var name: String = "Anonymous"
+    var name: String = ""
     var gender: String = ""
     var birthday: String = ""
     var profilePhoto: String = ""

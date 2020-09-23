@@ -39,13 +39,13 @@ class Credential : AppCompatActivity() {
         val actionBar = supportActionBar
         actionBar!!.title = if (isSignup) "Signup" else "Login"
 
-        credential_email.setOnClickListener{
+        buttonEmail.setOnClickListener{
             navigateToSignup(true)
         }
 
         callbackManager = CallbackManager.Factory.create()
-        facebook_login_button.setPermissions("email", "public_profile", "user_birthday")
-        facebook_login_button.registerCallback(callbackManager, object :
+        buttonFacebook.setPermissions("email", "public_profile", "user_birthday")
+        buttonFacebook.registerCallback(callbackManager, object :
             FacebookCallback<LoginResult> {
             override fun onSuccess(loginResult: LoginResult) {
                 Log.d("Authentication", "facebook:onSuccess:$loginResult")
@@ -77,10 +77,14 @@ class Credential : AppCompatActivity() {
             AccessToken.getCurrentAccessToken()
         ) { `object`, response ->
             try {
+                Log.d("Facebook", "Facebook Object $`object`")
                 user.birthday = `object`.getString("birthday")
-                val id = `object`.getString("id")
                 user.name = `object`.getString("first_name")
-                user.profilePhoto = "http://graph.facebook.com/$id/picture?type=large"
+
+                val picture = `object`.getJSONObject("picture")
+                val data = picture.getJSONObject("data")
+                val url = data.getString("url")
+                user.profilePhoto = url
 
                 val email: String
                 if (`object`.has("email")) {
@@ -98,7 +102,7 @@ class Credential : AppCompatActivity() {
         request.parameters = parameters
         request.executeAsync()
         callback.invoke()
-        Log.d("Authentication","fb parameters ${parameters}")
+        Log.d("Facebook","fb parameters ${parameters}")
     }
 
     private fun handleFacebookAccessToken(token: AccessToken) {

@@ -7,7 +7,7 @@
     tools:context=".Signup">
 
     <HorizontalScrollView
-        android:id="@+id/signup_scrollview"
+        android:id="@+id/scrollViewSignup"
         android:layout_width="0dp"
         android:layout_height="0dp"
         android:fillViewport="true"
@@ -135,7 +135,7 @@
                     app:layout_constraintBottom_toBottomOf="@id/username_field_layout"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
-                    tools:srcCompat="@tools:sample/avatars" />
+                    android:contentDescription="TODO" />
 
                 <LinearLayout
                     android:id="@+id/username_field_layout"

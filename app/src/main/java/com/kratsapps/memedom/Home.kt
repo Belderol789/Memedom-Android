@@ -10,9 +10,11 @@ import android.view.ViewGroup
 import android.widget.Button
 import android.widget.ImageButton
 import android.widget.LinearLayout
+import androidx.annotation.NonNull
 import androidx.core.view.isVisible
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.google.firebase.auth.FirebaseAuth
 import kotlinx.android.synthetic.main.fragment_home.*
 
 
@@ -21,7 +23,8 @@ class Home : Fragment() {
     lateinit var rootView: View
     lateinit var createButton: ImageButton
 
-    var userLoggedIn: Boolean = false
+    var firebaseAuth: FirebaseAuth? = null
+    var mAuthListener: FirebaseAuth.AuthStateListener? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -43,17 +46,30 @@ class Home : Fragment() {
     }
 
     private fun checkLoginStatus() {
-        if (userLoggedIn) {
-            val credentialView = rootView.findViewById(R.id.home_credential_view) as LinearLayout
+
+        val user = FirebaseAuth.getInstance().getCurrentUser()
+        if (user != null) {
+            val credentialView = rootView.findViewById(R.id.credentialViewHome) as LinearLayout
             (credentialView.parent as? ViewGroup)?.removeView(credentialView)
         } else {
             (createButton.parent as? ViewGroup)?.removeView(createButton)
             setupCrentialView()
         }
+
+        firebaseAuth = FirebaseAuth.getInstance()
+        mAuthListener = FirebaseAuth.AuthStateListener() {
+            fun onAuthStateChanged(@NonNull firebaseAuth:FirebaseAuth) {
+                val user = FirebaseAuth.getInstance().getCurrentUser()
+                if (user != null) {
+                    val credentialView = rootView.findViewById(R.id.credentialViewHome) as LinearLayout
+                    (credentialView.parent as? ViewGroup)?.removeView(credentialView)
+                }
+            }
+        }
     }
 
     private fun setupUI() {
-        createButton = rootView.findViewById(R.id.create_button) as ImageButton
+        createButton = rootView.findViewById(R.id.buttonCreate) as ImageButton
         createButton.setOnClickListener{
             val intent: Intent = Intent(this.context, Create::class.java)
             startActivity(intent)
@@ -66,7 +82,7 @@ class Home : Fragment() {
         val item = FeedItem(R.drawable.ic_action_home, "This is a sample Title")
         dummyList += item
         //
-        val feedRecyclerView = rootView.findViewById(R.id.home_recycler_view) as RecyclerView
+        val feedRecyclerView = rootView.findViewById(R.id.recyclerViewHome) as RecyclerView
         feedRecyclerView.adapter = FeedAdapter(dummyList)
         feedRecyclerView.layoutManager = LinearLayoutManager(activity)
         feedRecyclerView.setHasFixedSize(true)

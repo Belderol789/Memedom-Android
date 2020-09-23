@@ -23,4 +23,6 @@
     <string name="icon_for_password">Icon for password</string>
 
     <string name="alert_ok">Ok</string>
+    <string name="postTitle">Title</string>
+    <string name="postButton">Post</string>
 </resources>
