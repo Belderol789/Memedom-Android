@@ -17,7 +17,7 @@
         app:layout_constraintTop_toTopOf="parent">
 
         <LinearLayout
-            android:id="@+id/scrollview_layout"
+            android:id="@+id/horizontalLayoutScrollView"
             android:layout_width="wrap_content"
             android:layout_height="match_parent"
             android:orientation="horizontal"
@@ -27,7 +27,7 @@
             app:layout_constraintTop_toTopOf="parent">
 
             <LinearLayout
-                android:id="@+id/authentication_layout"
+                android:id="@+id/layoutAuth"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:divider="@drawable/divider_vertical"
@@ -42,7 +42,7 @@
                 app:layout_constraintTop_toTopOf="parent">
 
                 <LinearLayout
-                    android:id="@+id/email_layout"
+                    android:id="@+id/layoutEmail"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:divider="@drawable/divider_vertical"
@@ -50,19 +50,19 @@
                     android:showDividers="middle">
 
                     <ImageView
-                        android:id="@+id/email_imageview"
+                        android:id="@+id/imageviewEmail"
                         android:layout_width="55dp"
                         android:layout_height="55dp"
                         android:contentDescription="@string/icon_for_email"
                         app:srcCompat="@mipmap/ic_launcher" />
 
                     <com.google.android.material.textfield.TextInputLayout
-                        android:id="@+id/email_field"
+                        android:id="@+id/textInputEmail"
                         android:layout_width="match_parent"
                         android:layout_height="match_parent">
 
                         <com.google.android.material.textfield.TextInputEditText
-                            android:id="@+id/email_input"
+                            android:id="@+id/editTextEmail"
                             android:layout_width="match_parent"
                             android:layout_height="match_parent"
                             android:hint="@string/hint_email"
@@ -72,7 +72,7 @@
                 </LinearLayout>
 
                 <LinearLayout
-                    android:id="@+id/password_layout"
+                    android:id="@+id/layoutPassword"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:divider="@drawable/divider_vertical"
@@ -80,19 +80,19 @@
                     android:showDividers="middle">
 
                     <ImageView
-                        android:id="@+id/password_imageview"
+                        android:id="@+id/imageviewPassword"
                         android:layout_width="55dp"
                         android:layout_height="55dp"
                         android:contentDescription="@string/icon_for_password"
                         app:srcCompat="@mipmap/ic_launcher" />
 
                     <com.google.android.material.textfield.TextInputLayout
-                        android:id="@+id/password_field"
+                        android:id="@+id/textInputPassword"
                         android:layout_width="match_parent"
                         android:layout_height="match_parent">
 
                         <com.google.android.material.textfield.TextInputEditText
-                            android:id="@+id/password_input"
+                            android:id="@+id/editTextPassword"
                             android:layout_width="match_parent"
                             android:layout_height="match_parent"
                             android:hint="@string/hint_password"
@@ -102,7 +102,7 @@
                 </LinearLayout>
 
                 <Button
-                    android:id="@+id/authentication_next_button"
+                    android:id="@+id/buttonNextAuth"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:background="@drawable/softbuttons"
@@ -113,7 +113,7 @@
             </LinearLayout>
 
             <LinearLayout
-                android:id="@+id/username_layout"
+                android:id="@+id/layoutUsername"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:divider="@drawable/divider_vertical"
@@ -124,21 +124,21 @@
                 android:showDividers="middle"
                 android:visibility="visible"
                 app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintStart_toStartOf="@+id/authentication_layout"
+                app:layout_constraintStart_toStartOf="@+id/layoutAuth"
                 app:layout_constraintTop_toTopOf="parent">
 
                 <ImageButton
-                    android:id="@+id/imageButton_profile"
+                    android:id="@+id/imageButtonProfile"
                     android:layout_width="120dp"
                     android:layout_height="120dp"
                     android:layout_gravity="center"
-                    app:layout_constraintBottom_toBottomOf="@id/username_field_layout"
+                    app:layout_constraintBottom_toBottomOf="@id/layoutFieldsUsername"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
                     android:contentDescription="TODO" />
 
                 <LinearLayout
-                    android:id="@+id/username_field_layout"
+                    android:id="@+id/layoutFieldsUsername"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:divider="@drawable/divider_vertical"
@@ -152,19 +152,19 @@
                     app:layout_constraintTop_toTopOf="@+id/authentication_view">
 
                     <ImageView
-                        android:id="@+id/username_imageview"
+                        android:id="@+id/imageviewIconUsername"
                         android:layout_width="55dp"
                         android:layout_height="55dp"
                         android:contentDescription="@string/icon_for_username"
                         app:srcCompat="@mipmap/ic_launcher" />
 
                     <com.google.android.material.textfield.TextInputLayout
-                        android:id="@+id/username_field"
+                        android:id="@+id/inputFieldUsername"
                         android:layout_width="match_parent"
                         android:layout_height="match_parent">
 
                         <com.google.android.material.textfield.TextInputEditText
-                            android:id="@+id/username_input"
+                            android:id="@+id/textEditUsername"
                             android:layout_width="match_parent"
                             android:layout_height="match_parent"
                             android:hint="@string/hint_username"
@@ -174,7 +174,7 @@
                 </LinearLayout>
 
                 <Button
-                    android:id="@+id/username_next_button"
+                    android:id="@+id/buttonNextUsername"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:background="@drawable/softbuttons"
@@ -186,7 +186,7 @@
             </LinearLayout>
 
             <LinearLayout
-                android:id="@+id/birthday_layout"
+                android:id="@+id/layoutBirthday"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:divider="@drawable/divider_vertical"
@@ -198,7 +198,7 @@
                 android:visibility="visible"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="@id/username_layout"
+                app:layout_constraintStart_toStartOf="@id/layoutUsername"
                 app:layout_constraintTop_toTopOf="parent">
 
                 <LinearLayout
@@ -215,19 +215,19 @@
                     app:layout_constraintTop_toTopOf="@+id/authentication_view">
 
                     <ImageView
-                        android:id="@+id/birthday_imageview"
+                        android:id="@+id/imageviewIconBirthday"
                         android:layout_width="55dp"
                         android:layout_height="55dp"
                         android:contentDescription="@string/icon_for_username"
                         app:srcCompat="@mipmap/ic_launcher" />
 
                     <com.google.android.material.textfield.TextInputLayout
-                        android:id="@+id/birthday_field"
+                        android:id="@+id/textInputBirthday"
                         android:layout_width="match_parent"
                         android:layout_height="match_parent">
 
                         <com.google.android.material.textfield.TextInputEditText
-                            android:id="@+id/birthday_input"
+                            android:id="@+id/textEditBirthday"
                             android:layout_width="match_parent"
                             android:layout_height="match_parent"
                             android:hint="@string/hint_birthday"
@@ -237,7 +237,7 @@
                 </LinearLayout>
 
                 <Button
-                    android:id="@+id/birthday_next_button"
+                    android:id="@+id/buttonNextBirthday"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:background="@drawable/softbuttons"
@@ -251,7 +251,7 @@
     </HorizontalScrollView>
 
     <include
-        android:id="@+id/include"
+        android:id="@+id/includeProgressOverlay"
         layout="@layout/include_progress_overlay"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"

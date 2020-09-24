@@ -12,6 +12,9 @@ import androidx.appcompat.app.AlertDialog
 import com.bumptech.glide.Glide
 import kotlinx.android.synthetic.main.activity_create.*
 import kotlinx.android.synthetic.main.activity_signup.*
+import java.text.SimpleDateFormat
+import java.util.*
+import kotlin.collections.HashMap
 
 class Create : AppCompatActivity() {
 
@@ -42,14 +45,58 @@ class Create : AppCompatActivity() {
         }
 
         buttonPost.setOnClickListener {
-            val title = editTextTitle.text.toString()
             if(imageViewMeme.drawable != null) {
                 Log.d("Create", "Has Image from gallery")
+                sendPostToFirestore()
             } else {
                 setupAlertDialog("Meme is missing!")
             }
         }
 
+    }
+
+    private fun sendPostToFirestore() {
+
+        val title = editTextTitle.text.toString()
+        val postID = generateRandomString()
+        val today = SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(Date())
+
+        val savedUser = DatabaseManager().retrieveSavedUser(this, "MainUser")
+
+        FireStorageHandler().uploadPhotoWith(postID, imageViewMeme.drawable, {
+
+            if (it != null && savedUser != null) {
+                val newPost: HashMap<String, Any> = hashMapOf(
+                    "postID" to postID,
+                    "postTitle" to title,
+                    "postLikes" to 0,
+                    "postComments" to 0,
+                    "postReports" to 0,
+                    "postImageURL" to it,
+                    "postUsername" to savedUser.name,
+                    "postProfileURL" to savedUser.profilePhoto,
+                    "postDate" to today
+                )
+
+                FirestoreHandler().addDataToFirestore("Memes", postID, newPost, {
+                    if(it != null) {
+                        setupAlertDialog(it)
+                    } else {
+                        onBackPressed()
+                    }
+                })
+            } else {
+                // show alert
+                setupAlertDialog("Ooops, we failed to share your meme :(")
+            }
+        })
+    }
+
+    private fun generateRandomString(): String {
+        val charset = ('a'..'z') + ('A'..'Z') + ('0'..'9')
+        return (1..10)
+            .map { charset.random() }
+            .joinToString("")
     }
 
     private fun prepOpenImageGallery() {

@@ -4,9 +4,6 @@ import android.app.DatePickerDialog
 import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
-import android.graphics.Bitmap
-import android.graphics.ImageDecoder
-import android.graphics.drawable.BitmapDrawable
 import android.os.Build
 import android.os.Bundle
 import android.provider.MediaStore
@@ -22,13 +19,10 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
 import com.bumptech.glide.Glide
 import com.google.firebase.auth.FirebaseAuth
-import kotlinx.android.synthetic.main.activity_credential.view.*
 import kotlinx.android.synthetic.main.activity_signup.*
-import java.io.ByteArrayOutputStream
-import java.io.Serializable
 import java.text.SimpleDateFormat
 import java.util.*
-import java.util.jar.Manifest
+import kotlin.collections.HashMap
 import kotlin.concurrent.schedule
 
 class Signup : AppCompatActivity() {
@@ -46,7 +40,6 @@ class Signup : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_signup)
-        requestPermissionToPhotos()
         auth = FirebaseAuth.getInstance()
         isEmail = intent.getBooleanExtra("AUTH_METHOD", true)
 
@@ -62,7 +55,7 @@ class Signup : AppCompatActivity() {
     ) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults)
         if(requestCode == 121 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-            imageButton_profile.isClickable = true
+            imageButtonProfile.isClickable = true
         }
     }
 
@@ -70,7 +63,7 @@ class Signup : AppCompatActivity() {
         if(ActivityCompat.checkSelfPermission(this,android.Manifest.permission.READ_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
             ActivityCompat.requestPermissions(this,Array(1){android.Manifest.permission.READ_EXTERNAL_STORAGE}, 121)
         } else {
-            imageButton_profile.isClickable = true
+            imageButtonProfile.isClickable = true
         }
     }
 
@@ -85,29 +78,29 @@ class Signup : AppCompatActivity() {
 
         Log.d("Screen Size", "ScreenWidth ${screenWidth}")
 
-        val authParams = authentication_layout.layoutParams
+        val authParams = layoutAuth.layoutParams
         authParams.width = screenWidth
 
-        val usernameParams = username_layout.layoutParams
+        val usernameParams = layoutUsername.layoutParams
         usernameParams.width = screenWidth
 
-        val birthdayParams = birthday_layout.layoutParams
+        val birthdayParams = layoutBirthday.layoutParams
         birthdayParams.width = screenWidth
 
-        birthday_input.setRawInputType(InputType.TYPE_NULL)
+        textEditBirthday.setRawInputType(InputType.TYPE_NULL)
         scrollViewSignup.setOnTouchListener(View.OnTouchListener { v, event -> true })
 
         //For Facebook
         if (!isEmail) {
             memeDomuser = intent.extras?.get("MEMEDOM_USER") as MemeDomUser
-            authentication_layout.visibility = View.INVISIBLE
-            username_input.setText(memeDomuser.name)
-            birthday_input.setText(memeDomuser.birthday)
+            layoutAuth.visibility = View.INVISIBLE
+            textEditUsername.setText(memeDomuser.name)
+            textEditBirthday.setText(memeDomuser.birthday)
             Glide.with(this)
                 .load(memeDomuser.profilePhoto)
                 .centerCrop()
-                .into(imageButton_profile)
-
+                .into(imageButtonProfile)
+            requestPermissionToPhotos()
             Timer().schedule(1000) {
                 scrollViewSignup.smoothScrollTo(screenWidth, 0)
             }
@@ -119,27 +112,25 @@ class Signup : AppCompatActivity() {
     private fun setupActionButtons() {
         // Authentication
         if (isEmail) {
-            authentication_next_button.setOnClickListener{
+            buttonNextAuth.setOnClickListener{
                 checkIfFieldsHaveValues()
             }
         }
 
         // Username
-        username_next_button.setOnClickListener{
-            val username = username_input.text.toString()
+        buttonNextUsername.setOnClickListener{
+            val username = textEditUsername.text.toString()
             if(!username.isEmpty()) {
                 memeDomuser.name = username
                 scrollViewSignup.smoothScrollTo(screenWidth * 2, 0)
             }
         }
 
-        imageButton_profile.setOnClickListener{
+        imageButtonProfile.setOnClickListener{
             prepOpenImageGallery()
         }
 
-        val dateText: String = SimpleDateFormat("dd MMMM yyyy").format(System.currentTimeMillis())
-        birthday_input.setText(dateText)
-
+        textEditBirthday.setText("")
         var cal = Calendar.getInstance()
 
         val dateSetListener = DatePickerDialog.OnDateSetListener { view, year, monthOfYear, dayOfMonth ->
@@ -147,12 +138,12 @@ class Signup : AppCompatActivity() {
             cal.set(Calendar.MONTH, monthOfYear)
             cal.set(Calendar.DAY_OF_MONTH, dayOfMonth)
 
-            val myFormat = "dd.MM.yyyy" // mention the format you need
+            val myFormat = "dd MMMM yyyy" // mention the format you need
             val sdf = SimpleDateFormat(myFormat, Locale.US)
-            birthday_input.setText(sdf.format(cal.time))
+            textEditBirthday.setText(sdf.format(cal.time))
         }
 
-        birthday_input.setOnClickListener {
+        textEditBirthday.setOnClickListener {
             DatePickerDialog(
                 this, dateSetListener,
                 cal.get(Calendar.YEAR),
@@ -161,9 +152,9 @@ class Signup : AppCompatActivity() {
             ).show()
         }
 
-        birthday_next_button.setOnClickListener{
+        buttonNextBirthday.setOnClickListener{
 
-            val birthday = birthday_input.text.toString()
+            val birthday = textEditBirthday.text.toString()
 
             Log.d("Birthday", "$birthday")
 
@@ -172,29 +163,39 @@ class Signup : AppCompatActivity() {
                 AndroidUtils().animateView(progressOverlay, View.VISIBLE, 0.4f, 200)
                 memeDomuser.birthday = birthday
 
-                val bitmap = (imageButton_profile.drawable as BitmapDrawable).bitmap
-                val baos = ByteArrayOutputStream()
-                bitmap.compress(Bitmap.CompressFormat.JPEG, 100, baos)
-                val data = baos.toByteArray()
+                val newUser: HashMap<String, Any> = hashMapOf(
+                    "name" to memeDomuser.name,
+                    "birthday" to memeDomuser.birthday,
+                    "profilePhoto" to memeDomuser.profilePhoto,
+                    "uid" to memeDomuser.uid,
+                    "email" to memeDomuser.email
+                )
 
-                FirestoreHandler().addUserToDatabase(memeDomuser, {
-                    if (it == null) {
-                        Log.d("Firestore", "User has data has been saved to firestore")
-                        navigateToMain()
-                    } else {
-                        setupAlertDialog(it)
-                    }
-                    progressOverlay.visibility = View.GONE
-                })
+                val profileImage = imageButtonProfile.drawable
 
-                FireStorageHandler().uploadPhotoWith(memeDomuser.uid, data, {
+                FireStorageHandler().uploadPhotoWith(memeDomuser.uid, profileImage, {
                     if (it != null) {
-                        FirestoreHandler().updateUserDatabase(memeDomuser.uid, "profilePhoto", it)
-                    } else {
-                        setupAlertDialog("Error with saving your profile photo :(")
+                        memeDomuser.profilePhoto = it
+                        val profilePhoto: HashMap<kotlin.String, kotlin.Any> =
+                            kotlin.collections.hashMapOf(
+                                "profilePhoto" to it
+                            )
+                        com.kratsapps.memedom.FirestoreHandler()
+                            .updateDatabaseObject("User", memeDomuser.uid, profilePhoto)
+
+                        DatabaseManager().convertUserObject(this, memeDomuser, "MainUser")
                     }
-                    progressOverlay.visibility = View.GONE
                 })
+
+                FirestoreHandler().addDataToFirestore("User", memeDomuser.uid, newUser, {
+                    progressOverlay.visibility = View.GONE
+                    if (it != null) {
+                        setupAlertDialog(it)
+                    } else {
+                        navigateToMain()
+                    }
+                })
+
             } else {
                 setupAlertDialog("Missing birthday or username")
             }
@@ -216,8 +217,8 @@ class Signup : AppCompatActivity() {
     private fun checkIfFieldsHaveValues() {
         hideKeyboard()
 
-        val email = email_input.text.toString()
-        val password = password_input.text.toString()
+        val email = editTextEmail.text.toString()
+        val password = editTextPassword.text.toString()
 
         if(email.isEmpty() || password.toString().isEmpty() || password.toString().length < 6) {
             Toast.makeText(baseContext, "Email or Password is invalid", Toast.LENGTH_SHORT).show()
@@ -239,6 +240,7 @@ class Signup : AppCompatActivity() {
                     if (user != null) {
                         memeDomuser.uid = user.uid
                         memeDomuser.email = email
+                        requestPermissionToPhotos()
                         scrollViewSignup.smoothScrollTo(screenWidth, 0)
                     }
                 } else {
@@ -270,7 +272,7 @@ class Signup : AppCompatActivity() {
                 Glide.with(this)
                     .load(imageData)
                     .centerCrop()
-                    .into(imageButton_profile)
+                    .into(imageButtonProfile)
             }
         }
     }

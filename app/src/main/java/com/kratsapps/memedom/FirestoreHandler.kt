@@ -10,32 +10,18 @@ class FirestoreHandler {
     private val firestoreDB = Firebase.firestore
     private val USER_PATH = "Users"
 
-    fun addUserToDatabase(user: MemeDomUser, success: (String?) -> Unit) {
-
-        Log.d("Firestore", "Adding new user ${user.profilePhoto} ${user.birthday}")
-
-        val newUser = hashMapOf(
-            "name" to user.name,
-            "birthday" to user.birthday,
-            "profilePhoto" to user.profilePhoto,
-            "uid" to user.uid,
-            "email" to user.email
-        )
-
-        firestoreDB.collection(USER_PATH).document(user.uid).set(newUser).addOnSuccessListener {
-            Log.d("Firestore", "DocumentSnapshot successfully written!")
+    fun addDataToFirestore(path: String, document: String, hashMap: HashMap<String, Any>, success: (String?) -> Unit) {
+        firestoreDB.collection(path).document(document).set(hashMap).addOnSuccessListener {
+            Log.d("Firestore", "DocumentSnapshot successfully written for $path")
             success(null)
         }.addOnFailureListener { e ->
             Log.w("Firestore", "Error writing document", e)
             success(e.message)
         }
-
     }
 
-    fun updateUserDatabase(uid: String, key: String, value: Any) {
-        val updatedData = hashMapOf(
-            key to value
-        )
-        firestoreDB.collection(USER_PATH).document(uid).update(updatedData)
+    fun updateDatabaseObject(path: String, document: String, hashMap: HashMap<String, Any>) {
+        firestoreDB.collection(path).document(document).update(hashMap)
     }
+
 }
