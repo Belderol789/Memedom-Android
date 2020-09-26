@@ -25,4 +25,11 @@
     <string name="alert_ok">Ok</string>
     <string name="postTitle">Title</string>
     <string name="postButton">Post</string>
+
+    <string-array name="feed_segments">
+        <item>Connections</item>
+        <item>Popular</item>
+        <item>Fresh</item>
+    </string-array>
+
 </resources>

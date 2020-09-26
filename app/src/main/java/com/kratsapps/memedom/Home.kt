@@ -11,7 +11,9 @@ import android.view.ViewGroup
 import android.widget.Button
 import android.widget.ImageButton
 import android.widget.LinearLayout
+import android.widget.RadioButton
 import androidx.annotation.NonNull
+import androidx.appcompat.widget.AppCompatRadioButton
 import androidx.core.view.isVisible
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
@@ -23,6 +25,9 @@ class Home : Fragment() {
 
     lateinit var rootView: View
     lateinit var createButton: ImageButton
+    lateinit var linkSegment: AppCompatRadioButton
+    lateinit var popularSegment: AppCompatRadioButton
+    lateinit var freshSegment: AppCompatRadioButton
 
     private var allMemes: List<Memes> = listOf<Memes>()
     var firebaseAuth: FirebaseAuth? = null
@@ -83,6 +88,23 @@ class Home : Fragment() {
             val intent: Intent = Intent(this.context, Create::class.java)
             startActivity(intent)
         }
+
+        linkSegment = rootView.findViewById(R.id.linkSegment)
+        popularSegment = rootView.findViewById(R.id.popularSegment)
+        freshSegment = rootView.findViewById(R.id.freshSegment)
+
+        linkSegment.setOnClickListener{
+            Log.d("Segment", "Link segment tapped")
+            updateSegments(0)
+        }
+        popularSegment.setOnClickListener{
+            Log.d("Segment", "Link segment tapped")
+            updateSegments(1)
+        }
+        freshSegment.setOnClickListener{
+            Log.d("Segment", "Link segment tapped")
+            updateSegments(2)
+        }
     }
 
     private fun setupFeedView() {
@@ -111,4 +133,19 @@ class Home : Fragment() {
         startActivity(intent)
     }
 
+    private fun updateSegments(type: Int) {
+        if(type == 0) {
+            linkSegment.isChecked = true
+            popularSegment.isChecked = false
+            freshSegment.isChecked = false
+        } else if (type == 1) {
+            popularSegment.isChecked = true
+            freshSegment.isChecked = false
+            linkSegment.isChecked = false
+        } else {
+            freshSegment.isChecked = true
+            popularSegment.isChecked = false
+            linkSegment.isChecked = false
+        }
+    }
 }
