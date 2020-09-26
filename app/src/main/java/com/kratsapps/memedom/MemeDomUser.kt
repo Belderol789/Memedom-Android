@@ -21,8 +21,5 @@ class MemeDomUser: Serializable {
         val userAge = (currentDate.time - date.time) / 86400000 / 365
         return userAge.toInt()
     }
-
-
-
 }
 

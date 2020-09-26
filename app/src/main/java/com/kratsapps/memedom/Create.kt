@@ -15,6 +15,7 @@ import kotlinx.android.synthetic.main.activity_signup.*
 import java.text.SimpleDateFormat
 import java.util.*
 import kotlin.collections.HashMap
+import kotlin.time.milliseconds
 
 class Create : AppCompatActivity() {
 
@@ -59,7 +60,7 @@ class Create : AppCompatActivity() {
 
         val title = editTextTitle.text.toString()
         val postID = generateRandomString()
-        val today = SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(Date())
+        val today = Date().time
 
         val savedUser = DatabaseManager().retrieveSavedUser(this, "MainUser")
 
@@ -87,7 +88,7 @@ class Create : AppCompatActivity() {
                 })
             } else {
                 // show alert
-                setupAlertDialog("Ooops, we failed to share your meme :(")
+                setupAlertDialog("Ooops, we failed to share your amazing meme :(")
             }
         })
     }

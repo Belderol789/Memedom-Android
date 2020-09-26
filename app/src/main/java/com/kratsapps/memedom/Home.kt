@@ -3,6 +3,7 @@ package com.kratsapps.memedom
 import android.content.Intent
 import android.media.Image
 import android.os.Bundle
+import android.util.Log
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
@@ -23,12 +24,21 @@ class Home : Fragment() {
     lateinit var rootView: View
     lateinit var createButton: ImageButton
 
+    private var allMemes: List<Memes> = listOf<Memes>()
     var firebaseAuth: FirebaseAuth? = null
     var mAuthListener: FirebaseAuth.AuthStateListener? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        getAllMemes()
+    }
 
+    private fun getAllMemes() {
+        FirestoreHandler().checkForNewMemes {
+            Log.d("Memes", "Got all new memes ${it.size}")
+            allMemes = it
+            setupFeedView()
+        }
     }
 
     override fun onCreateView(
@@ -41,7 +51,6 @@ class Home : Fragment() {
         rootView = inflater.inflate(R.layout.fragment_home, container, false)
         setupUI()
         checkLoginStatus()
-        setupFeedView()
         return rootView
     }
 
@@ -77,13 +86,8 @@ class Home : Fragment() {
     }
 
     private fun setupFeedView() {
-        //For Testing
-        val dummyList = ArrayList<FeedItem>()
-        val item = FeedItem(R.drawable.ic_action_home, "This is a sample Title")
-        dummyList += item
-        //
         val feedRecyclerView = rootView.findViewById(R.id.recyclerViewHome) as RecyclerView
-        feedRecyclerView.adapter = FeedAdapter(dummyList)
+        feedRecyclerView.adapter = FeedAdapter(allMemes)
         feedRecyclerView.layoutManager = LinearLayoutManager(activity)
         feedRecyclerView.setHasFixedSize(true)
     }
