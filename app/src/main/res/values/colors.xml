@@ -3,7 +3,7 @@
     <color name="colorPrimary">#6200EE</color>
     <color name="colorPrimaryDark">#3700B3</color>
     <color name="colorAccent">#03DAC5</color>
-    <color name="appBGColor">#ff00ddff</color>
-    <color name="appFGColor">#30444E</color>
+    <color name="appFGColor">#FACE0D</color>
+    <color name="appBGColor">#30444E</color>
     <color name="whiteColor">#ffffff</color>
 </resources>

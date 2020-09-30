@@ -5,6 +5,7 @@ import android.os.Parcelable
 import java.io.Serializable
 import java.text.SimpleDateFormat
 import java.util.*
+import kotlin.collections.HashMap
 
 class MemeDomUser: Serializable {
     var name: String = ""
@@ -13,6 +14,7 @@ class MemeDomUser: Serializable {
     var profilePhoto: String = ""
     var uid: String = ""
     var email: String = ""
+    var likers: HashMap<String, String> = hashMapOf()
 
     fun getUserAge(): Int {
         val sdf = SimpleDateFormat("dd MMMM yyyy")

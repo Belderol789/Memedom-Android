@@ -31,7 +31,7 @@
                 android:checked="true"
                 android:gravity="center"
                 android:text="@string/links"
-                android:textColor="@android:color/holo_blue_bright" />
+                android:textColor="@color/appFGColor" />
 
             <androidx.appcompat.widget.AppCompatRadioButton
                 android:id="@+id/popularSegment"
@@ -43,7 +43,7 @@
                 android:checked="false"
                 android:gravity="center"
                 android:text="@string/popular"
-                android:textColor="@android:color/holo_blue_bright" />
+                android:textColor="@color/appFGColor" />
 
             <androidx.appcompat.widget.AppCompatRadioButton
                 android:id="@+id/freshSegment"
@@ -55,7 +55,7 @@
                 android:checked="false"
                 android:gravity="center"
                 android:text="@string/fresh"
-                android:textColor="@android:color/holo_blue_bright" />
+                android:textColor="@color/appFGColor" />
         </RadioGroup>
     </LinearLayout>
 
@@ -87,7 +87,7 @@
         android:id="@+id/credentialViewHome"
         android:layout_width="fill_parent"
         android:layout_height="100dp"
-        android:background="#CC454444"
+        android:background="#99000000"
         android:baselineAligned="false"
         android:orientation="horizontal"
         android:paddingTop="20dp"
@@ -106,9 +106,9 @@
                 android:layout_width="150dp"
                 android:layout_height="wrap_content"
                 android:layout_gravity="end"
-                android:elevation="10dp"
+                android:elevation="20dp"
                 android:background="@drawable/soft_buttons"
-                android:backgroundTint="@color/appBGColor"
+                android:backgroundTint="@color/appFGColor"
                 android:textColor="@color/whiteColor"
                 android:text="@string/home_signup" />
         </LinearLayout>
@@ -118,7 +118,7 @@
             android:layout_height="wrap_content"
             android:layout_weight="1"
             android:orientation="vertical"
-            android:paddingStart="10dp"
+            android:paddingStart="20dp"
             android:paddingEnd="10dp">
 
             <Button
@@ -127,7 +127,7 @@
                 android:layout_height="wrap_content"
                 android:layout_gravity="start"
                 android:elevation="10dp"
-                android:textColor="@color/appBGColor"
+                android:textColor="@color/appFGColor"
                 android:backgroundTint="@color/whiteColor"
                 android:background="@drawable/soft_buttons"
                 android:text="@string/home_login" />
