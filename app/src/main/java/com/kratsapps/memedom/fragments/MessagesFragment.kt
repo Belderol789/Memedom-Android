@@ -1,13 +1,14 @@
-package com.kratsapps.memedom
+package com.kratsapps.memedom.fragments
 
 import android.os.Bundle
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import com.kratsapps.memedom.R
 
 
-class NotificationsFragment : Fragment() {
+class MessagesFragment : Fragment() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)

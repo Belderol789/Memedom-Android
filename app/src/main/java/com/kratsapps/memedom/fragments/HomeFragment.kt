@@ -1,9 +1,7 @@
-package com.kratsapps.memedom
+package com.kratsapps.memedom.fragments
 
 import android.content.Intent
-import android.graphics.Color
 import android.os.Bundle
-import android.os.Handler
 import android.util.Log
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
@@ -17,7 +15,7 @@ import androidx.appcompat.widget.AppCompatRadioButton
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.google.firebase.auth.FirebaseAuth
-import kotlinx.android.synthetic.main.fragment_home.*
+import com.kratsapps.memedom.*
 
 
 class HomeFragment : Fragment() {

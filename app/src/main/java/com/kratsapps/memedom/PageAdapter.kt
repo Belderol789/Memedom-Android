@@ -6,6 +6,10 @@ import android.content.Context
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentManager
 import androidx.fragment.app.FragmentPagerAdapter
+import com.kratsapps.memedom.fragments.HomeFragment
+import com.kratsapps.memedom.fragments.MessagesFragment
+import com.kratsapps.memedom.fragments.NotificationsFragment
+import com.kratsapps.memedom.fragments.ProfileFragment
 
 data class Fragments(val fragment: Fragment)
 
