@@ -16,12 +16,13 @@ import org.json.JSONException
 import java.io.Serializable
 
 
-class Credential : AppCompatActivity() {
+class CredentialActivity : AppCompatActivity() {
 
     var user: MemeDomUser = MemeDomUser()
     var isSignup: Boolean = false
     private lateinit var auth: FirebaseAuth
 
+    lateinit var progressOverlay: View
     lateinit var callbackManager: CallbackManager
     lateinit var rootView: View
 
@@ -39,8 +40,14 @@ class Credential : AppCompatActivity() {
         val actionBar = supportActionBar
         actionBar!!.title = if (isSignup) "Signup" else "Login"
 
+        progressOverlay = findViewById(R.id.progress_overlay)
+
         buttonEmail.setOnClickListener{
-            navigateToSignup(true)
+            if(isSignup) {
+                navigateToSignup(true)
+            } else {
+                navigateToLogin()
+            }
         }
 
         callbackManager = CallbackManager.Factory.create()
@@ -107,7 +114,7 @@ class Credential : AppCompatActivity() {
 
     private fun handleFacebookAccessToken(token: AccessToken) {
         Log.d("Authentication", "handleFacebookAccessToken:$token")
-
+        AndroidUtils().animateView(progressOverlay, View.VISIBLE, 0.4f, 200)
         val credential = FacebookAuthProvider.getCredential(token.token)
         auth.signInWithCredential(credential)
             .addOnCompleteListener(this) { task ->
@@ -132,9 +139,18 @@ class Credential : AppCompatActivity() {
         Log.d("Firestore", "Adding New User")
         if (firebaseUser != null) {
             user.uid = firebaseUser.uid
-            navigateToSignup(false)
+            if(isSignup) {
+                progressOverlay.visibility = View.GONE
+                navigateToSignup(false)
+            } else {
+                FirestoreHandler().getUserDataWith(user.uid, {
+                    DatabaseManager(this).convertUserObject(it, "MainUser")
+                    progressOverlay.visibility = View.GONE
+                    val intent: Intent = Intent(this, MainActivity::class.java)
+                    startActivity(intent)
+                })
+            }
         }
-        // Proceed to next signup steps
     }
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
@@ -143,8 +159,14 @@ class Credential : AppCompatActivity() {
         callbackManager.onActivityResult(requestCode, resultCode, data)
     }
 
+    private fun navigateToLogin() {
+        val intent: Intent = Intent(this, LoginActivity::class.java)
+        intent.putExtra("MEMEDOM_USER", user as Serializable)
+        startActivity(intent)
+    }
+
     private fun navigateToSignup(isEmail: Boolean) {
-        val intent: Intent = Intent(this, Signup::class.java)
+        val intent: Intent = Intent(this, SignupActivity::class.java)
         intent.putExtra("AUTH_METHOD", isEmail)
         intent.putExtra("MEMEDOM_USER", user as Serializable)
         startActivity(intent)

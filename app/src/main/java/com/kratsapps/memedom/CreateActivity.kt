@@ -17,7 +17,7 @@ import java.util.*
 import kotlin.collections.HashMap
 import kotlin.time.milliseconds
 
-class Create : AppCompatActivity() {
+class CreateActivity : AppCompatActivity() {
 
     private val IMAGE_GALLERY_REQUEST_CODE: Int = 2001
 
@@ -62,7 +62,7 @@ class Create : AppCompatActivity() {
         val postID = generateRandomString()
         val today = Date().time
 
-        val savedUser = DatabaseManager().retrieveSavedUser(this, "MainUser")
+        val savedUser = DatabaseManager(this).retrieveSavedUser("MainUser")
 
         FireStorageHandler().uploadPhotoWith(postID, imageViewMeme.drawable, {
 
@@ -70,13 +70,14 @@ class Create : AppCompatActivity() {
                 val newPost: HashMap<String, Any> = hashMapOf(
                     "postID" to postID,
                     "postTitle" to title,
-                    "postLikes" to 0,
+                    "postDate" to today,
+                    "postImageURL" to it,
                     "postComments" to 0,
                     "postReports" to 0,
-                    "postImageURL" to it,
+                    "postLikers" to arrayListOf<String>(),
                     "postUsername" to savedUser.name,
                     "postProfileURL" to savedUser.profilePhoto,
-                    "postDate" to today
+                    "postUserUID" to savedUser.uid
                 )
 
                 FirestoreHandler().addDataToFirestore("Memes", postID, newPost, {

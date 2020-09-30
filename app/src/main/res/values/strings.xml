@@ -25,6 +25,12 @@
     <string name="alert_ok">Ok</string>
     <string name="postTitle">Title</string>
     <string name="postButton">Post</string>
+    <string name="male">Male</string>
+    <string name="female">Female</string>
+    <string name="other">Other</string>
+    <string name="popular">Popular</string>
+    <string name="links">Links</string>
+    <string name="fresh">Fresh</string>
 
     <string-array name="feed_segments">
         <item>Connections</item>

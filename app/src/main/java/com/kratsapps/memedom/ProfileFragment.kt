@@ -7,7 +7,7 @@ import android.view.View
 import android.view.ViewGroup
 
 
-class Notifications : Fragment() {
+class ProfileFragment : Fragment() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)

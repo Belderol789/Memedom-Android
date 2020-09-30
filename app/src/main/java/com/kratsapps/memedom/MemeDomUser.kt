@@ -8,7 +8,7 @@ import java.util.*
 
 class MemeDomUser: Serializable {
     var name: String = ""
-    var gender: String = ""
+    var gender: String = "Other"
     var birthday: String = ""
     var profilePhoto: String = ""
     var uid: String = ""

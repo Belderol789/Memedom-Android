@@ -4,6 +4,7 @@ import android.content.Context
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Button
 import android.widget.ImageView
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
@@ -23,18 +24,35 @@ class FeedAdapter(private val feedList: List<Memes>): RecyclerView.Adapter<FeedA
 
     override fun onBindViewHolder(holder: FeedViewHolder, position: Int) {
         val currentItem = feedList[position]
+        val postUD: String = currentItem.postID
+        val postUserID: String = currentItem.postUserUID
+        var currentPostLikes = currentItem.getPostLikeCount()
+
         Glide.with(feedAdapterContext)
             .load(currentItem.postImageURL)
             .centerCrop()
             .into(holder.imageView)
         holder.titleTextView.text = currentItem.postTitle
+        holder.likeBtn.text = "$currentPostLikes"
+
+        var mainUserID = DatabaseManager(feedAdapterContext).getMainUserID()
+
+        if(mainUserID != null) {
+            holder.likeBtn.setOnClickListener {
+                holder.likeBtn.text = "$currentPostLikes"
+                FirestoreHandler().updateArrayDatabaseObject("Memes", postUD, mainUserID)
+            }
+        }
     }
 
     override fun getItemCount() = feedList.size
 
     class FeedViewHolder(itemView: View): RecyclerView.ViewHolder(itemView) {
-        val imageView: ImageView = itemView.feed_Image
-        val titleTextView: TextView = itemView.feed_title
+        val imageView: ImageView = itemView.feedImage
+        val titleTextView: TextView = itemView.feedTitle
+        val shareBtn: Button = itemView.postShareBtn
+        val commentsBtn: Button = itemView.postCommentsBtn
+        val likeBtn: Button = itemView.postLikeBtn
     }
 }
 

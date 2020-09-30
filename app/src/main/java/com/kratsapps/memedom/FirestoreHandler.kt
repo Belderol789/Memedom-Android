@@ -1,6 +1,7 @@
 package com.kratsapps.memedom
 
 import android.util.Log
+import com.google.firebase.firestore.FieldValue
 import com.google.firebase.firestore.auth.User
 import com.google.firebase.firestore.ktx.firestore
 import com.google.firebase.ktx.Firebase
@@ -10,14 +11,10 @@ class FirestoreHandler {
 
     private val firestoreDB = Firebase.firestore
     private val MEMES_PATH = "Memes"
+    private val USERS_PATH = "User"
 
     //Adding
-    fun addDataToFirestore(
-        path: String,
-        document: String,
-        hashMap: HashMap<String, Any>,
-        success: (String?) -> Unit
-    ) {
+    fun addDataToFirestore(path: String, document: String, hashMap: HashMap<String, Any>, success: (String?) -> Unit) {
         firestoreDB
             .collection(path)
             .document(document)
@@ -37,6 +34,14 @@ class FirestoreHandler {
             .collection(path)
             .document(document)
             .update(hashMap)
+    }
+
+    fun updateArrayDatabaseObject(path: String, document: String, value: String) {
+        val fieldValue = FieldValue.arrayUnion(value)
+        firestoreDB
+            .collection(path)
+            .document(document)
+            .update("postLikers", fieldValue)
     }
 
     //Getting
@@ -77,6 +82,18 @@ class FirestoreHandler {
                     memes += newMeme
                 }
                 completed(memes)
+            }
+    }
+
+    fun getUserDataWith(uid: String, completed: (MemeDomUser) -> Unit) {
+        firestoreDB
+            .collection(USERS_PATH)
+            .document(uid)
+            .get()
+            .addOnSuccessListener { document ->
+                Log.d("Firestore", "${document.id} => ${document.data}")
+                val mainUser: MemeDomUser = document.toObject(MemeDomUser::class.java)!!
+                completed(mainUser)
             }
     }
 }

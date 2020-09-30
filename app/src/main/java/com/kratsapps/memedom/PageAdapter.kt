@@ -3,12 +3,9 @@
 package com.kratsapps.memedom
 
 import android.content.Context
-import android.provider.Settings.Global.getString
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentManager
 import androidx.fragment.app.FragmentPagerAdapter
-import androidx.annotation.NonNull
-import androidx.annotation.StringRes
 
 data class Fragments(val fragment: Fragment)
 
@@ -17,10 +14,10 @@ class PageAdapter(val context: Context, fm: FragmentManager) : FragmentPagerAdap
     private val fragments = arrayListOf<Fragments>()
 
     init {
-        fragments.add(Fragments(Profile()))
-        fragments.add(Fragments(Home()))
-        fragments.add(Fragments(Notifications()))
-        fragments.add(Fragments(Messages()))
+        fragments.add(Fragments(ProfileFragment()))
+        fragments.add(Fragments(HomeFragment()))
+        fragments.add(Fragments(NotificationsFragment()))
+        fragments.add(Fragments(MessagesFragment()))
     }
 
     override fun getCount(): Int = fragments.size

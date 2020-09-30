@@ -4,7 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".Home">
+    tools:context=".HomeFragment">
 
     <LinearLayout
         android:id="@+id/linearRadios"
@@ -30,7 +30,7 @@
                 android:button="@android:color/transparent"
                 android:checked="true"
                 android:gravity="center"
-                android:text="Links"
+                android:text="@string/links"
                 android:textColor="@android:color/holo_blue_bright" />
 
             <androidx.appcompat.widget.AppCompatRadioButton
@@ -42,7 +42,7 @@
                 android:button="@android:color/transparent"
                 android:checked="false"
                 android:gravity="center"
-                android:text="Popular"
+                android:text="@string/popular"
                 android:textColor="@android:color/holo_blue_bright" />
 
             <androidx.appcompat.widget.AppCompatRadioButton
@@ -54,7 +54,7 @@
                 android:button="@android:color/transparent"
                 android:checked="false"
                 android:gravity="center"
-                android:text="Fresh"
+                android:text="@string/fresh"
                 android:textColor="@android:color/holo_blue_bright" />
         </RadioGroup>
     </LinearLayout>
@@ -102,11 +102,14 @@
             android:orientation="vertical">
 
             <Button
-                android:id="@+id/home_signup_button"
+                android:id="@+id/signupHomeButton"
                 android:layout_width="150dp"
                 android:layout_height="wrap_content"
                 android:layout_gravity="end"
-                android:background="@drawable/softbuttons"
+                android:elevation="10dp"
+                android:background="@drawable/soft_buttons"
+                android:backgroundTint="@color/appBGColor"
+                android:textColor="@color/whiteColor"
                 android:text="@string/home_signup" />
         </LinearLayout>
 
@@ -119,11 +122,14 @@
             android:paddingEnd="10dp">
 
             <Button
-                android:id="@+id/home_login_button"
+                android:id="@+id/loginHomeButton"
                 android:layout_width="150dp"
                 android:layout_height="wrap_content"
                 android:layout_gravity="start"
-                android:background="@drawable/softbuttons"
+                android:elevation="10dp"
+                android:textColor="@color/appBGColor"
+                android:backgroundTint="@color/whiteColor"
+                android:background="@drawable/soft_buttons"
                 android:text="@string/home_login" />
         </LinearLayout>
     </LinearLayout>

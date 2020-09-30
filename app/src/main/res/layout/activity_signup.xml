@@ -4,7 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".Signup">
+    tools:context=".SignupActivity">
 
     <HorizontalScrollView
         android:id="@+id/scrollViewSignup"
@@ -105,7 +105,7 @@
                     android:id="@+id/buttonNextAuth"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:background="@drawable/softbuttons"
+                    android:background="@drawable/soft_buttons"
                     android:text="@string/next"
                     app:layout_constraintTop_toTopOf="@+id/authentication_view"
                     tools:layout_editor_absoluteX="307dp" />
@@ -177,13 +177,93 @@
                     android:id="@+id/buttonNextUsername"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:background="@drawable/softbuttons"
+                    android:background="@drawable/soft_buttons"
                     android:text="@string/next"
                     android:visibility="visible"
                     app:layout_constraintTop_toTopOf="@+id/authentication_view"
                     tools:layout_editor_absoluteX="307dp" />
 
             </LinearLayout>
+
+            <LinearLayout
+                android:id="@+id/layoutGender"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:divider="@drawable/divider_vertical"
+                android:gravity="center"
+                android:orientation="vertical"
+                android:paddingHorizontal="16dp"
+                android:paddingVertical="8dp"
+                android:showDividers="middle"
+                android:visibility="visible"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintStart_toStartOf="@id/layoutUsername"
+                app:layout_constraintTop_toTopOf="parent">
+
+                <LinearLayout
+                    android:id="@+id/linearRadios"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="4dp"
+                    android:layout_marginEnd="4dp"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent">
+
+                    <RadioGroup
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="horizontal">
+
+                        <androidx.appcompat.widget.AppCompatRadioButton
+                            android:id="@+id/maleSegment"
+                            android:layout_width="0dp"
+                            android:layout_height="50dp"
+                            android:layout_weight="1"
+                            android:background="@drawable/radio_button_selector_fill"
+                            android:button="@android:color/transparent"
+                            android:checked="true"
+                            android:gravity="center"
+                            android:text="@string/male"
+                            android:textColor="@android:color/white" />
+
+                        <androidx.appcompat.widget.AppCompatRadioButton
+                            android:id="@+id/femaleSegment"
+                            android:layout_width="0dp"
+                            android:layout_height="50dp"
+                            android:layout_weight="1"
+                            android:background="@drawable/radio_button_selector_fill"
+                            android:button="@android:color/transparent"
+                            android:checked="false"
+                            android:gravity="center"
+                            android:text="@string/female"
+                            android:textColor="@android:color/holo_blue_bright" />
+
+                        <androidx.appcompat.widget.AppCompatRadioButton
+                            android:id="@+id/otherSegment"
+                            android:layout_width="0dp"
+                            android:layout_height="50dp"
+                            android:layout_weight="1"
+                            android:background="@drawable/radio_button_selector_fill"
+                            android:button="@android:color/transparent"
+                            android:checked="false"
+                            android:gravity="center"
+                            android:text="@string/other"
+                            android:textColor="@android:color/holo_blue_bright" />
+                    </RadioGroup>
+                </LinearLayout>
+
+                <Button
+                    android:id="@+id/buttonNextGender"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:background="@drawable/soft_buttons"
+                    android:text="@string/next"
+                    android:visibility="visible"
+                    app:layout_constraintTop_toTopOf="@+id/authentication_view"
+                    tools:layout_editor_absoluteX="307dp" />
+            </LinearLayout>
+
 
             <LinearLayout
                 android:id="@+id/layoutBirthday"
@@ -198,7 +278,7 @@
                 android:visibility="visible"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="@id/layoutUsername"
+                app:layout_constraintStart_toStartOf="@id/layoutGender"
                 app:layout_constraintTop_toTopOf="parent">
 
                 <LinearLayout
@@ -240,13 +320,14 @@
                     android:id="@+id/buttonNextBirthday"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:background="@drawable/softbuttons"
+                    android:background="@drawable/soft_buttons"
                     android:text="@string/next"
                     android:visibility="visible"
                     app:layout_constraintTop_toTopOf="@+id/authentication_view"
                     tools:layout_editor_absoluteX="307dp" />
 
             </LinearLayout>
+
         </LinearLayout>
     </HorizontalScrollView>
 

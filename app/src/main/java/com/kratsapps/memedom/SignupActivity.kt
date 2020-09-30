@@ -4,6 +4,7 @@ import android.app.DatePickerDialog
 import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
+import android.graphics.Color
 import android.os.Build
 import android.os.Bundle
 import android.provider.MediaStore
@@ -18,6 +19,7 @@ import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
 import com.bumptech.glide.Glide
+import com.bumptech.glide.load.engine.Resource
 import com.google.firebase.auth.FirebaseAuth
 import kotlinx.android.synthetic.main.activity_signup.*
 import java.text.SimpleDateFormat
@@ -25,7 +27,7 @@ import java.util.*
 import kotlin.collections.HashMap
 import kotlin.concurrent.schedule
 
-class Signup : AppCompatActivity() {
+class SignupActivity : AppCompatActivity() {
 
     private val IMAGE_GALLERY_REQUEST_CODE: Int = 2001
     private var screenWidth: Int = 0
@@ -78,14 +80,10 @@ class Signup : AppCompatActivity() {
 
         Log.d("Screen Size", "ScreenWidth ${screenWidth}")
 
-        val authParams = layoutAuth.layoutParams
-        authParams.width = screenWidth
-
-        val usernameParams = layoutUsername.layoutParams
-        usernameParams.width = screenWidth
-
-        val birthdayParams = layoutBirthday.layoutParams
-        birthdayParams.width = screenWidth
+        layoutAuth.layoutParams.width = screenWidth
+        layoutUsername.layoutParams.width = screenWidth
+        layoutBirthday.layoutParams.width = screenWidth
+        layoutGender.layoutParams.width = screenWidth
 
         textEditBirthday.setRawInputType(InputType.TYPE_NULL)
         scrollViewSignup.setOnTouchListener(View.OnTouchListener { v, event -> true })
@@ -125,9 +123,32 @@ class Signup : AppCompatActivity() {
                 scrollViewSignup.smoothScrollTo(screenWidth * 2, 0)
             }
         }
-
+        // Profile Photo
         imageButtonProfile.setOnClickListener{
             prepOpenImageGallery()
+        }
+
+        // Gender
+        buttonNextGender.setOnClickListener {
+            if(!memeDomuser.gender.isEmpty()) {
+                scrollViewSignup.smoothScrollTo(screenWidth * 3, 0)
+            }
+        }
+
+        maleSegment.setOnClickListener{
+            Log.d("Segment", "Male segment tapped")
+            memeDomuser.gender = "Male"
+            updateGenderSegments(0)
+        }
+        femaleSegment.setOnClickListener{
+            Log.d("Segment", "Female segment tapped")
+            memeDomuser.gender = "Female"
+            updateGenderSegments(1)
+        }
+        otherSegment.setOnClickListener{
+            memeDomuser.gender = "Other"
+            Log.d("Segment", "Other segment tapped")
+            updateGenderSegments(2)
         }
 
         textEditBirthday.setText("")
@@ -153,52 +174,7 @@ class Signup : AppCompatActivity() {
         }
 
         buttonNextBirthday.setOnClickListener{
-
-            val birthday = textEditBirthday.text.toString()
-
-            Log.d("Birthday", "$birthday")
-
-            if (!birthday.isEmpty()) {
-
-                AndroidUtils().animateView(progressOverlay, View.VISIBLE, 0.4f, 200)
-                memeDomuser.birthday = birthday
-
-                val newUser: HashMap<String, Any> = hashMapOf(
-                    "name" to memeDomuser.name,
-                    "birthday" to memeDomuser.birthday,
-                    "profilePhoto" to memeDomuser.profilePhoto,
-                    "uid" to memeDomuser.uid,
-                    "email" to memeDomuser.email
-                )
-
-                val profileImage = imageButtonProfile.drawable
-
-                FireStorageHandler().uploadPhotoWith(memeDomuser.uid, profileImage, {
-                    if (it != null) {
-                        memeDomuser.profilePhoto = it
-                        val profilePhoto: HashMap<kotlin.String, kotlin.Any> =
-                            kotlin.collections.hashMapOf(
-                                "profilePhoto" to it
-                            )
-                        com.kratsapps.memedom.FirestoreHandler()
-                            .updateDatabaseObject("User", memeDomuser.uid, profilePhoto)
-
-                        DatabaseManager().convertUserObject(this, memeDomuser, "MainUser")
-                    }
-                })
-
-                FirestoreHandler().addDataToFirestore("User", memeDomuser.uid, newUser, {
-                    progressOverlay.visibility = View.GONE
-                    if (it != null) {
-                        setupAlertDialog(it)
-                    } else {
-                        navigateToMain()
-                    }
-                })
-
-            } else {
-                setupAlertDialog("Missing birthday or username")
-            }
+            signupUser()
         }
     }
 
@@ -252,6 +228,32 @@ class Signup : AppCompatActivity() {
             }
     }
 
+    private fun updateGenderSegments(type: Int) {
+
+        if(type == 0) {
+            maleSegment.isChecked = true
+            femaleSegment.isChecked = false
+            otherSegment.isChecked = false
+            maleSegment.setTextColor(Color.WHITE)
+            femaleSegment.setTextColor(Color.parseColor("#ff00ddff"))
+            otherSegment.setTextColor(Color.parseColor("#ff00ddff"))
+        } else if (type == 1) {
+            femaleSegment.isChecked = true
+            otherSegment.isChecked = false
+            maleSegment.isChecked = false
+            femaleSegment.setTextColor(Color.WHITE)
+            maleSegment.setTextColor(Color.parseColor("#ff00ddff"))
+            otherSegment.setTextColor(Color.parseColor("#ff00ddff"))
+        } else {
+            otherSegment.isChecked = true
+            maleSegment.isChecked = false
+            femaleSegment.isChecked = false
+            otherSegment.setTextColor(Color.WHITE)
+            femaleSegment.setTextColor(Color.parseColor("#ff00ddff"))
+            maleSegment.setTextColor(Color.parseColor("#ff00ddff"))
+        }
+    }
+
     private fun setupAlertDialog(message: String?) {
         val builder = AlertDialog.Builder(this)
         builder.setTitle("Signup Error")
@@ -283,6 +285,56 @@ class Signup : AppCompatActivity() {
             imm.hideSoftInputFromWindow(currentFocus!!.windowToken, 0)
         }
         return super.dispatchTouchEvent(ev)
+    }
+
+    private fun signupUser() {
+        val birthday = textEditBirthday.text.toString()
+
+        Log.d("Birthday", "$birthday")
+
+        if (!birthday.isEmpty()) {
+
+            AndroidUtils().animateView(progressOverlay, View.VISIBLE, 0.4f, 200)
+            memeDomuser.birthday = birthday
+
+            val newUser: HashMap<String, Any> = hashMapOf(
+                "name" to memeDomuser.name,
+                "birthday" to memeDomuser.birthday,
+                "profilePhoto" to memeDomuser.profilePhoto,
+                "uid" to memeDomuser.uid,
+                "gender" to memeDomuser.gender,
+                "email" to memeDomuser.email
+            )
+
+            val profileImage = imageButtonProfile.drawable
+            if (profileImage != null) {
+                FireStorageHandler().uploadPhotoWith(memeDomuser.uid, profileImage, {
+                    if (it != null) {
+                        memeDomuser.profilePhoto = it
+                        val profilePhoto: HashMap<kotlin.String, kotlin.Any> =
+                            kotlin.collections.hashMapOf(
+                                "profilePhoto" to it
+                            )
+                        com.kratsapps.memedom.FirestoreHandler()
+                            .updateDatabaseObject("User", memeDomuser.uid, profilePhoto)
+
+                        DatabaseManager(this).convertUserObject(memeDomuser, "MainUser")
+                    }
+                })
+            }
+
+            FirestoreHandler().addDataToFirestore("User", memeDomuser.uid, newUser, {
+                progressOverlay.visibility = View.GONE
+                if (it != null) {
+                    setupAlertDialog(it)
+                } else {
+                    DatabaseManager(this).convertUserObject(memeDomuser, "MainUser")
+                    navigateToMain()
+                }
+            })
+        } else {
+            setupAlertDialog("Missing birthday or username")
+        }
     }
 
 }

@@ -1,7 +1,7 @@
 package com.kratsapps.memedom
 
 import android.content.Intent
-import android.media.Image
+import android.graphics.Color
 import android.os.Bundle
 import android.util.Log
 import androidx.fragment.app.Fragment
@@ -11,17 +11,15 @@ import android.view.ViewGroup
 import android.widget.Button
 import android.widget.ImageButton
 import android.widget.LinearLayout
-import android.widget.RadioButton
 import androidx.annotation.NonNull
 import androidx.appcompat.widget.AppCompatRadioButton
-import androidx.core.view.isVisible
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.google.firebase.auth.FirebaseAuth
 import kotlinx.android.synthetic.main.fragment_home.*
 
 
-class Home : Fragment() {
+class HomeFragment : Fragment() {
 
     lateinit var rootView: View
     lateinit var createButton: ImageButton
@@ -36,6 +34,7 @@ class Home : Fragment() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         getAllMemes()
+        DatabaseManager(this.context!!).retrieveSavedUser("MainUser")
     }
 
     private fun getAllMemes() {
@@ -50,8 +49,6 @@ class Home : Fragment() {
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-
-        // Inflate the layout for this fragment
         val homeContext = container?.context
         rootView = inflater.inflate(R.layout.fragment_home, container, false)
         setupUI()
@@ -85,10 +82,9 @@ class Home : Fragment() {
     private fun setupUI() {
         createButton = rootView.findViewById(R.id.buttonCreate) as ImageButton
         createButton.setOnClickListener{
-            val intent: Intent = Intent(this.context, Create::class.java)
+            val intent: Intent = Intent(this.context, CreateActivity::class.java)
             startActivity(intent)
         }
-
         linkSegment = rootView.findViewById(R.id.linkSegment)
         popularSegment = rootView.findViewById(R.id.popularSegment)
         freshSegment = rootView.findViewById(R.id.freshSegment)
@@ -98,11 +94,11 @@ class Home : Fragment() {
             updateSegments(0)
         }
         popularSegment.setOnClickListener{
-            Log.d("Segment", "Link segment tapped")
+            Log.d("Segment", "Popular segment tapped")
             updateSegments(1)
         }
         freshSegment.setOnClickListener{
-            Log.d("Segment", "Link segment tapped")
+            Log.d("Segment", "Fresh segment tapped")
             updateSegments(2)
         }
     }
@@ -115,8 +111,8 @@ class Home : Fragment() {
     }
 
     private fun setupCrentialView() {
-        val signupButton = rootView.findViewById(R.id.home_signup_button) as Button
-        val loginButton: Button = rootView.findViewById(R.id.home_login_button) as Button
+        val signupButton = rootView.findViewById(R.id.signupHomeButton) as Button
+        val loginButton: Button = rootView.findViewById(R.id.loginHomeButton) as Button
 
         signupButton.setOnClickListener{
             navigateToCredentialView(true)
@@ -128,7 +124,7 @@ class Home : Fragment() {
     }
 
     private fun navigateToCredentialView(isSignup: Boolean) {
-        val intent: Intent = Intent(this.context, Credential::class.java)
+        val intent: Intent = Intent(this.context, CredentialActivity::class.java)
         intent.putExtra("CREDENTIAL_ACTION", isSignup)
         startActivity(intent)
     }
