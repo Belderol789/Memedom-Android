@@ -2,6 +2,7 @@ package com.kratsapps.memedom
 
 import android.util.Log
 import com.google.firebase.firestore.FieldValue
+import com.google.firebase.firestore.SetOptions
 import com.google.firebase.firestore.auth.User
 import com.google.firebase.firestore.ktx.firestore
 import com.google.firebase.ktx.Firebase
@@ -29,6 +30,23 @@ class FirestoreHandler {
     }
 
     //Editing
+    fun updateLikedDatabase(mainUserID: String, postUserID: String) {
+
+        getCurrentNumberOfLikes(mainUserID, postUserID, {
+            val updatedCount = it?.plus(1)
+            val updatedLike = hashMapOf(postUserID to updatedCount)
+            val updateLiked: HashMap<String, Any> = hashMapOf(
+                "liked" to updatedLike
+            )
+            firestoreDB
+                .collection(USERS_PATH)
+                .document(mainUserID)
+                .set(updateLiked, SetOptions.merge())
+
+        })
+        Log.d("Firestore-Liked", "Updating $postUserID to $mainUserID")
+    }
+
     fun updateDatabaseObject(path: String, document: String, hashMap: HashMap<String, Any>) {
         firestoreDB
             .collection(path)
@@ -96,4 +114,28 @@ class FirestoreHandler {
                 completed(mainUser)
             }
     }
+
+    fun getCurrentNumberOfLikes(mainuserID: String, postUserID: String, completed: (currentLikes: Long?) -> Unit) {
+        firestoreDB
+            .collection(USERS_PATH)
+            .document(mainuserID)
+            .get()
+            .addOnSuccessListener {
+                val likedHashMap = it.get("liked") as HashMap<String, Long>
+
+                Log.d("Firestore-Liked", "Got like hashmap $likedHashMap with uid as $postUserID")
+
+                val userLiked = likedHashMap.get(postUserID)
+                if(userLiked != null) {
+                    Log.d("Firestore-Liked", "Current number $userLiked")
+                    completed(userLiked)
+                } else {
+                    completed(0)
+                }
+            }
+            .addOnFailureListener{
+                completed(0)
+            }
+    }
 }
+

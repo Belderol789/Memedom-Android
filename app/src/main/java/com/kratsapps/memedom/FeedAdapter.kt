@@ -1,12 +1,18 @@
 package com.kratsapps.memedom
 
 import android.content.Context
+import android.content.res.ColorStateList
+import android.graphics.Color
+import android.os.Build
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Button
 import android.widget.ImageView
 import android.widget.TextView
+import androidx.annotation.RequiresApi
+import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import kotlinx.android.synthetic.main.feed_item.view.*
@@ -22,6 +28,7 @@ class FeedAdapter(private val feedList: List<Memes>): RecyclerView.Adapter<FeedA
         return FeedViewHolder(itemView)
     }
 
+    @RequiresApi(Build.VERSION_CODES.M)
     override fun onBindViewHolder(holder: FeedViewHolder, position: Int) {
         val currentItem = feedList[position]
         val postUD: String = currentItem.postID
@@ -39,8 +46,14 @@ class FeedAdapter(private val feedList: List<Memes>): RecyclerView.Adapter<FeedA
 
         if(mainUserID != null) {
             holder.likeBtn.setOnClickListener {
-                holder.likeBtn.text = "$currentPostLikes"
-                FirestoreHandler().updateArrayDatabaseObject("Memes", postUD, mainUserID)
+
+                val postLikers = currentItem.postLikers
+                if(!postLikers.contains(mainUserID)) {
+                    holder.likeBtn.text = "$currentPostLikes"
+                    FirestoreHandler().updateArrayDatabaseObject("Memes", postUD, mainUserID)
+
+                    FirestoreHandler().updateLikedDatabase(mainUserID, postUserID)
+                }
             }
         }
     }

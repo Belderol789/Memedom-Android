@@ -4,26 +4,26 @@
     <item
         android:id="@+id/ic_settings"
         android:icon="@drawable/ic_action_setting"
-        android:title=""/>
+        android:title="Settings"/>
 
     <item
         android:id="@+id/ic_profile"
         android:icon="@drawable/ic_action_name"
-        android:title=""/>
+        android:title="Profile"/>
 
     <item
         android:id="@+id/ic_home"
         android:icon="@drawable/ic_action_home"
-        android:title="" />
+        android:title="Memedom" />
 
     <item
         android:id="@+id/ic_notifs"
         android:icon="@drawable/ic_action_notif"
-        android:title=""/>
+        android:title="Notifications"/>
 
     <item
         android:id="@+id/ic_chat"
         android:icon="@drawable/ic_action_chat"
-        android:title=""/>
+        android:title="Chat"/>
 
 </menu>

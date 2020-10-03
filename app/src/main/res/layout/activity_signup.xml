@@ -237,7 +237,7 @@
                             android:checked="false"
                             android:gravity="center"
                             android:text="@string/female"
-                            android:textColor="@android:color/holo_blue_bright" />
+                            android:textColor="@color/appFGColor" />
 
                         <androidx.appcompat.widget.AppCompatRadioButton
                             android:id="@+id/otherSegment"
@@ -249,7 +249,7 @@
                             android:checked="false"
                             android:gravity="center"
                             android:text="@string/other"
-                            android:textColor="@android:color/holo_blue_bright" />
+                            android:textColor="@color/appFGColor" />
                     </RadioGroup>
                 </LinearLayout>
 

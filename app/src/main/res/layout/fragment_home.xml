@@ -75,11 +75,12 @@
         android:id="@+id/buttonCreate"
         android:layout_width="45dp"
         android:layout_height="45dp"
-        android:layout_marginEnd="20dp"
+        android:layout_marginEnd="16dp"
         android:layout_marginBottom="20dp"
         android:background="@drawable/roundbutton"
         android:contentDescription="navigate to create activity"
         android:src="@drawable/ic_action_create"
+        android:tint="@color/whiteColor"
         app:layout_constraintBottom_toBottomOf="@+id/recyclerViewHome"
         app:layout_constraintEnd_toEndOf="@+id/recyclerViewHome" />
 
@@ -103,14 +104,14 @@
 
             <Button
                 android:id="@+id/signupHomeButton"
-                android:layout_width="150dp"
+                android:layout_width="180dp"
                 android:layout_height="wrap_content"
                 android:layout_gravity="end"
-                android:elevation="20dp"
                 android:background="@drawable/soft_buttons"
                 android:backgroundTint="@color/appFGColor"
-                android:textColor="@color/whiteColor"
-                android:text="@string/home_signup" />
+                android:elevation="20dp"
+                android:text="@string/home_signup"
+                android:textColor="@color/whiteColor" />
         </LinearLayout>
 
         <LinearLayout
@@ -123,14 +124,14 @@
 
             <Button
                 android:id="@+id/loginHomeButton"
-                android:layout_width="150dp"
+                android:layout_width="180dp"
                 android:layout_height="wrap_content"
                 android:layout_gravity="start"
-                android:elevation="10dp"
-                android:textColor="@color/appFGColor"
-                android:backgroundTint="@color/whiteColor"
                 android:background="@drawable/soft_buttons"
-                android:text="@string/home_login" />
+                android:backgroundTint="@color/whiteColor"
+                android:elevation="10dp"
+                android:text="@string/home_login"
+                android:textColor="@color/appFGColor" />
         </LinearLayout>
     </LinearLayout>
 

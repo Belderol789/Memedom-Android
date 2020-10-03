@@ -14,7 +14,7 @@ class MemeDomUser: Serializable {
     var profilePhoto: String = ""
     var uid: String = ""
     var email: String = ""
-    var likers: HashMap<String, String> = hashMapOf()
+    var liked: HashMap<String, Any> = hashMapOf()
 
     fun getUserAge(): Int {
         val sdf = SimpleDateFormat("dd MMMM yyyy")
