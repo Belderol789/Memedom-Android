@@ -6,6 +6,7 @@ import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.provider.MediaStore
 import android.util.Log
+import android.view.View
 import android.widget.Toast
 import androidx.annotation.RequiresApi
 import androidx.appcompat.app.AlertDialog
@@ -46,23 +47,27 @@ class CreateActivity : AppCompatActivity() {
         }
 
         buttonPost.setOnClickListener {
-            if(imageViewMeme.drawable != null) {
+            if (imageViewMeme.drawable != null) {
                 Log.d("Create", "Has Image from gallery")
+                it.visibility = View.INVISIBLE
                 sendPostToFirestore()
             } else {
                 setupAlertDialog("Meme is missing!")
             }
         }
-
     }
 
     private fun sendPostToFirestore() {
+
+        var progressOverlay: View = findViewById(R.id.progress_overlay)
 
         val title = editTextTitle.text.toString()
         val postID = generateRandomString()
         val today = Date().time
 
         val savedUser = DatabaseManager(this).retrieveSavedUser("MainUser")
+
+        AndroidUtils().animateView(progressOverlay, View.VISIBLE, 0.4f, 200)
 
         FireStorageHandler().uploadPhotoWith(postID, imageViewMeme.drawable, {
 
@@ -77,11 +82,14 @@ class CreateActivity : AppCompatActivity() {
                     "postLikers" to arrayListOf<String>(),
                     "postUsername" to savedUser.name,
                     "postProfileURL" to savedUser.profilePhoto,
-                    "postUserUID" to savedUser.uid
+                    "postUserUID" to savedUser.uid,
+                    "points" to 1
                 )
 
                 FirestoreHandler().addDataToFirestore("Memes", postID, newPost, {
-                    if(it != null) {
+                    progressOverlay.visibility = View.GONE
+                    buttonPost.visibility = View.VISIBLE
+                    if (it != null) {
                         setupAlertDialog(it)
                     } else {
                         onBackPressed()

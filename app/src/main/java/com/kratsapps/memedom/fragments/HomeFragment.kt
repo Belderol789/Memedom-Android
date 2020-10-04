@@ -37,7 +37,7 @@ class HomeFragment : Fragment() {
     }
 
     private fun getAllMemes() {
-        FirestoreHandler().checkForNewMemes {
+        FirestoreHandler().checkForPopularMemes {
             Log.d("Memes", "Got all new memes ${it.size}")
             allMemes = it
             setupFeedView()

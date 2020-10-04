@@ -12,6 +12,7 @@ class Memes : Serializable {
     var postProfileURL: String = ""
     var postUserUID: String = ""
 
+    var postPoints: Long = 0
     var postLikers: List<String> = listOf()
 
     var postDate: Long = 0

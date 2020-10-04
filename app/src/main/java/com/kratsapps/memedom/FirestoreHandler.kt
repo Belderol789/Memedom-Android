@@ -59,12 +59,13 @@ class FirestoreHandler {
             .update(hashMap)
     }
 
-    fun updateArrayDatabaseObject(path: String, document: String, value: String) {
+    fun updateArrayDatabaseObject(path: String, document: String, value: String, points: Long) {
         val fieldValue = FieldValue.arrayUnion(value)
         firestoreDB
             .collection(path)
             .document(document)
-            .update("postLikers", fieldValue)
+            .update("postLikers", fieldValue,
+            "postPoints", points)
     }
 
     //Getting
@@ -90,9 +91,10 @@ class FirestoreHandler {
             }
     }
 
-    fun checkForNewMemes(completed: (List<Memes>) -> Unit) {
+    fun checkForPopularMemes(completed: (List<Memes>) -> Unit) {
         firestoreDB
             .collection(MEMES_PATH)
+            .whereGreaterThanOrEqualTo("postPoints", 200)
             .addSnapshotListener { value, e ->
                 if (e != null) {
                     Log.w("Firestore", "Listen faield", e)
@@ -105,7 +107,9 @@ class FirestoreHandler {
                     val newMeme: Memes = document.toObject(Memes::class.java)
                     memes += newMeme
                 }
-                completed(memes)
+
+                val shuffledMemes = memes.shuffled()
+                completed(shuffledMemes)
             }
     }
 

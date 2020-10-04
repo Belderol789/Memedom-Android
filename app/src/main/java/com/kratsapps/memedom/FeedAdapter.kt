@@ -35,6 +35,8 @@ class FeedAdapter(private val feedList: List<Memes>): RecyclerView.Adapter<FeedA
         val postUserID: String = currentItem.postUserUID
         var currentPostLikes = currentItem.getPostLikeCount()
 
+        Log.d("Scrolling", "Scrolled through meme ${currentItem.postTitle}")
+
         Glide.with(feedAdapterContext)
             .load(currentItem.postImageURL)
             .centerCrop()
@@ -50,7 +52,10 @@ class FeedAdapter(private val feedList: List<Memes>): RecyclerView.Adapter<FeedA
                 val postLikers = currentItem.postLikers
                 if(!postLikers.contains(mainUserID)) {
                     holder.likeBtn.text = "$currentPostLikes"
-                    FirestoreHandler().updateArrayDatabaseObject("Memes", postUD, mainUserID)
+
+                    val updatedPoints = postLikers.count() + 1
+
+                    FirestoreHandler().updateArrayDatabaseObject("Memes", postUD, mainUserID, updatedPoints.toLong())
                     FirestoreHandler().updateLikedDatabase(mainUserID, postUserID)
                 }
             }
