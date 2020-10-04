@@ -51,7 +51,6 @@ class FeedAdapter(private val feedList: List<Memes>): RecyclerView.Adapter<FeedA
                 if(!postLikers.contains(mainUserID)) {
                     holder.likeBtn.text = "$currentPostLikes"
                     FirestoreHandler().updateArrayDatabaseObject("Memes", postUD, mainUserID)
-
                     FirestoreHandler().updateLikedDatabase(mainUserID, postUserID)
                 }
             }

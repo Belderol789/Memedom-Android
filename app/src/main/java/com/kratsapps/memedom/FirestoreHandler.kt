@@ -15,7 +15,12 @@ class FirestoreHandler {
     private val USERS_PATH = "User"
 
     //Adding
-    fun addDataToFirestore(path: String, document: String, hashMap: HashMap<String, Any>, success: (String?) -> Unit) {
+    fun addDataToFirestore(
+        path: String,
+        document: String,
+        hashMap: HashMap<String, Any>,
+        success: (String?) -> Unit
+    ) {
         firestoreDB
             .collection(path)
             .document(document)
@@ -95,6 +100,7 @@ class FirestoreHandler {
                 }
 
                 val memes = ArrayList<Memes>()
+
                 for (document in value!!) {
                     val newMeme: Memes = document.toObject(Memes::class.java)
                     memes += newMeme
@@ -115,7 +121,11 @@ class FirestoreHandler {
             }
     }
 
-    fun getCurrentNumberOfLikes(mainuserID: String, postUserID: String, completed: (currentLikes: Long?) -> Unit) {
+    fun getCurrentNumberOfLikes(
+        mainuserID: String,
+        postUserID: String,
+        completed: (currentLikes: Long?) -> Unit
+    ) {
         firestoreDB
             .collection(USERS_PATH)
             .document(mainuserID)
@@ -126,15 +136,43 @@ class FirestoreHandler {
                 Log.d("Firestore-Liked", "Got like hashmap $likedHashMap with uid as $postUserID")
 
                 val userLiked = likedHashMap.get(postUserID)
-                if(userLiked != null) {
+                if (userLiked != null) {
                     Log.d("Firestore-Liked", "Current number $userLiked")
                     completed(userLiked)
                 } else {
                     completed(0)
                 }
             }
-            .addOnFailureListener{
+            .addOnFailureListener {
                 completed(0)
+            }
+    }
+
+    fun checkMatchingStatus(uid: String) {
+
+        Log.d("Firestore-matching", "$uid")
+
+        firestoreDB
+            .collection(USERS_PATH)
+            .document(uid)
+            .addSnapshotListener { snapshot, e ->
+                if (e != null) {
+                    Log.w("Firestore-matching", "listen failed $e")
+                    return@addSnapshotListener
+                }
+
+                if (snapshot != null && snapshot.exists()) {
+                    val likedHashMap = snapshot.get("liked") as HashMap<String, Long>
+                    for ((key, value) in likedHashMap) {
+                        Log.d("Firestore-matching", "Current users $key and $value")
+                        if (value >= 10) {
+                            getUserDataWith(key, {
+                                Log.d("Firestore-matching", "Got user data ${it.name} ${it.profilePhoto}")
+                            })
+                            // display popup
+                        }
+                    }
+                }
             }
     }
 }

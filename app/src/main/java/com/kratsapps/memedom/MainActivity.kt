@@ -26,6 +26,7 @@ class MainActivity : AppCompatActivity() {
         setContentView(R.layout.activity_main)
         activateFacebook()
         setupBottomNavigation()
+        checkLikedStatus()
     }
 
     private fun setupBottomNavigation() {
@@ -51,6 +52,13 @@ class MainActivity : AppCompatActivity() {
 
     private fun activateFacebook() {
         FacebookSdk.fullyInitialize()
+    }
+
+    private fun checkLikedStatus() {
+        val user = FirebaseAuth.getInstance().getCurrentUser()
+        if(user != null) {
+            FirestoreHandler().checkMatchingStatus(user.uid)
+        }
     }
 
     private fun checkLoginStatus() {
