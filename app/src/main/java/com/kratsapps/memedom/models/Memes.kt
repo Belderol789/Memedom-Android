@@ -1,4 +1,4 @@
-package com.kratsapps.memedom
+package com.kratsapps.memedom.models
 
 import java.io.Serializable
 import java.text.SimpleDateFormat

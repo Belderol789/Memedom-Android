@@ -1,4 +1,4 @@
-package com.kratsapps.memedom
+package com.kratsapps.memedom.utils
 
 import android.graphics.Bitmap
 import android.graphics.drawable.BitmapDrawable

@@ -8,6 +8,11 @@ import android.view.View
 import android.widget.Toast
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseUser
+import com.kratsapps.memedom.models.MemeDomUser
+import com.kratsapps.memedom.utils.AndroidUtils
+import com.kratsapps.memedom.utils.DatabaseManager
+import com.kratsapps.memedom.utils.FirestoreHandler
+import com.kratsapps.memedom.utils.hideKeyboard
 import kotlinx.android.synthetic.main.activity_login.*
 
 class LoginActivity : AppCompatActivity() {
@@ -23,12 +28,17 @@ class LoginActivity : AppCompatActivity() {
         auth = FirebaseAuth.getInstance()
         progressOverlay = findViewById(R.id.progress_overlay)
 
+        hideKeyboard()
+
         buttonNextLoginAuth.setOnClickListener {
             checkIfFieldsHaveValues()
         }
     }
 
     private fun userDidLoginEmail(email: String, password: String) {
+
+        Log.d("Firestore Login", "Logging in as $email")
+
         if(!email.isEmpty() && !password.isEmpty()) {
 
             AndroidUtils().animateView(progressOverlay, View.VISIBLE, 0.4f, 200)
@@ -39,7 +49,9 @@ class LoginActivity : AppCompatActivity() {
                         // Sign in success, update UI with the signed-in user's information
                         Log.d("Firestore Login", "signInWithEmail:success")
                         val user = auth.currentUser
-                        updateUI(user!!)
+                        if(user != null) {
+                            updateUI(user)
+                        }
                     } else {
                         // If sign in fails, display a message to the user.
                         Log.w("Firestore Login", "signInWithEmail:failure", task.exception)
@@ -52,7 +64,6 @@ class LoginActivity : AppCompatActivity() {
     }
 
     private fun checkIfFieldsHaveValues() {
-        hideKeyboard()
 
         val email = editTextLoginEmail.text.toString()
         val password = editTextLoginPassword.text.toString()
@@ -66,10 +77,13 @@ class LoginActivity : AppCompatActivity() {
 
     private fun updateUI(firebaseUser: FirebaseUser) {
         FirestoreHandler().getUserDataWith(firebaseUser.uid, {
+
+            Log.d("Firestore Login", "Logged in as $it")
+
+            progressOverlay.visibility = View.GONE
             DatabaseManager(this).convertUserObject(it, "MainUser")
             navigateToMain()
         })
-        progressOverlay.visibility = View.GONE
     }
 
     private fun navigateToMain() {

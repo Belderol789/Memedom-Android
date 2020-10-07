@@ -16,6 +16,9 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.google.firebase.auth.FirebaseAuth
 import com.kratsapps.memedom.*
+import com.kratsapps.memedom.models.Memes
+import com.kratsapps.memedom.utils.DatabaseManager
+import com.kratsapps.memedom.utils.FirestoreHandler
 
 
 class HomeFragment : Fragment() {
@@ -109,6 +112,7 @@ class HomeFragment : Fragment() {
         feedRecyclerView.adapter = FeedAdapter(allMemes)
         feedRecyclerView.layoutManager = LinearLayoutManager(activity)
         feedRecyclerView.setHasFixedSize(true)
+        feedRecyclerView.itemAnimator?.removeDuration
     }
 
     private fun setupCrentialView() {

@@ -19,8 +19,9 @@ import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
 import com.bumptech.glide.Glide
-import com.bumptech.glide.load.engine.Resource
 import com.google.firebase.auth.FirebaseAuth
+import com.kratsapps.memedom.models.MemeDomUser
+import com.kratsapps.memedom.utils.*
 import kotlinx.android.synthetic.main.activity_signup.*
 import java.text.SimpleDateFormat
 import java.util.*
@@ -316,7 +317,7 @@ class SignupActivity : AppCompatActivity() {
                             kotlin.collections.hashMapOf(
                                 "profilePhoto" to it
                             )
-                        com.kratsapps.memedom.FirestoreHandler()
+                        FirestoreHandler()
                             .updateDatabaseObject("User", memeDomuser.uid, profilePhoto)
 
                         DatabaseManager(this).convertUserObject(memeDomuser, "MainUser")

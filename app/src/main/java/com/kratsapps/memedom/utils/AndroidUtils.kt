@@ -1,4 +1,4 @@
-package com.kratsapps.memedom
+package com.kratsapps.memedom.utils
 
 import android.animation.Animator
 import android.animation.AnimatorListenerAdapter

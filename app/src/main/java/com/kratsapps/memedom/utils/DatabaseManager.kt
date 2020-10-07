@@ -1,9 +1,9 @@
-package com.kratsapps.memedom
+package com.kratsapps.memedom.utils
 
 import android.content.Context
-import android.content.SharedPreferences
 import android.util.Log
 import com.google.gson.Gson
+import com.kratsapps.memedom.models.MemeDomUser
 
 class DatabaseManager(context: Context) {
 

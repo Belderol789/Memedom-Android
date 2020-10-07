@@ -1,4 +1,4 @@
-package com.kratsapps.memedom
+package com.kratsapps.memedom.models
 
 import android.os.Parcel
 import android.os.Parcelable

@@ -11,12 +11,13 @@ import android.widget.Toast
 import androidx.annotation.RequiresApi
 import androidx.appcompat.app.AlertDialog
 import com.bumptech.glide.Glide
+import com.kratsapps.memedom.utils.AndroidUtils
+import com.kratsapps.memedom.utils.DatabaseManager
+import com.kratsapps.memedom.utils.FireStorageHandler
+import com.kratsapps.memedom.utils.FirestoreHandler
 import kotlinx.android.synthetic.main.activity_create.*
-import kotlinx.android.synthetic.main.activity_signup.*
-import java.text.SimpleDateFormat
 import java.util.*
 import kotlin.collections.HashMap
-import kotlin.time.milliseconds
 
 class CreateActivity : AppCompatActivity() {
 
@@ -83,7 +84,7 @@ class CreateActivity : AppCompatActivity() {
                     "postUsername" to savedUser.name,
                     "postProfileURL" to savedUser.profilePhoto,
                     "postUserUID" to savedUser.uid,
-                    "points" to 1
+                    "postPoints" to 1
                 )
 
                 FirestoreHandler().addDataToFirestore("Memes", postID, newPost, {
@@ -140,6 +141,11 @@ class CreateActivity : AppCompatActivity() {
             Toast.makeText(applicationContext, R.string.alert_ok, Toast.LENGTH_SHORT).show()
         }
         builder.show()
+    }
+
+    private fun navigateToComments() {
+        val intent: Intent = Intent(this, CommentsActivity::class.java)
+        startActivity(intent)
     }
 
 }
