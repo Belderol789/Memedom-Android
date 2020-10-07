@@ -63,7 +63,7 @@ class CreateActivity : AppCompatActivity() {
 
         val title = editTextTitle.text.toString()
         val postID = generateRandomString()
-        val today = Date().time
+        val today = GregorianCalendar().timeInMillis
 
         val savedUser = DatabaseManager(this).retrieveSavedUser("MainUser")
 

@@ -1,18 +1,23 @@
 package com.kratsapps.memedom
 
+import android.content.Context
 import android.util.Log
 import com.google.firebase.firestore.FieldValue
 import com.google.firebase.firestore.SetOptions
-import com.google.firebase.firestore.auth.User
 import com.google.firebase.firestore.ktx.firestore
 import com.google.firebase.ktx.Firebase
-import java.util.ArrayList
+import java.text.SimpleDateFormat
+import java.util.*
+import kotlin.math.round
 
 class FirestoreHandler {
 
     private val firestoreDB = Firebase.firestore
     private val MEMES_PATH = "Memes"
     private val USERS_PATH = "User"
+    private val APP_SETTINGS = "AppSettings"
+    private val POPULAR_POINTS = "PopularPoints"
+    private val DAY_LIMIT = "DayLimit"
 
     //Adding
     fun addDataToFirestore(
@@ -36,7 +41,6 @@ class FirestoreHandler {
 
     //Editing
     fun updateLikedDatabase(mainUserID: String, postUserID: String) {
-
         getCurrentNumberOfLikes(mainUserID, postUserID, {
             val updatedCount = it?.plus(1)
             val updatedLike = hashMapOf(postUserID to updatedCount)
@@ -64,46 +68,101 @@ class FirestoreHandler {
         firestoreDB
             .collection(path)
             .document(document)
-            .update("postLikers", fieldValue,
-            "postPoints", points)
+            .update(
+                "postLikers", fieldValue,
+                "postPoints", points
+            )
+    }
+
+    //App Settings
+    fun getAppSettings(context: Context, done: (points: Long, days: Long) -> Unit) {
+
+        Log.d("App Settings", "Getting app settings")
+
+        val sharedPreference = context.getSharedPreferences(POPULAR_POINTS, Context.MODE_PRIVATE)
+        var editor = sharedPreference.edit()
+
+        firestoreDB
+            .collection(APP_SETTINGS)
+            .document(APP_SETTINGS)
+            .get()
+            .addOnSuccessListener {
+
+                val popularPoints = it.get(POPULAR_POINTS) as Long
+                val dayLimit = it.get(DAY_LIMIT) as Long
+
+                done(popularPoints, dayLimit)
+            }
+            .addOnFailureListener{
+                done(100, 1)
+            }
+    }
+
+    fun convertLongToTime(time: Long): String {
+        val date = Date(time)
+        val format = SimpleDateFormat("yyyy.MM.dd HH:mm")
+        return format.format(date)
+    }
+
+    fun Long.round(decimals: Int): Long {
+        var multiplier = 1.0
+        repeat(decimals) { multiplier *= 10 }
+        return (round(this * multiplier) / multiplier).toLong()
     }
 
     //Getting
-    fun getAllMemeObjects(completed: (List<Memes>) -> Unit) {
+    fun checkForFreshMemes(dayLimit: Long, completed: (List<Memes>) -> Unit) {
 
-        var memes: List<Memes> = listOf<Memes>()
+        val todayCalendar: Calendar = GregorianCalendar()
+        todayCalendar[Calendar.HOUR_OF_DAY] = 0
+        todayCalendar[Calendar.MINUTE] = 0
+        todayCalendar[Calendar.SECOND] = 0
+        todayCalendar[Calendar.MILLISECOND] = 0
+        val today = todayCalendar.timeInMillis
+
+        val tomorrowCalendar: Calendar = GregorianCalendar()
+        tomorrowCalendar[Calendar.HOUR_OF_DAY] = 0
+        tomorrowCalendar[Calendar.MINUTE] = 0
+        tomorrowCalendar[Calendar.SECOND] = 0
+        tomorrowCalendar[Calendar.MILLISECOND] = 0
+        tomorrowCalendar.add(Calendar.DAY_OF_MONTH, dayLimit.toInt())
+        val tomorrow = tomorrowCalendar.timeInMillis
+
 
         firestoreDB
             .collection(MEMES_PATH)
+            .whereGreaterThan("postDate", today)
             .get()
             .addOnSuccessListener { documents ->
-                for (document in documents) {
-                    Log.d("Firestore", "${document.id} => ${document.data}")
-                    val newMeme: Memes = document.toObject(Memes::class.java)
-                    memes += newMeme
-                }
-                Log.d("Firestore", "Getting all memes ${memes.size}")
-                completed(memes)
-            }
-            .addOnFailureListener { exception ->
-                Log.w("Firestore", "Error getting documents: ", exception)
-                completed(memes)
-            }
-    }
-
-    fun checkForPopularMemes(completed: (List<Memes>) -> Unit) {
-        firestoreDB
-            .collection(MEMES_PATH)
-            .whereGreaterThanOrEqualTo("postPoints", 200)
-            .addSnapshotListener { value, e ->
-                if (e != null) {
-                    Log.w("Firestore", "Listen faield", e)
-                    return@addSnapshotListener
-                }
 
                 val memes = ArrayList<Memes>()
 
-                for (document in value!!) {
+                Log.d("Timestamps", "Got memes ${documents.size()}")
+
+                for (document in documents) {
+                    val newMeme: Memes = document.toObject(Memes::class.java)
+                    memes += newMeme
+                }
+
+                val shuffledMemes = memes.shuffled()
+                completed(shuffledMemes)
+            }
+    }
+
+    fun checkForPopularMemes(
+        context: Context,
+        popularPoints: Long,
+        completed: (List<Memes>) -> Unit
+    ) {
+        firestoreDB
+            .collection(MEMES_PATH)
+            .whereGreaterThanOrEqualTo("postPoints", popularPoints)
+            .get()
+            .addOnSuccessListener { documents ->
+
+                val memes = ArrayList<Memes>()
+
+                for (document in documents) {
                     val newMeme: Memes = document.toObject(Memes::class.java)
                     memes += newMeme
                 }
@@ -171,7 +230,10 @@ class FirestoreHandler {
                         Log.d("Firestore-matching", "Current users $key and $value")
                         if (value >= 10) {
                             getUserDataWith(key, {
-                                Log.d("Firestore-matching", "Got user data ${it.name} ${it.profilePhoto}")
+                                Log.d(
+                                    "Firestore-matching",
+                                    "Got user data ${it.name} ${it.profilePhoto}"
+                                )
                             })
                             // display popup
                         }
@@ -181,3 +243,27 @@ class FirestoreHandler {
     }
 }
 
+
+/*
+fun getAllMemeObjects(completed: (List<Memes>) -> Unit) {
+
+    var memes: List<Memes> = listOf<Memes>()
+
+    firestoreDB
+        .collection(MEMES_PATH)
+        .get()
+        .addOnSuccessListener { documents ->
+            for (document in documents) {
+                Log.d("Firestore", "${document.id} => ${document.data}")
+                val newMeme: Memes = document.toObject(Memes::class.java)
+                memes += newMeme
+            }
+            Log.d("Firestore", "Getting all memes ${memes.size}")
+            completed(memes)
+        }
+        .addOnFailureListener { exception ->
+            Log.w("Firestore", "Error getting documents: ", exception)
+            completed(memes)
+        }
+}
+*/
