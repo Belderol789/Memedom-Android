@@ -9,17 +9,18 @@
     <LinearLayout
         android:id="@+id/layoutLoginAuth"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
+        android:layout_height="wrap_content"
         android:divider="@drawable/divider_vertical"
         android:gravity="center"
         android:orientation="vertical"
         android:paddingHorizontal="16dp"
-        android:paddingVertical="8dp"
+        android:dividerPadding="8dp"
         android:showDividers="middle"
         android:visibility="visible"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent">
+
 
         <LinearLayout
             android:id="@+id/layoutLoginEmail"
@@ -31,8 +32,8 @@
 
             <ImageView
                 android:id="@+id/imageviewLoginEmail"
-                android:layout_width="55dp"
-                android:layout_height="55dp"
+                android:layout_width="45dp"
+                android:layout_height="50dp"
                 android:contentDescription="@string/icon_for_email"
                 app:srcCompat="@mipmap/ic_launcher" />
 
@@ -61,8 +62,8 @@
 
             <ImageView
                 android:id="@+id/imageviewLoginPassword"
-                android:layout_width="55dp"
-                android:layout_height="55dp"
+                android:layout_width="45dp"
+                android:layout_height="50dp"
                 android:contentDescription="@string/icon_for_password"
                 app:srcCompat="@mipmap/ic_launcher" />
 
@@ -84,7 +85,7 @@
         <Button
             android:id="@+id/buttonNextLoginAuth"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
+            android:layout_height="45dp"
             android:background="@drawable/soft_buttons"
             android:text="@string/next"
             app:layout_constraintTop_toTopOf="@+id/authentication_view"

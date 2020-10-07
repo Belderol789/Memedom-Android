@@ -28,9 +28,7 @@ class LoginActivity : AppCompatActivity() {
         auth = FirebaseAuth.getInstance()
         progressOverlay = findViewById(R.id.progress_overlay)
 
-        hideKeyboard()
-
-        buttonNextLoginAuth.setOnClickListener {
+         buttonNextLoginAuth.setOnClickListener {
             checkIfFieldsHaveValues()
         }
     }
@@ -64,7 +62,7 @@ class LoginActivity : AppCompatActivity() {
     }
 
     private fun checkIfFieldsHaveValues() {
-
+        hideKeyboard()
         val email = editTextLoginEmail.text.toString()
         val password = editTextLoginPassword.text.toString()
 
