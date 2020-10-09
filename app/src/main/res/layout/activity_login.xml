@@ -85,7 +85,7 @@
             android:id="@+id/buttonNextLoginAuth"
             android:layout_width="match_parent"
             android:layout_height="45dp"
-            android:background="@drawable/soft_buttons"
+            android:background="@drawable/soft_button"
             android:text="@string/next"
             app:layout_constraintTop_toTopOf="@+id/authentication_view"
             tools:layout_editor_absoluteX="307dp" />

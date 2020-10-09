@@ -7,6 +7,7 @@
     android:layout_height="wrap_content"
     android:layout_marginTop="0dp"
     android:backgroundTint="@color/appBGColorLight"
+    app:cardCornerRadius="8dp"
     android:elevation="20dp"
     tools:targetApi="lollipop">
 
@@ -23,6 +24,7 @@
             android:src="@drawable/ic_action_home"
             app:layout_constraintBottom_toTopOf="@+id/feedActionLayout"
             app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="1.0"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/linearLayout2" />
 
@@ -50,9 +52,11 @@
 
                 <ImageView
                     android:id="@+id/postProfilePic"
+                    android:background="@drawable/round_imageview"
                     android:layout_width="25dp"
                     android:layout_height="match_parent"
                     android:layout_weight="0"
+                    android:src="@drawable/ic_action_name"
                     tools:srcCompat="@tools:sample/avatars" />
 
                 <TextView
@@ -72,7 +76,7 @@
                     android:layout_weight="1"
                     android:gravity="fill_vertical"
                     android:text="Just now"
-                    android:textColor="@android:color/white"
+                    android:textColor="@color/appSecondaryColor"
                     android:textSize="10sp" />
             </LinearLayout>
 
@@ -91,27 +95,13 @@
             android:id="@+id/feedActionLayout"
             android:layout_width="wrap_content"
             android:layout_height="35dp"
-            android:layout_marginBottom="8dp"
+            android:divider="@drawable/divider_horizontal"
             android:gravity="center|fill_horizontal"
             android:orientation="horizontal"
             android:visibility="visible"
-            android:divider="@drawable/divider_horizontal"
-            app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/feedImage">
-
-            <Button
-                android:id="@+id/postLikesButton"
-                style="@style/Widget.AppCompat.Button.Borderless.Colored"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:drawableStart="@drawable/ic_action_like"
-                android:drawableTint="@color/whiteColor"
-                android:textColor="@color/appFGColor"
-                tools:targetApi="m"
-                tools:visibility="gone" />
 
             <Button
                 android:id="@+id/postShareBtn"
@@ -142,16 +132,50 @@
         <ImageButton
             android:id="@+id/reportButton"
             android:layout_width="30dp"
-            android:layout_height="30dp"
-            android:layout_marginTop="16dp"
+            android:layout_height="25dp"
+            android:layout_marginTop="8dp"
             android:layout_marginEnd="16dp"
             android:background="@color/transparent"
             android:contentDescription="@string/reporting_resource"
             android:src="@drawable/ic_action_report"
             android:tint="@color/whiteColor"
             android:visibility="visible"
+            app:layout_constraintBottom_toTopOf="@+id/feedImage"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
+
+        <LinearLayout
+            android:id="@+id/pointsLayout"
+            android:layout_width="100dp"
+            android:layout_height="30dp"
+            android:layout_marginTop="16dp"
+            android:background="@drawable/cornered_layer"
+            android:divider="@drawable/divider_horizontal"
+            android:orientation="horizontal"
+            android:showDividers="middle"
+            app:layout_constraintStart_toStartOf="@+id/feedImage"
+            app:layout_constraintTop_toBottomOf="@+id/linearLayout2">
+
+            <ImageView
+                android:id="@+id/pointsIcon"
+                android:layout_width="25dp"
+                android:layout_height="25dp"
+                android:layout_weight="1"
+                android:paddingLeft="16dp"
+                app:srcCompat="@drawable/ic_action_like"
+                app:tint="@color/appFGColor" />
+
+            <TextView
+                android:id="@+id/pointsTextView"
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:gravity="center"
+                android:text="2.4k"
+                android:textAlignment="viewStart"
+                android:textColor="@color/appFGColor"
+                android:textStyle="bold" />
+        </LinearLayout>
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 

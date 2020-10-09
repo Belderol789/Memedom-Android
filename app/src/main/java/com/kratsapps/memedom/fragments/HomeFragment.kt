@@ -1,5 +1,6 @@
 package com.kratsapps.memedom.fragments
 
+import DefaultItemDecorator
 import android.content.Intent
 import android.os.Bundle
 import android.util.Log
@@ -102,6 +103,7 @@ class HomeFragment : Fragment() {
         val feedRecyclerView = rootView.findViewById(R.id.recyclerViewHome) as RecyclerView
         val feedAdapter = FeedAdapter(allMemes)
 
+        feedRecyclerView.addItemDecoration(DefaultItemDecorator(resources.getDimensionPixelSize(R.dimen.com_facebook_likeboxcountview_border_width)))
         feedRecyclerView.adapter = feedAdapter
         feedRecyclerView.layoutManager = LinearLayoutManager(activity)
         feedRecyclerView.setHasFixedSize(true)

@@ -4,10 +4,12 @@
     <color name="colorPrimaryDark">#3700B3</color>
     <color name="colorAccent">#03DAC5</color>
     <color name="appFGColor">#FACE0D</color>
-    <color name="appBGColor">#070707</color>
-    <color name="appBGColorLight">#1A1919</color>
+    <color name="appBGColor">#111111</color>
+    <color name="appBGColorLight">#202121</color>
+    <color name="appSecondaryColor">#282828</color>
     <color name="whiteColor">#ffffff</color>
     <color name="transparent">#00ff0000</color>
+    <color name="clearBlack">#99000000</color>
     //#070707
     //#30444E
 </resources>
