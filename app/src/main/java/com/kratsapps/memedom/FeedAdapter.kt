@@ -1,15 +1,19 @@
 package com.kratsapps.memedom
 
 import android.content.Context
+import android.content.res.ColorStateList
+import android.graphics.Color
 import android.os.Build
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Button
+import android.widget.ImageButton
 import android.widget.ImageView
 import android.widget.TextView
 import androidx.annotation.RequiresApi
+import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.kratsapps.memedom.models.Memes
@@ -40,29 +44,39 @@ class FeedAdapter(private val feedList: List<Memes>): RecyclerView.Adapter<FeedA
         Glide.with(feedAdapterContext)
             .load(currentItem.postImageURL)
             .centerCrop()
-            .into(holder.imageView)
+            .into(holder.imageViewButton)
         holder.titleTextView.text = currentItem.postTitle
-        holder.likeBtn.text = "$currentPostLikes"
+        holder.likesBtn.visibility = View.GONE
 
-        var mainUserID = DatabaseManager(feedAdapterContext).getMainUserID()
+        val mainUser = DatabaseManager(feedAdapterContext).retrieveSavedUser()
+        val postLikers = currentItem.postLikers
+        val appFGColor = Color.parseColor("#FACE0D")
 
-        Log.d("Scrolling", "Main user is $mainUserID")
+        if(mainUser != null) {
+            if(!postLikers.contains(mainUser.uid)) {
+                Log.d("Scrolling", "Main user is ${mainUser.uid}")
 
-        if(mainUserID != null) {
-            holder.likeBtn.setOnClickListener {
+                holder.imageViewButton.setOnClickListener {
 
-                val postLikers = currentItem.postLikers
-
-                Log.d("Firestore", "Post likers $postLikers uid $mainUserID")
-
-                if(!postLikers.contains(mainUserID)) {
-                    holder.likeBtn.text = "$currentPostLikes"
+                    Log.d("Firestore", "Post likers $postLikers uid ${mainUser.uid}")
 
                     val updatedPoints = postLikers.count() + 1
 
-                    FirestoreHandler().updateArrayDatabaseObject("Memes", postUD, mainUserID, updatedPoints.toLong())
-                    FirestoreHandler().updateLikedDatabase(mainUserID, postUserID)
+                    holder.postUserInfo.visibility = View.VISIBLE
+                    holder.likesBtn.visibility = View.VISIBLE
+                    holder.likesBtn.text = "$updatedPoints"
+                    holder.likesBtn.compoundDrawableTintList = ColorStateList.valueOf(ContextCompat.getColor(feedAdapterContext, R.color.appFGColor))
+                    holder.likesBtn.setTextColor(appFGColor)
+
+                    FirestoreHandler().updateArrayDatabaseObject("Memes", postUD, mainUser.uid, updatedPoints.toLong())
+                    FirestoreHandler().updateLikedDatabase(mainUser.uid, postUserID)
                 }
+            } else {
+                holder.postUserInfo.visibility = View.VISIBLE
+                holder.likesBtn.visibility = View.VISIBLE
+                holder.likesBtn.text = "${postLikers.count()}"
+                holder.likesBtn.compoundDrawableTintList = ColorStateList.valueOf(ContextCompat.getColor(feedAdapterContext, R.color.appFGColor))
+                holder.likesBtn.setTextColor(appFGColor)
             }
         }
     }
@@ -70,11 +84,15 @@ class FeedAdapter(private val feedList: List<Memes>): RecyclerView.Adapter<FeedA
     override fun getItemCount() = feedList.size
 
     class FeedViewHolder(itemView: View): RecyclerView.ViewHolder(itemView) {
-        val imageView: ImageView = itemView.feedImage
+        val imageViewButton: ImageButton = itemView.feedImage
         val titleTextView: TextView = itemView.feedTitle
+
         val shareBtn: Button = itemView.postShareBtn
         val commentsBtn: Button = itemView.postCommentsBtn
-        val likeBtn: Button = itemView.postLikeBtn
+        val likesBtn: Button = itemView.postLikesButton
+
+        val feedActionLayout = itemView.feedActionLayout
+        val postUserInfo = itemView.postUserInfo
     }
 }
 

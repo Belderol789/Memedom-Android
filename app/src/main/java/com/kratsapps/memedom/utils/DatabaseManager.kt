@@ -22,8 +22,8 @@ class DatabaseManager(context: Context) {
         editor.apply()
     }
 
-    fun retrieveSavedUser(key: String): MemeDomUser? {
-        val savedJson = dbContext.getSharedPreferences(key, Context.MODE_PRIVATE).getString(key, null)
+    fun retrieveSavedUser(): MemeDomUser? {
+        val savedJson = dbContext.getSharedPreferences(MAIN_USER, Context.MODE_PRIVATE).getString(MAIN_USER, null)
 
         Log.d("Database", "Loaded Json $savedJson")
 

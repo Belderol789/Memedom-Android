@@ -34,7 +34,7 @@
                 android:textColor="@color/appFGColor" />
 
             <androidx.appcompat.widget.AppCompatRadioButton
-                android:id="@+id/popularSegment"
+                android:id="@+id/freeMemeSegment"
                 android:layout_width="0dp"
                 android:layout_height="50dp"
                 android:layout_weight="1"
@@ -42,19 +42,7 @@
                 android:button="@android:color/transparent"
                 android:checked="false"
                 android:gravity="center"
-                android:text="@string/popular"
-                android:textColor="@color/appFGColor" />
-
-            <androidx.appcompat.widget.AppCompatRadioButton
-                android:id="@+id/freshSegment"
-                android:layout_width="0dp"
-                android:layout_height="50dp"
-                android:layout_weight="1"
-                android:background="@drawable/radio_button_selector"
-                android:button="@android:color/transparent"
-                android:checked="false"
-                android:gravity="center"
-                android:text="@string/fresh"
+                android:text="@string/freeMeme"
                 android:textColor="@color/appFGColor" />
         </RadioGroup>
     </LinearLayout>
@@ -70,19 +58,6 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/linearRadios"
         tools:listitem="@layout/feed_item" />
-
-    <ImageButton
-        android:id="@+id/buttonCreate"
-        android:layout_width="45dp"
-        android:layout_height="45dp"
-        android:layout_marginEnd="16dp"
-        android:layout_marginBottom="20dp"
-        android:background="@drawable/roundbutton"
-        android:contentDescription="navigate to create activity"
-        android:src="@drawable/ic_action_create"
-        android:tint="@color/whiteColor"
-        app:layout_constraintBottom_toBottomOf="@+id/recyclerViewHome"
-        app:layout_constraintEnd_toEndOf="@+id/recyclerViewHome" />
 
     <LinearLayout
         android:id="@+id/credentialViewHome"

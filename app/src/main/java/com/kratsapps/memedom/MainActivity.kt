@@ -18,7 +18,7 @@ class MainActivity : AppCompatActivity() {
     val homeFragment = HomeFragment()
     val notifFragment = NotificationsFragment()
     val msgFragment = MessagesFragment()
-    val settingFragment = SettingFragment()
+    val createFragment = CreateFragment()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -29,18 +29,19 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun setupBottomNavigation() {
-        makeCurrentFragment(homeFragment)
-
         navigationBottom.setOnNavigationItemSelectedListener {
             when (it.itemId){
                 R.id.ic_home -> makeCurrentFragment(homeFragment)
                 R.id.ic_profile -> makeCurrentFragment(profileFragment)
+                R.id.ic_create -> makeCurrentFragment(createFragment)
                 R.id.ic_notifs -> makeCurrentFragment(notifFragment)
                 R.id.ic_chat -> makeCurrentFragment(msgFragment)
-                R.id.ic_settings -> makeCurrentFragment(settingFragment)
             }
             true
         }
+
+        makeCurrentFragment(homeFragment)
+
     }
 
     private fun makeCurrentFragment(fragment: Fragment) =

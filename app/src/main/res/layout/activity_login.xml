@@ -14,7 +14,6 @@
         android:gravity="center"
         android:orientation="vertical"
         android:paddingHorizontal="16dp"
-        android:dividerPadding="8dp"
         android:showDividers="middle"
         android:visibility="visible"
         app:layout_constraintBottom_toBottomOf="parent"

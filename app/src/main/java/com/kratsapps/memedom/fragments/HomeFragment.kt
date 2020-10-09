@@ -26,7 +26,7 @@ class HomeFragment : Fragment() {
     lateinit var rootView: View
     lateinit var createButton: ImageButton
     lateinit var linkSegment: AppCompatRadioButton
-    lateinit var popularSegment: AppCompatRadioButton
+    lateinit var freeMemeSegment: AppCompatRadioButton
     lateinit var freshSegment: AppCompatRadioButton
 
     private var allMemes: List<Memes> = listOf<Memes>()
@@ -36,15 +36,14 @@ class HomeFragment : Fragment() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         getAllMemes()
-        DatabaseManager(this.context!!).retrieveSavedUser("MainUser")
+        DatabaseManager(this.context!!).retrieveSavedUser()
     }
 
     private fun getAllMemes() {
         FirestoreHandler().getAppSettings(this.context!!) { points, dayLimit ->
             FirestoreHandler().checkForFreshMemes(dayLimit) {
-                Log.d("Memes", "Got all new memes ${it.size}")
-                allMemes = it
-                setupFeedView()
+                Log.d("Memes", "Got all new memes ${it}")
+                setupFeedView(it)
             }
         }
     }
@@ -84,35 +83,31 @@ class HomeFragment : Fragment() {
     }
 
     private fun setupUI() {
-        createButton = rootView.findViewById(R.id.buttonCreate) as ImageButton
-        createButton.setOnClickListener{
-            val intent: Intent = Intent(this.context, CreateActivity::class.java)
-            startActivity(intent)
-        }
+
         linkSegment = rootView.findViewById(R.id.linkSegment)
-        popularSegment = rootView.findViewById(R.id.popularSegment)
-        freshSegment = rootView.findViewById(R.id.freshSegment)
+        freeMemeSegment = rootView.findViewById(R.id.freeMemeSegment)
 
         linkSegment.setOnClickListener{
             Log.d("Segment", "Link segment tapped")
             updateSegments(0)
         }
-        popularSegment.setOnClickListener{
+        freeMemeSegment.setOnClickListener{
             Log.d("Segment", "Popular segment tapped")
             updateSegments(1)
         }
-        freshSegment.setOnClickListener{
-            Log.d("Segment", "Fresh segment tapped")
-            updateSegments(2)
-        }
     }
 
-    private fun setupFeedView() {
+    private fun setupFeedView(meme: Memes) {
+        allMemes += meme
         val feedRecyclerView = rootView.findViewById(R.id.recyclerViewHome) as RecyclerView
-        feedRecyclerView.adapter = FeedAdapter(allMemes)
+        val feedAdapter = FeedAdapter(allMemes)
+
+        feedRecyclerView.adapter = feedAdapter
         feedRecyclerView.layoutManager = LinearLayoutManager(activity)
         feedRecyclerView.setHasFixedSize(true)
         feedRecyclerView.itemAnimator?.removeDuration
+
+        feedAdapter.notifyItemInserted(allMemes.count() - 1)
     }
 
     private fun setupCrentialView() {
@@ -137,15 +132,11 @@ class HomeFragment : Fragment() {
     private fun updateSegments(type: Int) {
         if(type == 0) {
             linkSegment.isChecked = true
-            popularSegment.isChecked = false
+            freeMemeSegment.isChecked = false
             freshSegment.isChecked = false
         } else if (type == 1) {
-            popularSegment.isChecked = true
+            freeMemeSegment.isChecked = true
             freshSegment.isChecked = false
-            linkSegment.isChecked = false
-        } else {
-            freshSegment.isChecked = true
-            popularSegment.isChecked = false
             linkSegment.isChecked = false
         }
     }
