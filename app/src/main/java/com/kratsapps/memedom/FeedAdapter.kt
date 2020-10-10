@@ -1,6 +1,8 @@
 package com.kratsapps.memedom
 
+import android.app.Activity
 import android.content.Context
+import android.content.Intent
 import android.content.res.ColorStateList
 import android.graphics.Color
 import android.os.Build
@@ -18,7 +20,7 @@ import com.kratsapps.memedom.utils.DatabaseManager
 import com.kratsapps.memedom.utils.FirestoreHandler
 import kotlinx.android.synthetic.main.feed_item.view.*
 
-class FeedAdapter(private val feedList: List<Memes>): RecyclerView.Adapter<FeedAdapter.FeedViewHolder>() {
+class FeedAdapter(private val feedList: List<Memes>, private val activity: Activity): RecyclerView.Adapter<FeedAdapter.FeedViewHolder>() {
 
     lateinit var feedAdapterContext: Context
 
@@ -41,9 +43,23 @@ class FeedAdapter(private val feedList: List<Memes>): RecyclerView.Adapter<FeedA
         Glide.with(feedAdapterContext)
             .load(currentItem.postImageURL)
             .centerCrop()
-            .into(holder.imageViewButton)
-        holder.titleTextView.text = currentItem.postTitle
+            .into(holder.feedImage)
+        holder.feedImage.setOnClickListener{
+            navigateToComments(currentItem)
+        }
+        holder.commentsBtn.setOnClickListener {
+            navigateToComments(currentItem)
+        }
+        holder.feedTitle.text = currentItem.postTitle
+
+        Glide.with(feedAdapterContext)
+            .load(currentItem.postProfileURL)
+            .centerCrop()
+            .into(holder.postProfilePic)
+        holder.feedDate.text = currentItem.postDateString()
         holder.pointsLayout.visibility = View.GONE
+
+        holder
 
         val mainUser = DatabaseManager(feedAdapterContext).retrieveSavedUser()
         val postLikers = currentItem.postLikers
@@ -52,7 +68,7 @@ class FeedAdapter(private val feedList: List<Memes>): RecyclerView.Adapter<FeedA
             if(!postLikers.contains(mainUser.uid)) {
                 Log.d("Scrolling", "Main user is ${mainUser.uid}")
 
-                holder.imageViewButton.setOnClickListener {
+                holder.feedImage.setOnClickListener {
 
                     Log.d("Firestore", "Post likers $postLikers uid ${mainUser.uid}")
 
@@ -81,20 +97,29 @@ class FeedAdapter(private val feedList: List<Memes>): RecyclerView.Adapter<FeedA
     override fun getItemCount() = feedList.size
 
     class FeedViewHolder(itemView: View): RecyclerView.ViewHolder(itemView) {
-        val imageViewButton: ImageButton = itemView.feedImage
-        val titleTextView: TextView = itemView.feedTitle
+        val feedImage: ImageButton = itemView.feedImage
+        val feedTitle: TextView = itemView.feedTitle
+        val feedDate = itemView.feedDate
 
         val shareBtn: Button = itemView.postShareBtn
         val commentsBtn: Button = itemView.postCommentsBtn
+        val feedActionLayout = itemView.feedActionLayout
 
         val pointsTextView: TextView = itemView.pointsTextView
         val pointsIcon: ImageView = itemView.pointsIcon
         val pointsLayout: LinearLayout = itemView.pointsLayout
 
-        val feedActionLayout = itemView.feedActionLayout
         val postUserInfo = itemView.postUserInfo
+        val postProfilePic = itemView.postProfilePic
+        val postUserName = itemView.postUsername
     }
 
+    private fun navigateToComments(meme: Memes) {
+        val intent: Intent = Intent(feedAdapterContext, CommentsActivity::class.java)
+        intent.putExtra("CommentMeme", meme)
+        feedAdapterContext.startActivity(intent)
+        activity.overridePendingTransition(R.anim.enter_activity, R.anim.enter_activity)
+    }
 }
 
 

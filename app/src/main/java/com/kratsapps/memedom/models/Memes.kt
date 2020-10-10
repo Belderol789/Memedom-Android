@@ -17,6 +17,7 @@ class Memes : Serializable {
 
     var postDate: Long = 0
     var postComments: Long = 0
+    var postShares: Long = 0
     var postReports: Long = 0
 
     fun getPostLikeCount(): Int {
@@ -24,20 +25,26 @@ class Memes : Serializable {
     }
 
     fun postDateString(): String {
-        val seconds = postDate / 1000
+        val seconds: Int = (postDate / 1000).toInt()
         val minutes = seconds / 60
         val hours = minutes / 60
         val days = hours / 24
+        val weeks = days / 7
+        val months = weeks / 4
+        val years = months / 12
 
-        if (days > 3) {
-            val dateString = SimpleDateFormat("yyyy-MM-dd").format(Date(postDate))
-            return dateString
+        if (months > 12) {
+            return "$years y ago"
+        } else if (weeks > 4) {
+            return "$months m ago"
+        } else if (days > 7) {
+            return "$weeks w ago"
         } else if (days > 0) {
-            return "$days days ago"
+            return "$days d ago"
         } else if (hours < 23 && hours > 0) {
-            return "$hours hours ago"
+            return "$hours h ago"
         } else if (minutes < 60 && minutes > 0) {
-            return "$minutes minutes ago"
+            return "$minutes min ago"
         } else {
             return "Just now"
         }

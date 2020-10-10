@@ -6,7 +6,7 @@
     <color name="appFGColor">#FACE0D</color>
     <color name="appBGColor">#111111</color>
     <color name="appBGColorLight">#202121</color>
-    <color name="appSecondaryColor">#282828</color>
+    <color name="appSecondaryColor">#D3D3D3</color>
     <color name="whiteColor">#ffffff</color>
     <color name="transparent">#00ff0000</color>
     <color name="clearBlack">#99000000</color>

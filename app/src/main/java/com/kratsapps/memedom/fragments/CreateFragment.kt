@@ -9,16 +9,15 @@ import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.Button
-import android.widget.ImageButton
-import android.widget.ImageView
-import android.widget.Toast
+import android.widget.*
 import androidx.annotation.RequiresApi
 import androidx.appcompat.app.AlertDialog
+import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import com.bumptech.glide.Glide
 import com.kratsapps.memedom.CommentsActivity
 import com.kratsapps.memedom.R
+import com.kratsapps.memedom.models.Memes
 import com.kratsapps.memedom.utils.AndroidUtils
 import com.kratsapps.memedom.utils.DatabaseManager
 import com.kratsapps.memedom.utils.FireStorageHandler
@@ -42,13 +41,21 @@ class CreateFragment : Fragment() {
         return rootView
     }
 
+    override fun onDestroy() {
+        Log.d("CreateActivity", "Resetting")
+        resetValues()
+        super.onDestroy()
+
+    }
+
     private fun setupUI() {
         val imageViewMeme = rootView.findViewById(R.id.imageViewMeme) as ImageView
         val buttonPost = rootView.findViewById(R.id.buttonPost) as Button
         val addImageButton = rootView.findViewById(R.id.addImageButton) as ImageButton
 
-        imageViewMeme.setImageDrawable(null)
+        resetValues()
 
+        imageViewMeme.setImageDrawable(null)
         addImageButton.setOnClickListener {
 
             val hasMeme: Boolean = imageViewMeme.drawable != null
@@ -86,16 +93,18 @@ class CreateFragment : Fragment() {
         AndroidUtils().animateView(progressOverlay, View.VISIBLE, 0.4f, 200)
 
         FireStorageHandler().uploadPhotoWith(postID, imageViewMeme.drawable, {
+            val memeImageURL = it
+            if (memeImageURL != null && savedUser != null) {
 
-            if (it != null && savedUser != null) {
                 val newPost: HashMap<String, Any> = hashMapOf(
                     "postID" to postID,
                     "postTitle" to title,
                     "postDate" to today,
-                    "postImageURL" to it,
+                    "postImageURL" to memeImageURL,
                     "postComments" to 0,
                     "postReports" to 0,
-                    "postLikers" to arrayListOf<String>(),
+                    "postShares" to 0,
+                    "postLikers" to arrayListOf<String>(savedUser.uid),
                     "postUsername" to savedUser.name,
                     "postProfileURL" to savedUser.profilePhoto,
                     "postUserUID" to savedUser.uid,
@@ -108,7 +117,20 @@ class CreateFragment : Fragment() {
                     if (it != null) {
                         setupAlertDialog(it)
                     } else {
-                        navigateToComments()
+                        resetValues()
+                        val meme = Memes()
+                        meme.postID = postID
+                        meme.postTitle = title
+                        meme.postDate = today
+                        meme.postShares = 0
+                        meme.postReports = 0
+                        meme.postComments = 0
+                        meme.postImageURL = memeImageURL
+                        meme.postLikers = arrayListOf(savedUser.uid)
+                        meme.postUsername = savedUser.name
+                        meme.postProfileURL = savedUser.profilePhoto
+                        meme.postUserUID = savedUser.uid
+                        navigateToComments(meme)
                     }
                 })
             } else {
@@ -137,6 +159,8 @@ class CreateFragment : Fragment() {
         super.onActivityResult(requestCode, resultCode, data)
         if (resultCode == RESULT_OK) {
             if (requestCode == IMAGE_GALLERY_REQUEST_CODE && data != null && data.data != null) {
+                val postButton = rootView.findViewById(R.id.buttonPost) as Button
+                postButton.alpha = 1.0f
                 val imageData = data.data
                 Glide.with(this)
                     .load(imageData)
@@ -145,6 +169,16 @@ class CreateFragment : Fragment() {
                 addImageButton.setImageResource(R.drawable.ic_action_delete)
             }
         }
+    }
+
+    private fun resetValues() {
+        val imageViewMeme = rootView.findViewById(R.id.imageViewMeme) as ImageView
+        val buttonPost = rootView.findViewById(R.id.buttonPost) as Button
+        val postTitle = rootView.findViewById(R.id.editTextTitle) as EditText
+
+        buttonPost.alpha = 0.25f
+        imageViewMeme.setImageDrawable(null)
+        postTitle.setText(null)
     }
 
     private fun setupAlertDialog(message: String?) {
@@ -158,10 +192,10 @@ class CreateFragment : Fragment() {
         builder.show()
     }
 
-    private fun navigateToComments() {
+    private fun navigateToComments(meme: Memes) {
         val intent: Intent = Intent(activity, CommentsActivity::class.java)
+        intent.putExtra("CommentMeme", meme)
         startActivity(intent)
     }
-
 }
 
