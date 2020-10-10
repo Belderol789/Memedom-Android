@@ -34,18 +34,13 @@ class CredentialActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_credential)
         auth = FirebaseAuth.getInstance()
-
         isSignup = intent.getBooleanExtra("CREDENTIAL_ACTION", false)
         Log.i("Navigation", "Navigated to Credential with isSignup ${isSignup}")
         setupUI()
     }
 
     fun setupUI() {
-        val actionBar = supportActionBar
-        actionBar!!.title = if (isSignup) "Signup" else "Login"
-
         progressOverlay = findViewById(R.id.progress_overlay)
-
         buttonEmail.setOnClickListener{
             if(isSignup) {
                 navigateToSignup(true)

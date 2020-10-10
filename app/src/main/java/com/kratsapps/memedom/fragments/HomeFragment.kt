@@ -25,7 +25,6 @@ import com.kratsapps.memedom.utils.FirestoreHandler
 class HomeFragment : Fragment() {
 
     lateinit var rootView: View
-    lateinit var createButton: ImageButton
     lateinit var linkSegment: AppCompatRadioButton
     lateinit var freeMemeSegment: AppCompatRadioButton
     lateinit var homeContext: Context
@@ -91,7 +90,6 @@ class HomeFragment : Fragment() {
             val credentialView = rootView.findViewById(R.id.credentialViewHome) as LinearLayout
             (credentialView.parent as? ViewGroup)?.removeView(credentialView)
         } else {
-            (createButton.parent as? ViewGroup)?.removeView(createButton)
             setupCrentialView()
         }
 

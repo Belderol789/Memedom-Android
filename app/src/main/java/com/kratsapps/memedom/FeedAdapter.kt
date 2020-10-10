@@ -1,32 +1,37 @@
 package com.kratsapps.memedom
 
-import android.animation.AnimatorListenerAdapter
 import android.app.Activity
 import android.content.Context
+import android.content.DialogInterface
 import android.content.Intent
-import android.content.res.ColorStateList
 import android.graphics.Color
 import android.os.Build
 import android.util.Log
-import android.view.*
+import android.view.LayoutInflater
+import android.view.View
+import android.view.ViewGroup
 import android.widget.*
 import androidx.annotation.RequiresApi
 import androidx.core.content.ContextCompat
-import androidx.core.view.GestureDetectorCompat
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
+import com.kratsapps.memedom.models.MemeDomUser
 import com.kratsapps.memedom.models.Memes
 import com.kratsapps.memedom.utils.DatabaseManager
+import com.kratsapps.memedom.utils.DoubleClickListener
 import com.kratsapps.memedom.utils.FirestoreHandler
 import kotlinx.android.synthetic.main.feed_item.view.*
+
 
 class FeedAdapter(private val feedList: List<Memes>, private val activity: Activity): RecyclerView.Adapter<FeedAdapter.FeedViewHolder>() {
 
     lateinit var feedAdapterContext: Context
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): FeedViewHolder {
-        val itemView = LayoutInflater.from(parent.context).inflate(R.layout.feed_item,
-        parent, false)
+        val itemView = LayoutInflater.from(parent.context).inflate(
+            R.layout.feed_item,
+            parent, false
+        )
         feedAdapterContext = parent.context
         return FeedViewHolder(itemView)
     }
@@ -45,9 +50,6 @@ class FeedAdapter(private val feedList: List<Memes>, private val activity: Activ
             .centerCrop()
             .into(holder.feedImage)
         holder.likeImageView.alpha = 0f
-//        holder.feedImage.setOnClickListener{
-//            navigateToComments(currentItem)
-//        }
         holder.commentsBtn.setOnClickListener {
             navigateToComments(currentItem)
         }
@@ -62,40 +64,56 @@ class FeedAdapter(private val feedList: List<Memes>, private val activity: Activ
         val mainUser = DatabaseManager(feedAdapterContext).retrieveSavedUser()
         val postLikers = currentItem.postLikers
 
+        holder.feedImage.setOnClickListener(object: DoubleClickListener() {
+            override fun onSingleClick(v: View?) {
+                Log.d("Gesture", "User has tapped once")
+                if(mainUser?.uid != null && postLikers.contains(mainUser.uid)) {
+                    navigateToComments(currentItem)
+                    //make sure when user logs out, all data is destroyed
+                }
+            }
+            override fun onDoubleClick(v: View?) {
+                Log.d("Gesture", "User has tapped twice")
+                if(mainUser?.uid != null) {
+                    if(!postLikers.contains(mainUser.uid)) {
+                        //animate in crown
+                        animateLikeImageView(holder, mainUser, currentItem)
+                    }
+                }
+            }
+        })
+
         if(mainUser != null) {
-            if(!postLikers.contains(mainUser.uid)) {
-                Log.d("Scrolling", "Main user is ${mainUser.uid}")
-                holder.pointsLayout.visibility = View.GONE
-//                holder.feedImage.setOnClickListener {
-//
-//                    animateLikeImageView(holder)
-//
-//                    Log.d("Firestore", "Post likers $postLikers uid ${mainUser.uid}")
-//
-//                    val updatedPoints = postLikers.count() + 1
-//                    activatePoints(holder, updatedPoints)
-//
-//                    FirestoreHandler().updateArrayDatabaseObject("Memes", postUD, mainUser.uid, updatedPoints.toLong())
-//                    FirestoreHandler().updateLikedDatabase(mainUser.uid, postUserID)
-//                }
+            if(postLikers.contains(mainUser.uid)) {
+                activatePoints(holder, currentPostLikes)
             } else {
-                holder.pointsLayout.visibility = View.VISIBLE
-                activatePoints(holder, postLikers.count())
+                deactivatePoints(holder)
             }
         } else {
-            holder.pointsLayout.visibility = View.GONE
+            deactivatePoints(holder)
         }
     }
 
-    private fun animateLikeImageView(holder: FeedViewHolder) {
+    private fun animateLikeImageView(holder: FeedViewHolder, mainUser: MemeDomUser, meme: Memes) {
         holder.likeImageView.animate()
             .alpha(1.0f)
-            .setDuration(400)
+            .setDuration(600)
             .withEndAction {
                 holder.likeImageView.animate()
                     .alpha(0f)
-                    .setDuration(400)
+                    .setDuration(600)
+                holder.pointsLayout.visibility = View.VISIBLE
+                holder.postUserInfo.visibility = View.VISIBLE
+                val updatedPoints = meme.postLikers.count() + 1
+                activatePoints(holder, updatedPoints)
+                FirestoreHandler().updateArrayDatabaseObject("Memes", meme.postID, mainUser.uid, updatedPoints.toLong())
+                FirestoreHandler().updateLikedDatabase(mainUser.uid, meme.postUserUID)
             }
+    }
+
+    private fun deactivatePoints(holder: FeedViewHolder) {
+        holder.pointsLayout.visibility = View.GONE
+        holder.postUserInfo.visibility = View.GONE
     }
 
     private fun activatePoints(holder: FeedViewHolder, updatedPoints: Int) {
@@ -105,7 +123,12 @@ class FeedAdapter(private val feedList: List<Memes>, private val activity: Activ
         holder.postUserInfo.visibility = View.VISIBLE
         holder.pointsTextView.text = "${updatedPoints}"
         holder.pointsTextView.setTextColor(appFGColor)
-        holder.pointsIcon.setColorFilter(ContextCompat.getColor(feedAdapterContext, R.color.appFGColor))
+        holder.pointsIcon.setColorFilter(
+            ContextCompat.getColor(
+                feedAdapterContext,
+                R.color.appFGColor
+            )
+        )
     }
 
     override fun getItemCount() = feedList.size
