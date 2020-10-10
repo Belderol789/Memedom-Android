@@ -1,5 +1,6 @@
 package com.kratsapps.memedom
 
+import android.animation.AnimatorListenerAdapter
 import android.app.Activity
 import android.content.Context
 import android.content.Intent
@@ -7,12 +8,11 @@ import android.content.res.ColorStateList
 import android.graphics.Color
 import android.os.Build
 import android.util.Log
-import android.view.LayoutInflater
-import android.view.View
-import android.view.ViewGroup
+import android.view.*
 import android.widget.*
 import androidx.annotation.RequiresApi
 import androidx.core.content.ContextCompat
+import androidx.core.view.GestureDetectorCompat
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.kratsapps.memedom.models.Memes
@@ -44,9 +44,10 @@ class FeedAdapter(private val feedList: List<Memes>, private val activity: Activ
             .load(currentItem.postImageURL)
             .centerCrop()
             .into(holder.feedImage)
-        holder.feedImage.setOnClickListener{
-            navigateToComments(currentItem)
-        }
+        holder.likeImageView.alpha = 0f
+//        holder.feedImage.setOnClickListener{
+//            navigateToComments(currentItem)
+//        }
         holder.commentsBtn.setOnClickListener {
             navigateToComments(currentItem)
         }
@@ -57,9 +58,6 @@ class FeedAdapter(private val feedList: List<Memes>, private val activity: Activ
             .centerCrop()
             .into(holder.postProfilePic)
         holder.feedDate.text = currentItem.postDateString()
-        holder.pointsLayout.visibility = View.GONE
-
-        holder
 
         val mainUser = DatabaseManager(feedAdapterContext).retrieveSavedUser()
         val postLikers = currentItem.postLikers
@@ -67,21 +65,37 @@ class FeedAdapter(private val feedList: List<Memes>, private val activity: Activ
         if(mainUser != null) {
             if(!postLikers.contains(mainUser.uid)) {
                 Log.d("Scrolling", "Main user is ${mainUser.uid}")
-
-                holder.feedImage.setOnClickListener {
-
-                    Log.d("Firestore", "Post likers $postLikers uid ${mainUser.uid}")
-
-                    val updatedPoints = postLikers.count() + 1
-                    activatePoints(holder, updatedPoints)
-
-                    FirestoreHandler().updateArrayDatabaseObject("Memes", postUD, mainUser.uid, updatedPoints.toLong())
-                    FirestoreHandler().updateLikedDatabase(mainUser.uid, postUserID)
-                }
+                holder.pointsLayout.visibility = View.GONE
+//                holder.feedImage.setOnClickListener {
+//
+//                    animateLikeImageView(holder)
+//
+//                    Log.d("Firestore", "Post likers $postLikers uid ${mainUser.uid}")
+//
+//                    val updatedPoints = postLikers.count() + 1
+//                    activatePoints(holder, updatedPoints)
+//
+//                    FirestoreHandler().updateArrayDatabaseObject("Memes", postUD, mainUser.uid, updatedPoints.toLong())
+//                    FirestoreHandler().updateLikedDatabase(mainUser.uid, postUserID)
+//                }
             } else {
+                holder.pointsLayout.visibility = View.VISIBLE
                 activatePoints(holder, postLikers.count())
             }
+        } else {
+            holder.pointsLayout.visibility = View.GONE
         }
+    }
+
+    private fun animateLikeImageView(holder: FeedViewHolder) {
+        holder.likeImageView.animate()
+            .alpha(1.0f)
+            .setDuration(400)
+            .withEndAction {
+                holder.likeImageView.animate()
+                    .alpha(0f)
+                    .setDuration(400)
+            }
     }
 
     private fun activatePoints(holder: FeedViewHolder, updatedPoints: Int) {
@@ -112,6 +126,8 @@ class FeedAdapter(private val feedList: List<Memes>, private val activity: Activ
         val postUserInfo = itemView.postUserInfo
         val postProfilePic = itemView.postProfilePic
         val postUserName = itemView.postUsername
+
+        val likeImageView = itemView.likeImageView
     }
 
     private fun navigateToComments(meme: Memes) {

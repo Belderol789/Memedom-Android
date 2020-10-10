@@ -86,7 +86,7 @@ class CreateFragment : Fragment() {
 
         val title = editTextTitle.text.toString()
         val postID = generateRandomString()
-        val today = GregorianCalendar().timeInMillis
+        val today = System.currentTimeMillis()
 
         val savedUser = DatabaseManager(this.context!!).retrieveSavedUser()
 

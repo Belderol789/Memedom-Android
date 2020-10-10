@@ -1,5 +1,6 @@
 package com.kratsapps.memedom.models
 
+import android.util.Log
 import java.io.Serializable
 import java.text.SimpleDateFormat
 import java.util.*
@@ -25,7 +26,10 @@ class Memes : Serializable {
     }
 
     fun postDateString(): String {
-        val seconds: Int = (postDate / 1000).toInt()
+
+        val postDateFromNow = (GregorianCalendar().timeInMillis - postDate)
+
+        val seconds: Int = (postDateFromNow / 1000).toInt()
         val minutes = seconds / 60
         val hours = minutes / 60
         val days = hours / 24
@@ -33,18 +37,20 @@ class Memes : Serializable {
         val months = weeks / 4
         val years = months / 12
 
+        //Log.d("Date", "System ${System.currentTimeMillis()} / PostDate $postDate / Seconds $seconds / Minutes $minutes / Hours $hours / Days $days / Weeks $weeks / Months $months / Years $years")
+
         if (months > 12) {
-            return "$years y ago"
+            return "${years}y ago"
         } else if (weeks > 4) {
-            return "$months m ago"
+            return "${months}m ago"
         } else if (days > 7) {
-            return "$weeks w ago"
+            return "${weeks}w ago"
         } else if (days > 0) {
-            return "$days d ago"
+            return "${days}d ago"
         } else if (hours < 23 && hours > 0) {
-            return "$hours h ago"
+            return "${hours}h ago"
         } else if (minutes < 60 && minutes > 0) {
-            return "$minutes min ago"
+            return "${minutes}min ago"
         } else {
             return "Just now"
         }

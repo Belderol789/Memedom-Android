@@ -28,6 +28,17 @@
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/userInfoLinear" />
 
+        <ImageView
+            android:id="@+id/likeImageView"
+            android:layout_width="100dp"
+            android:layout_height="100dp"
+            app:layout_constraintBottom_toBottomOf="@+id/feedImage"
+            app:layout_constraintEnd_toEndOf="@+id/feedImage"
+            app:layout_constraintStart_toStartOf="@+id/feedImage"
+            app:layout_constraintTop_toTopOf="@+id/feedImage"
+            app:srcCompat="@drawable/ic_action_like"
+            app:tint="@color/appFGColor" />
+
         <LinearLayout
             android:id="@+id/userInfoLinear"
             android:layout_width="0dp"
