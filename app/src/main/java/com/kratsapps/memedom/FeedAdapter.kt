@@ -49,7 +49,10 @@ class FeedAdapter(private val feedList: List<Memes>, private val activity: Activ
             .load(currentItem.postImageURL)
             .centerCrop()
             .into(holder.feedImage)
+
+        holder.postUserName.text = currentItem.postUsername
         holder.likeImageView.alpha = 0f
+        holder.shareBtn.text = "${currentItem.postShares}"
         holder.commentsBtn.setOnClickListener {
             navigateToComments(currentItem)
         }
@@ -77,6 +80,7 @@ class FeedAdapter(private val feedList: List<Memes>, private val activity: Activ
                 if(mainUser?.uid != null) {
                     if(!postLikers.contains(mainUser.uid)) {
                         //animate in crown
+                        currentItem.postLikers += mainUser.uid
                         animateLikeImageView(holder, mainUser, currentItem)
                     }
                 }
@@ -97,7 +101,7 @@ class FeedAdapter(private val feedList: List<Memes>, private val activity: Activ
     private fun animateLikeImageView(holder: FeedViewHolder, mainUser: MemeDomUser, meme: Memes) {
         holder.likeImageView.animate()
             .alpha(1.0f)
-            .setDuration(600)
+            .setDuration(750)
             .withEndAction {
                 holder.likeImageView.animate()
                     .alpha(0f)
@@ -140,7 +144,6 @@ class FeedAdapter(private val feedList: List<Memes>, private val activity: Activ
 
         val shareBtn: Button = itemView.postShareBtn
         val commentsBtn: Button = itemView.postCommentsBtn
-        val feedActionLayout = itemView.feedActionLayout
 
         val pointsTextView: TextView = itemView.pointsTextView
         val pointsIcon: ImageView = itemView.pointsIcon

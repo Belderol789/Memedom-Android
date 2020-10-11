@@ -109,6 +109,35 @@ class FirestoreHandler {
     }
 
     //Getting
+    fun checkForMemeChanges(dayLimit: Long, uid: String, completed: (Memes) -> Unit) {
+        Log.d("DayLimit", "Current day limit $dayLimit")
+
+        val todayCalendar: Calendar = GregorianCalendar()
+        todayCalendar[Calendar.HOUR_OF_DAY] = 0
+        todayCalendar[Calendar.MINUTE] = 0
+        todayCalendar[Calendar.SECOND] = 0
+        todayCalendar[Calendar.MILLISECOND] = 0
+        val today = todayCalendar.timeInMillis
+
+        val tomorrowCalendar: Calendar = GregorianCalendar()
+        tomorrowCalendar[Calendar.HOUR_OF_DAY] = 0
+        tomorrowCalendar[Calendar.MINUTE] = 0
+        tomorrowCalendar[Calendar.SECOND] = 0
+        tomorrowCalendar[Calendar.MILLISECOND] = 0
+        tomorrowCalendar.add(Calendar.DAY_OF_YEAR, dayLimit.toInt() * -1)
+        val tomorrow = tomorrowCalendar.timeInMillis
+
+        Log.d("DayLimit", "Today ${convertLongToTime(today)} Days after ${convertLongToTime(tomorrow)}")
+
+        firestoreDB
+            .collection(MEMES_PATH)
+            .whereArrayContains("postLikers", uid)
+            .addSnapshotListener{ value, e ->
+                Log.d("Firestore", "Got Updated Posts ${value?.count()}")
+            }
+    }
+
+
     fun checkForFreshMemes(dayLimit: Long, completed: (List<Memes>) -> Unit) {
 
         Log.d("DayLimit", "Current day limit $dayLimit")
@@ -138,7 +167,6 @@ class FirestoreHandler {
             .addOnSuccessListener { documents ->
                 var memes: List<Memes> = arrayListOf()
                 for (document in documents) {
-                    Log.d("Firestore", "${document.id} => ${document.data}")
                     val newMeme: Memes = document.toObject(Memes::class.java)
                     memes += newMeme
                 }
@@ -171,7 +199,6 @@ class FirestoreHandler {
             .document(uid)
             .get()
             .addOnSuccessListener { document ->
-                Log.d("Firestore", "${document.id} => ${document.data}")
                 val mainUser: MemeDomUser = document.toObject(MemeDomUser::class.java)!!
                 completed(mainUser)
             }

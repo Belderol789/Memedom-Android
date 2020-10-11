@@ -65,6 +65,7 @@
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
                         android:layout_marginStart="16dp"
+                        android:layout_marginTop="8dp"
                         android:layout_marginEnd="16dp"
                         android:divider="@drawable/divider_vertical"
                         android:orientation="vertical"
@@ -126,10 +127,12 @@
                         android:id="@+id/commentsActionLayout"
                         android:layout_width="wrap_content"
                         android:layout_height="35dp"
+                        android:layout_marginBottom="8dp"
                         android:divider="@drawable/divider_horizontal"
                         android:gravity="center|fill_horizontal"
                         android:orientation="horizontal"
                         android:visibility="visible"
+                        app:layout_constraintBottom_toBottomOf="parent"
                         app:layout_constraintEnd_toEndOf="parent"
                         app:layout_constraintStart_toStartOf="parent"
                         app:layout_constraintTop_toBottomOf="@+id/commentsImage">
@@ -215,5 +218,41 @@
             </androidx.cardview.widget.CardView>
         </LinearLayout>
     </ScrollView>
+
+    <LinearLayout
+        android:id="@+id/linearLayout2"
+        android:layout_width="0dp"
+        android:layout_height="50dp"
+        android:layout_marginBottom="8dp"
+        android:background="@drawable/cornered_card"
+        android:orientation="horizontal"
+        android:paddingLeft="16dp"
+        android:paddingRight="16dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent">
+
+        <EditText
+            android:id="@+id/editTextTextMultiLine"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:backgroundTint="@color/appFGColor"
+            android:ems="10"
+            android:gravity="start|top"
+            android:hint="@string/postComment"
+            android:inputType="textMultiLine"
+            android:textColor="@color/whiteColor"
+            android:textColorHint="@color/appSecondaryColor" />
+
+        <ImageButton
+            android:id="@+id/imageButton"
+            android:layout_width="45dp"
+            android:layout_height="match_parent"
+            android:layout_weight="0"
+            android:background="@color/transparent"
+            android:tint="@color/whiteColor"
+            app:srcCompat="@drawable/ic_action_send" />
+    </LinearLayout>
 
 </androidx.constraintlayout.widget.ConstraintLayout>

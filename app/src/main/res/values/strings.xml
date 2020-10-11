@@ -24,6 +24,7 @@
 
     <string name="alert_ok">Ok</string>
     <string name="postTitle">Post Title</string>
+    <string name="postComment">Write a comment</string>
     <string name="postButton">Post</string>
     <string name="male">Male</string>
     <string name="female">Female</string>
