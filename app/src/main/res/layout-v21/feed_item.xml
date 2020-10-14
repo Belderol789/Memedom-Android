@@ -93,7 +93,6 @@
 
                 <ImageView
                     android:id="@+id/postProfilePic"
-                    android:background="@drawable/round_imageview"
                     android:layout_width="25dp"
                     android:layout_height="match_parent"
                     android:layout_weight="0"

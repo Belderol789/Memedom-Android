@@ -7,12 +7,14 @@ import com.google.firebase.firestore.Query
 import com.google.firebase.firestore.SetOptions
 import com.google.firebase.firestore.ktx.firestore
 import com.google.firebase.ktx.Firebase
+import com.kratsapps.memedom.models.Comments
 import com.kratsapps.memedom.models.MemeDomUser
 import com.kratsapps.memedom.models.Memes
 import java.lang.reflect.Field
 import java.text.SimpleDateFormat
 import java.util.*
 import kotlin.collections.ArrayList
+import kotlin.collections.HashMap
 import kotlin.math.round
 
 class FirestoreHandler {
@@ -20,6 +22,7 @@ class FirestoreHandler {
     private val firestoreDB = Firebase.firestore
     private val POPULAR_POINTS = "PopularPoints"
     private val MEMES_PATH = "Memes"
+    private val COMMENTS_PATH = "Comments"
     private val USERS_PATH = "User"
     private val APP_SETTINGS = "AppSettings"
     private val DAY_LIMIT = "DayLimit"
@@ -37,6 +40,23 @@ class FirestoreHandler {
                 Log.w("Firestore", "Error writing document", e)
                 success(e.message)
             }
+    }
+
+    fun sendUserCommentToFirestore(postID: String, commentID: String, newCount: Int, hashMap: HashMap<String, Any>) {
+        firestoreDB
+            .collection(COMMENTS_PATH)
+            .document(postID)
+            .collection(COMMENTS_PATH)
+            .document(commentID)
+            .set(hashMap)
+            .addOnFailureListener{
+                Log.d("Comment", "Comment Error $it")
+            }
+
+            firestoreDB
+                .collection(MEMES_PATH)
+                .document(postID)
+                .update("postComments", newCount)
     }
 
     //Editing
@@ -77,6 +97,29 @@ class FirestoreHandler {
             )
     }
 
+    fun updateCommentPoints(uid: String, postID: String, commentID: String) {
+
+        var fieldValue: FieldValue = FieldValue.arrayUnion(uid)
+
+        firestoreDB
+            .collection(COMMENTS_PATH)
+            .document(postID)
+            .collection(COMMENTS_PATH)
+            .document(commentID)
+            .update("commentLikers", fieldValue)
+    }
+
+    fun removeCommentPoints(uid: String, postID: String, commentID: String) {
+        var fieldValue: FieldValue = FieldValue.arrayRemove(uid)
+
+        firestoreDB
+            .collection(COMMENTS_PATH)
+            .document(postID)
+            .collection(COMMENTS_PATH)
+            .document(commentID)
+            .update("commentLikers", fieldValue)
+    }
+
     //App Settings
     fun getAppSettings(done: (points: Long, days: Long) -> Unit) {
 
@@ -91,7 +134,7 @@ class FirestoreHandler {
 
                 done(popularPoints, dayLimit)
             }
-            .addOnFailureListener{
+            .addOnFailureListener {
                 done(100, 1)
             }
     }
@@ -107,36 +150,6 @@ class FirestoreHandler {
         repeat(decimals) { multiplier *= 10 }
         return (round(this * multiplier) / multiplier).toLong()
     }
-
-    //Getting
-    fun checkForMemeChanges(dayLimit: Long, uid: String, completed: (Memes) -> Unit) {
-        Log.d("DayLimit", "Current day limit $dayLimit")
-
-        val todayCalendar: Calendar = GregorianCalendar()
-        todayCalendar[Calendar.HOUR_OF_DAY] = 0
-        todayCalendar[Calendar.MINUTE] = 0
-        todayCalendar[Calendar.SECOND] = 0
-        todayCalendar[Calendar.MILLISECOND] = 0
-        val today = todayCalendar.timeInMillis
-
-        val tomorrowCalendar: Calendar = GregorianCalendar()
-        tomorrowCalendar[Calendar.HOUR_OF_DAY] = 0
-        tomorrowCalendar[Calendar.MINUTE] = 0
-        tomorrowCalendar[Calendar.SECOND] = 0
-        tomorrowCalendar[Calendar.MILLISECOND] = 0
-        tomorrowCalendar.add(Calendar.DAY_OF_YEAR, dayLimit.toInt() * -1)
-        val tomorrow = tomorrowCalendar.timeInMillis
-
-        Log.d("DayLimit", "Today ${convertLongToTime(today)} Days after ${convertLongToTime(tomorrow)}")
-
-        firestoreDB
-            .collection(MEMES_PATH)
-            .whereArrayContains("postLikers", uid)
-            .addSnapshotListener{ value, e ->
-                Log.d("Firestore", "Got Updated Posts ${value?.count()}")
-            }
-    }
-
 
     fun checkForFreshMemes(dayLimit: Long, completed: (List<Memes>) -> Unit) {
 
@@ -157,11 +170,15 @@ class FirestoreHandler {
         tomorrowCalendar.add(Calendar.DAY_OF_YEAR, dayLimit.toInt() * -1)
         val tomorrow = tomorrowCalendar.timeInMillis
 
-        Log.d("DayLimit", "Today ${convertLongToTime(today)} Days after ${convertLongToTime(tomorrow)}")
+        Log.d(
+            "DayLimit",
+            "Today ${convertLongToTime(today)} Days after ${convertLongToTime(tomorrow)}"
+        )
 
         firestoreDB
             .collection(MEMES_PATH)
             .whereGreaterThan("postDate", tomorrow)
+            .orderBy("postDate", Query.Direction.DESCENDING)
             .limit(100)
             .get()
             .addOnSuccessListener { documents ->
@@ -171,6 +188,22 @@ class FirestoreHandler {
                     memes += newMeme
                 }
                 completed(memes)
+            }
+    }
+
+    fun checkForComments(postID: String, completed: (List<Comments>) -> Unit) {
+        firestoreDB
+            .collection(COMMENTS_PATH)
+            .document(postID)
+            .collection(COMMENTS_PATH)
+            .get()
+            .addOnSuccessListener {
+                var comments: List<Comments> = listOf()
+                for (document in it) {
+                    val comment = document.toObject(Comments::class.java)
+                    comments += comment
+                }
+                completed(comments)
             }
     }
 
@@ -282,3 +315,38 @@ fun getAllMemeObjects(completed: (List<Memes>) -> Unit) {
         }
 }
 */
+
+
+/*
+  //Getting
+    fun checkForMemeChanges(dayLimit: Long, uid: String, completed: (Memes) -> Unit) {
+        Log.d("DayLimit", "Current day limit $dayLimit")
+
+        val todayCalendar: Calendar = GregorianCalendar()
+        todayCalendar[Calendar.HOUR_OF_DAY] = 0
+        todayCalendar[Calendar.MINUTE] = 0
+        todayCalendar[Calendar.SECOND] = 0
+        todayCalendar[Calendar.MILLISECOND] = 0
+        val today = todayCalendar.timeInMillis
+
+        val tomorrowCalendar: Calendar = GregorianCalendar()
+        tomorrowCalendar[Calendar.HOUR_OF_DAY] = 0
+        tomorrowCalendar[Calendar.MINUTE] = 0
+        tomorrowCalendar[Calendar.SECOND] = 0
+        tomorrowCalendar[Calendar.MILLISECOND] = 0
+        tomorrowCalendar.add(Calendar.DAY_OF_YEAR, dayLimit.toInt() * -1)
+        val tomorrow = tomorrowCalendar.timeInMillis
+
+        Log.d(
+            "DayLimit",
+            "Today ${convertLongToTime(today)} Days after ${convertLongToTime(tomorrow)}"
+        )
+
+        firestoreDB
+            .collection(MEMES_PATH)
+            .whereArrayContains("postLikers", uid)
+            .addSnapshotListener { value, e ->
+                Log.d("Firestore", "Got Updated Posts ${value?.count()}")
+            }
+    }
+ */

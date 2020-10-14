@@ -4,7 +4,9 @@ import android.app.Activity
 import android.content.Context
 import android.content.DialogInterface
 import android.content.Intent
+import android.content.res.ColorStateList
 import android.graphics.Color
+import android.graphics.PorterDuff
 import android.os.Build
 import android.util.Log
 import android.view.LayoutInflater
@@ -53,6 +55,7 @@ class FeedAdapter(private val feedList: List<Memes>, private val activity: Activ
         holder.postUserName.text = currentItem.postUsername
         holder.likeImageView.alpha = 0f
         holder.shareBtn.text = "${currentItem.postShares}"
+        holder.commentsBtn.text = "${currentItem.postComments}"
         holder.commentsBtn.setOnClickListener {
             navigateToComments(currentItem)
         }
@@ -118,6 +121,13 @@ class FeedAdapter(private val feedList: List<Memes>, private val activity: Activ
     private fun deactivatePoints(holder: FeedViewHolder) {
         holder.pointsLayout.visibility = View.GONE
         holder.postUserInfo.visibility = View.GONE
+
+        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.M) {
+            holder.shareBtn.setTextColor(Color.parseColor("#C0C0C0"))
+            holder.commentsBtn.setTextColor(Color.parseColor("#C0C0C0"))
+            holder.shareBtn.setCompoundDrawableTintList(ColorStateList.valueOf(Color.parseColor("#C0C0C0")))
+            holder.commentsBtn.setCompoundDrawableTintList(ColorStateList.valueOf(Color.parseColor("#C0C0C0")))
+        }
     }
 
     private fun activatePoints(holder: FeedViewHolder, updatedPoints: Int) {
@@ -126,6 +136,19 @@ class FeedAdapter(private val feedList: List<Memes>, private val activity: Activ
         holder.pointsLayout.visibility = View.VISIBLE
         holder.postUserInfo.visibility = View.VISIBLE
         holder.pointsTextView.text = "${updatedPoints}"
+        holder.pointsTextView.setTextColor(appFGColor)
+        holder.pointsIcon.setColorFilter(
+            ContextCompat.getColor(
+                feedAdapterContext,
+                R.color.appFGColor
+            )
+        )
+        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.M) {
+            holder.shareBtn.setTextColor(appFGColor)
+            holder.commentsBtn.setTextColor(appFGColor)
+            holder.shareBtn.setCompoundDrawableTintList(ColorStateList.valueOf(Color.parseColor("#FACE0D")))
+            holder.commentsBtn.setCompoundDrawableTintList(ColorStateList.valueOf(Color.parseColor("#FACE0D")))
+        }
         holder.pointsTextView.setTextColor(appFGColor)
         holder.pointsIcon.setColorFilter(
             ContextCompat.getColor(

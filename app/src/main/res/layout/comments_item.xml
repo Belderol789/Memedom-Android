@@ -3,11 +3,12 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/comments_view"
-    android:background="@color/appBGColorLight"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:padding="16dp"
+    android:background="@color/appBGColorLight"
     android:elevation="20dp"
+    android:padding="16dp"
+    app:cardBackgroundColor="@color/appBGColor"
     tools:targetApi="lollipop">
 
     <LinearLayout
@@ -24,7 +25,65 @@
             android:layout_height="match_parent"
             android:padding="0dp">
 
+            <LinearLayout
+                android:id="@+id/feedActionLayout"
+                android:layout_width="0dp"
+                android:layout_height="35dp"
+                android:layout_gravity="center"
+                android:layout_marginStart="27dp"
+                android:layout_marginTop="4dp"
+                android:layout_marginEnd="16dp"
+                android:layout_marginBottom="4dp"
+                android:divider="@drawable/divider_horizontal"
+                android:gravity="center|fill_horizontal"
+                android:orientation="horizontal"
+                android:showDividers="middle"
+                android:visibility="visible"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/constraintLayout">
+
+                <Button
+                    android:id="@+id/repliesBtn"
+                    style="@style/Widget.AppCompat.Button.Borderless.Colored"
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent"
+                    android:layout_weight="1"
+                    android:text="View 0 Replies"
+                    android:textAlignment="viewStart"
+                    android:textAllCaps="false"
+                    android:textColor="@color/com_facebook_blue"
+                    android:textSize="12sp" />
+
+                <Button
+                    android:id="@+id/upvoteBtn"
+                    style="@style/Widget.AppCompat.Button.Borderless.Colored"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:drawableStart="@drawable/ic_action_like"
+                    android:drawableTint="@color/whiteColor"
+                    android:text="   0"
+                    android:textAlignment="textStart"
+                    android:textAllCaps="false"
+                    android:textColor="@color/whiteColor"
+                    android:textSize="12sp" />
+
+                <ImageButton
+                    android:id="@+id/reportButton"
+                    android:layout_width="30dp"
+                    android:layout_height="25dp"
+                    android:background="@color/transparent"
+                    android:contentDescription="@string/reporting_resource"
+                    android:src="@drawable/ic_action_report"
+                    android:tint="@color/whiteColor"
+                    android:visibility="visible" />
+
+            </LinearLayout>
+
             <androidx.constraintlayout.widget.ConstraintLayout
+                android:id="@+id/constraintLayout"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:padding="0dp"
@@ -34,13 +93,13 @@
 
                 <LinearLayout
                     android:id="@+id/informationLayout"
-                    android:showDividers="middle"
-                    android:divider="@drawable/divider_vertical"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_marginStart="8dp"
                     android:layout_marginEnd="8dp"
+                    android:divider="@drawable/divider_vertical"
                     android:orientation="vertical"
+                    android:showDividers="middle"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toTopOf="parent">
@@ -54,7 +113,7 @@
                         android:showDividers="middle">
 
                         <TextView
-                            android:id="@+id/textView"
+                            android:id="@+id/commentUsername"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:layout_weight="1"
@@ -63,7 +122,7 @@
                             android:textStyle="bold" />
 
                         <TextView
-                            android:id="@+id/textView2"
+                            android:id="@+id/commentDate"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:layout_weight="1"
@@ -73,51 +132,11 @@
                     </LinearLayout>
 
                     <TextView
-                        android:id="@+id/commentTextView"
+                        android:id="@+id/commentsTextView"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:text="This is the users comment is about three lines long. Now how do we make it three lines long? Simple we add more texts This is the users comment is about three lines long. Now how do we make it three lines long? Simple we add more texts"
                         android:textColor="@color/whiteColor" />
-
-                    <LinearLayout
-                        android:id="@+id/feedActionLayout"
-                        android:layout_width="wrap_content"
-                        android:layout_height="35dp"
-                        android:layout_gravity="center"
-                        android:divider="@drawable/divider_horizontal"
-                        android:gravity="center|fill_horizontal"
-                        android:orientation="horizontal"
-                        android:showDividers="middle"
-                        android:visibility="visible"
-                        app:layout_constraintEnd_toEndOf="parent"
-                        app:layout_constraintStart_toStartOf="parent"
-                        app:layout_constraintTop_toBottomOf="@+id/feedImage">
-
-                        <Button
-                            android:id="@+id/postShareBtn"
-                            style="@style/Widget.AppCompat.Button.Borderless.Colored"
-                            android:layout_width="wrap_content"
-                            android:layout_height="match_parent"
-                            android:layout_weight="1"
-                            android:drawableStart="@drawable/ic_action_share"
-                            android:drawableTint="@color/whiteColor"
-                            android:text="0"
-                            android:textColor="@color/whiteColor"
-                            tools:targetApi="m" />
-
-                        <Button
-                            android:id="@+id/postCommentsBtn"
-                            style="@style/Widget.AppCompat.Button.Borderless.Colored"
-                            android:layout_width="match_parent"
-                            android:layout_height="match_parent"
-                            android:layout_weight="1"
-                            android:drawableStart="@drawable/ic_action_chat"
-                            android:drawableTint="@color/whiteColor"
-                            android:text="0"
-                            android:textColor="@color/whiteColor"
-                            tools:targetApi="m" />
-
-                    </LinearLayout>
 
                 </LinearLayout>
 
@@ -125,8 +144,9 @@
 
             <ImageButton
                 android:id="@+id/profileButton"
-                android:layout_width="45dp"
-                android:layout_height="45dp"
+                android:layout_width="30dp"
+                android:layout_height="30dp"
+                android:background="@drawable/round_button"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent"
                 app:srcCompat="@drawable/ic_action_name" />
