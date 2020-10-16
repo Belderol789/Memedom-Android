@@ -52,24 +52,40 @@ class CommentsAdapter(private val commentList: List<Comments>, private val activ
             .into(holder.userPhotoURL)
         holder.userName.setText(currentComment.userName)
         holder.commentDate.setText(currentComment.commentDateString())
-
         holder.commentText.setText(currentComment.commentText)
 
-        if (currentComment.getCommentReplyCount() > 0) {
-            holder.repliesBtn.setText("View ${currentComment.getCommentReplyCount()} Replies")
+        if (currentComment.isComments) {
+            holder.commentActionLayout.visibility = View.VISIBLE
+        } else {
+            holder.commentActionLayout.visibility = View.GONE
+        }
+
+        if (currentComment.commentRepliesCount > 0) {
+            holder.repliesBtn.setText("View ${currentComment.commentRepliesCount} Replies")
         } else {
             holder.repliesBtn.setText("Reply")
         }
         holder.upvoteBtn.setText("   ${currentComment.getCommentLikeCount()}")
 
-
         val mainUserID = DatabaseManager(commentAdapterContext).getMainUserID()
 
         if(mainUserID != null) {
+
+            if (currentComment.commentLikers.contains(mainUserID)) {
+                setLikeBtn(holder, true)
+            } else {
+                setLikeBtn(holder, false)
+            }
+
             holder.upvoteBtn.setOnClickListener {
                 updateLikers(mainUserID, currentComment, holder)
             }
         }
+
+        holder.repliesBtn.setOnClickListener {
+            navigateToReplies(currentComment)
+        }
+
     }
 
     private fun updateLikers(mainUserID: String, currentComment: Comments, holder: CommentViewHolder) {
@@ -111,6 +127,15 @@ class CommentsAdapter(private val commentList: List<Comments>, private val activ
         val commentText = itemView.commentsTextView
         val repliesBtn = itemView.repliesBtn
         val upvoteBtn = itemView.upvoteBtn
+
+        val commentActionLayout = itemView.commentActionLayout
+    }
+
+    private fun navigateToReplies(comment: Comments) {
+        val intent: Intent = Intent(commentAdapterContext, ReplyActivity::class.java)
+        intent.putExtra("CommentReply", comment)
+        commentAdapterContext.startActivity(intent)
+        activity.overridePendingTransition(R.anim.enter_activity, R.anim.enter_activity)
     }
 }
 

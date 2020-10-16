@@ -1,0 +1,251 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/appBGColor"
+    tools:context=".ReplyActivity">
+
+    <ImageButton
+        android:id="@+id/replyBackButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="16dp"
+        android:layout_marginTop="16dp"
+        android:background="@color/transparent"
+        android:tint="@color/whiteColor"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:srcCompat="@drawable/ic_action_back" />
+
+    <ScrollView
+        android:id="@+id/scrollViewReplies"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:layout_marginTop="8dp"
+        android:fillViewport="true"
+        app:layout_constraintBottom_toTopOf="@+id/linearLayout2"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/replyBackButton">
+
+        <LinearLayout
+            android:id="@+id/replyLayoutScrollView"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent">
+
+            <androidx.cardview.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
+                xmlns:app="http://schemas.android.com/apk/res-auto"
+                xmlns:tools="http://schemas.android.com/tools"
+                android:id="@+id/replies_view"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="@color/appBGColorLight"
+                android:elevation="20dp"
+                android:padding="16dp"
+                app:cardBackgroundColor="@color/appBGColorLight"
+                tools:targetApi="lollipop">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+                    android:padding="8dp"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent">
+
+                    <androidx.constraintlayout.widget.ConstraintLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:padding="0dp">
+
+                        <LinearLayout
+                            android:id="@+id/feedActionLayout"
+                            android:layout_width="0dp"
+                            android:layout_height="35dp"
+                            android:layout_gravity="center"
+                            android:layout_marginStart="27dp"
+                            android:layout_marginTop="4dp"
+                            android:layout_marginEnd="16dp"
+                            android:layout_marginBottom="4dp"
+                            android:divider="@drawable/divider_horizontal"
+                            android:gravity="center|fill_horizontal"
+                            android:orientation="horizontal"
+                            android:showDividers="middle"
+                            android:visibility="visible"
+                            app:layout_constraintBottom_toBottomOf="parent"
+                            app:layout_constraintEnd_toEndOf="parent"
+                            app:layout_constraintStart_toStartOf="parent"
+                            app:layout_constraintTop_toBottomOf="@+id/constraintLayout">
+
+                            <Button
+                                android:id="@+id/repliesBtn"
+                                style="@style/Widget.AppCompat.Button.Borderless.Colored"
+                                android:layout_width="wrap_content"
+                                android:layout_height="match_parent"
+                                android:layout_weight="1"
+                                android:text="View 0 Replies"
+                                android:textAlignment="viewStart"
+                                android:textAllCaps="false"
+                                android:textColor="@color/com_facebook_blue"
+                                android:textSize="12sp" />
+
+                            <Button
+                                android:id="@+id/upvoteBtn"
+                                style="@style/Widget.AppCompat.Button.Borderless.Colored"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_weight="1"
+                                android:drawableStart="@drawable/ic_action_like"
+                                android:drawableTint="@color/whiteColor"
+                                android:text="   0"
+                                android:textAlignment="textStart"
+                                android:textAllCaps="false"
+                                android:textColor="@color/whiteColor"
+                                android:textSize="12sp" />
+
+                            <ImageButton
+                                android:id="@+id/reportButton"
+                                android:layout_width="30dp"
+                                android:layout_height="25dp"
+                                android:background="@color/transparent"
+                                android:contentDescription="@string/reporting_resource"
+                                android:src="@drawable/ic_action_report"
+                                android:tint="@color/whiteColor"
+                                android:visibility="visible" />
+
+                        </LinearLayout>
+
+                        <androidx.constraintlayout.widget.ConstraintLayout
+                            android:id="@+id/constraintLayout"
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:padding="0dp"
+                            app:layout_constraintEnd_toEndOf="parent"
+                            app:layout_constraintStart_toEndOf="@+id/profileButton"
+                            app:layout_constraintTop_toTopOf="parent">
+
+                            <LinearLayout
+                                android:id="@+id/informationLayout"
+                                android:layout_width="0dp"
+                                android:layout_height="wrap_content"
+                                android:layout_marginStart="8dp"
+                                android:layout_marginEnd="8dp"
+                                android:divider="@drawable/divider_vertical"
+                                android:orientation="vertical"
+                                android:showDividers="middle"
+                                app:layout_constraintEnd_toEndOf="parent"
+                                app:layout_constraintStart_toStartOf="parent"
+                                app:layout_constraintTop_toTopOf="parent">
+
+                                <LinearLayout
+                                    android:id="@+id/userInfoLayout"
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:divider="@drawable/divider_horizontal"
+                                    android:orientation="horizontal"
+                                    android:showDividers="middle">
+
+                                    <TextView
+                                        android:id="@+id/replyUsername"
+                                        android:layout_width="wrap_content"
+                                        android:layout_height="wrap_content"
+                                        android:layout_weight="1"
+                                        android:text="Username"
+                                        android:textColor="@color/appSecondaryColor"
+                                        android:textStyle="bold" />
+
+                                    <TextView
+                                        android:id="@+id/replyDate"
+                                        android:layout_width="wrap_content"
+                                        android:layout_height="wrap_content"
+                                        android:layout_weight="1"
+                                        android:text="1d"
+                                        android:textColor="@color/appSecondaryColor"
+                                        android:textSize="12sp" />
+                                </LinearLayout>
+
+                                <TextView
+                                    android:id="@+id/replysTextView"
+                                    android:layout_width="match_parent"
+                                    android:layout_height="wrap_content"
+                                    android:text="This is the users comment is about three lines long. Now how do we make it three lines long? Simple we add more texts This is the users comment is about three lines long. Now how do we make it three lines long? Simple we add more texts"
+                                    android:textColor="@color/whiteColor" />
+
+                            </LinearLayout>
+
+                        </androidx.constraintlayout.widget.ConstraintLayout>
+
+                        <ImageButton
+                            android:id="@+id/profileButton"
+                            android:layout_width="30dp"
+                            android:layout_height="30dp"
+                            android:background="@drawable/round_button"
+                            app:layout_constraintStart_toStartOf="parent"
+                            app:layout_constraintTop_toTopOf="parent"
+                            app:srcCompat="@drawable/ic_action_name" />
+                    </androidx.constraintlayout.widget.ConstraintLayout>
+
+                </LinearLayout>
+
+            </androidx.cardview.widget.CardView>
+
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/replyRecyclerView"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:clipToPadding="false"
+                android:padding="4dp"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/replies_view"
+                tools:listitem="@layout/comments_item" />
+        </LinearLayout>
+
+    </ScrollView>
+
+    <LinearLayout
+        android:id="@+id/linearLayout2"
+        android:layout_width="0dp"
+        android:layout_height="50dp"
+        android:background="@drawable/cornered_card"
+        android:orientation="horizontal"
+        android:paddingLeft="16dp"
+        android:paddingRight="16dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent">
+
+        <EditText
+            android:id="@+id/replyTextMultiLine"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:backgroundTint="@color/appSecondaryColor"
+            android:ems="10"
+            android:gravity="start|top"
+            android:hint="@string/postReply"
+            android:inputType="textMultiLine"
+            android:textColor="@color/whiteColor"
+            android:textColorHint="@color/appSecondaryColor" />
+
+        <ImageButton
+            android:id="@+id/sendReplyButton"
+            android:layout_width="45dp"
+            android:layout_height="match_parent"
+            android:layout_weight="0"
+            android:background="@color/transparent"
+            android:tint="@color/whiteColor"
+            app:srcCompat="@drawable/ic_action_send" />
+
+    </LinearLayout>
+
+</androidx.constraintlayout.widget.ConstraintLayout>

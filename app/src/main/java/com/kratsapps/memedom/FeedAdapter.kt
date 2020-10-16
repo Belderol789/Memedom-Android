@@ -54,8 +54,13 @@ class FeedAdapter(private val feedList: List<Memes>, private val activity: Activ
 
         holder.postUserName.text = currentItem.postUsername
         holder.likeImageView.alpha = 0f
-        holder.shareBtn.text = "${currentItem.postShares}"
-        holder.commentsBtn.text = "${currentItem.postComments}"
+
+        val shareCount = if(currentItem.postShares >= 10) "${currentItem.postShares}" else ""
+        holder.shareBtn.text = shareCount
+
+        val commentsCount = if(currentItem.postComments >= 10) "${currentItem.postComments}"  else ""
+        holder.commentsBtn.text = commentsCount
+
         holder.commentsBtn.setOnClickListener {
             navigateToComments(currentItem)
         }

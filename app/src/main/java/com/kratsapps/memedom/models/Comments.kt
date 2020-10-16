@@ -11,14 +11,11 @@ class Comments : Serializable {
     var userName: String = ""
     var commentDate: Long = 0
     var commentLikers: List<String> = listOf()
-    var commentReplies: List<String> = listOf()
+    var commentRepliesCount: Long = 0
+    var isComments: Boolean = true
 
     fun getCommentLikeCount(): Int {
         return commentLikers.size
-    }
-
-    fun getCommentReplyCount(): Int {
-        return commentReplies.count()
     }
 
     fun commentDateString(): String {

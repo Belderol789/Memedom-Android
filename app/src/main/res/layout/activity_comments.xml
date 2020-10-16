@@ -141,6 +141,7 @@
                             android:drawableStart="@drawable/ic_action_share"
                             android:drawableTint="@color/whiteColor"
                             android:text="0"
+                            android:textSize="12dip"
                             android:textColor="@color/whiteColor"
                             tools:targetApi="m" />
 
@@ -154,6 +155,7 @@
                             android:drawableTint="@color/whiteColor"
                             android:enabled="false"
                             android:text="0"
+                            android:textSize="12dip"
                             android:textColor="@color/whiteColor"
                             tools:targetApi="m" />
 

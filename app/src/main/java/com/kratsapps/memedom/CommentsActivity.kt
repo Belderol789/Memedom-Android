@@ -2,15 +2,20 @@ package com.kratsapps.memedom
 
 import DefaultItemDecorator
 import android.R.color
+import android.content.Context
 import android.content.res.ColorStateList
 import android.graphics.Color
 import android.graphics.PorterDuff
+import android.graphics.Rect
 import android.os.Build
 import android.os.Bundle
 import android.text.Editable
 import android.text.TextWatcher
 import android.util.Log
+import android.view.MotionEvent
 import android.view.View
+import android.view.inputmethod.InputMethodManager
+import android.widget.EditText
 import androidx.annotation.RequiresApi
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
@@ -27,6 +32,7 @@ import com.kratsapps.memedom.utils.hideKeyboard
 import kotlinx.android.synthetic.main.activity_comments.*
 import kotlinx.android.synthetic.main.activity_credential.view.*
 import kotlinx.android.synthetic.main.comments_item.*
+import kotlinx.android.synthetic.main.fragment_home.*
 import org.w3c.dom.Comment
 
 
@@ -64,8 +70,12 @@ class CommentsActivity : AppCompatActivity() {
             commentsTitle.text = postMeme.postTitle
             commentsDate.text = postMeme.postDateString()
             commentsPointsTextView.text = "${postMeme.getPostLikeCount()}"
-            commentsCommentsBtn.text = "${postMeme.postComments}"
-            commentsShareBtn.text = "${postMeme.postShares}"
+
+            val shareCount = if(postMeme.postShares >= 10) "${postMeme.postShares}" else ""
+            commentsShareBtn.text = shareCount
+
+            val commentsCount = if(postMeme.postComments >= 10) "${postMeme.postComments}"  else ""
+            commentsCommentsBtn.text = commentsCount
 
             val mainUserID = DatabaseManager(this).getMainUserID()
             if (mainUserID != null && postMeme.postLikers.contains(mainUserID)) {
@@ -146,7 +156,8 @@ class CommentsActivity : AppCompatActivity() {
                     "userPhotoURL" to postMeme.postProfileURL,
                     "commentDate" to today,
                     "commentLikers" to arrayListOf<String>(mainUserUID),
-                    "commentReplies" to arrayListOf<String>()
+                    "commentRepliesCount" to 0,
+                    "isComments" to true
                 )
 
                 val newComment = Comments()
@@ -157,7 +168,8 @@ class CommentsActivity : AppCompatActivity() {
                 newComment.userPhotoURL = postMeme.postProfileURL
                 newComment.commentDate = today
                 newComment.commentLikers = arrayListOf<String>(mainUserUID)
-                newComment.commentReplies = arrayListOf<String>()
+                newComment.commentRepliesCount = 0
+                newComment.isComments = true
 
                 Log.d("Comments", "Sorted Comments ${comments.count()}")
 
@@ -193,4 +205,21 @@ class CommentsActivity : AppCompatActivity() {
             commentsRecyclerView.itemAnimator?.removeDuration
         }
     }
+
+    override fun dispatchTouchEvent(event: MotionEvent): Boolean {
+        if (event.action == MotionEvent.ACTION_DOWN) {
+            val v = currentFocus
+            if (v is EditText) {
+                val outRect = Rect()
+                v.getGlobalVisibleRect(outRect)
+                if (!outRect.contains(event.rawX.toInt(), event.rawY.toInt())) {
+                    v.clearFocus()
+                    val imm: InputMethodManager = getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
+                    imm.hideSoftInputFromWindow(v.getWindowToken(), 0)
+                }
+            }
+        }
+        return super.dispatchTouchEvent(event)
+    }
+
 }

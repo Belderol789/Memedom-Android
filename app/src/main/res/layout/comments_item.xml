@@ -26,7 +26,7 @@
             android:padding="0dp">
 
             <LinearLayout
-                android:id="@+id/feedActionLayout"
+                android:id="@+id/commentActionLayout"
                 android:layout_width="0dp"
                 android:layout_height="35dp"
                 android:layout_gravity="center"

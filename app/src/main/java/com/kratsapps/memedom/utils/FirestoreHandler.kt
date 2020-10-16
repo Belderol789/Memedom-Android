@@ -10,6 +10,7 @@ import com.google.firebase.ktx.Firebase
 import com.kratsapps.memedom.models.Comments
 import com.kratsapps.memedom.models.MemeDomUser
 import com.kratsapps.memedom.models.Memes
+import org.w3c.dom.Comment
 import java.lang.reflect.Field
 import java.text.SimpleDateFormat
 import java.util.*
@@ -22,6 +23,7 @@ class FirestoreHandler {
     private val firestoreDB = Firebase.firestore
     private val POPULAR_POINTS = "PopularPoints"
     private val MEMES_PATH = "Memes"
+    private val REPLIES_PATH = "Replies"
     private val COMMENTS_PATH = "Comments"
     private val USERS_PATH = "User"
     private val APP_SETTINGS = "AppSettings"
@@ -57,6 +59,26 @@ class FirestoreHandler {
                 .collection(MEMES_PATH)
                 .document(postID)
                 .update("postComments", newCount)
+    }
+
+    fun sendUserReplyToFirestore(comment: Comments, replyID: String, replyCount: Int, hashMap: HashMap<String, Any>) {
+
+        firestoreDB
+            .collection(REPLIES_PATH)
+            .document(comment.commentID)
+            .collection(REPLIES_PATH)
+            .document(replyID)
+            .set(hashMap)
+            .addOnFailureListener{
+                Log.d("Comment", "Comment Error $it")
+            }
+
+        firestoreDB
+            .collection(COMMENTS_PATH)
+            .document(comment.postID)
+            .collection(COMMENTS_PATH)
+            .document(comment.commentID)
+            .update("commentsRepliesCount", replyCount)
     }
 
     //Editing
@@ -139,18 +161,7 @@ class FirestoreHandler {
             }
     }
 
-    fun convertLongToTime(time: Long): String {
-        val date = Date(time)
-        val format = SimpleDateFormat("yyyy.MM.dd HH:mm")
-        return format.format(date)
-    }
-
-    fun Long.round(decimals: Int): Long {
-        var multiplier = 1.0
-        repeat(decimals) { multiplier *= 10 }
-        return (round(this * multiplier) / multiplier).toLong()
-    }
-
+    //Getting
     fun checkForFreshMemes(dayLimit: Long, completed: (List<Memes>) -> Unit) {
 
         Log.d("DayLimit", "Current day limit $dayLimit")
@@ -196,6 +207,7 @@ class FirestoreHandler {
             .collection(COMMENTS_PATH)
             .document(postID)
             .collection(COMMENTS_PATH)
+            .orderBy("commentRepliesCount", Query.Direction.DESCENDING)
             .get()
             .addOnSuccessListener {
                 var comments: List<Comments> = listOf()
@@ -206,25 +218,6 @@ class FirestoreHandler {
                 completed(comments)
             }
     }
-
-//    fun checkForPopularMemes(context: Context, popularPoints: Long, completed: (List<Memes>) -> Unit) {
-//        firestoreDB
-//            .collection(MEMES_PATH)
-//            .whereGreaterThanOrEqualTo("postPoints", popularPoints)
-//            .get()
-//            .addOnSuccessListener { documents ->
-//
-//                val memes = ArrayList<Memes>()
-//
-//                for (document in documents) {
-//                    val newMeme: Memes = document.toObject(Memes::class.java)
-//                    memes += newMeme
-//                }
-//
-//                val shuffledMemes = memes.shuffled()
-//                completed(shuffledMemes)
-//            }
-//    }
 
     fun getUserDataWith(uid: String, completed: (MemeDomUser) -> Unit) {
         firestoreDB
@@ -290,9 +283,65 @@ class FirestoreHandler {
                 }
             }
     }
+
+    fun getAllReplies(comment: Comments, success: (List<Comments>) -> Unit) {
+        firestoreDB
+            .collection(REPLIES_PATH)
+            .document(comment.commentID)
+            .collection(REPLIES_PATH)
+            .get()
+            .addOnSuccessListener { documents ->
+
+                var replies: List<Comments> = listOf()
+
+                for(reply in documents) {
+                    val newReply = reply.toObject(Comments::class.java)
+                    replies += newReply
+                }
+
+                success(replies)
+
+            }
+    }
+
+    // Extras
+
+    fun convertLongToTime(time: Long): String {
+        val date = Date(time)
+        val format = SimpleDateFormat("yyyy.MM.dd HH:mm")
+        return format.format(date)
+    }
+
+    fun Long.round(decimals: Int): Long {
+        var multiplier = 1.0
+        repeat(decimals) { multiplier *= 10 }
+        return (round(this * multiplier) / multiplier).toLong()
+    }
+
 }
 
 /*
+
+
+//    fun checkForPopularMemes(context: Context, popularPoints: Long, completed: (List<Memes>) -> Unit) {
+//        firestoreDB
+//            .collection(MEMES_PATH)
+//            .whereGreaterThanOrEqualTo("postPoints", popularPoints)
+//            .get()
+//            .addOnSuccessListener { documents ->
+//
+//                val memes = ArrayList<Memes>()
+//
+//                for (document in documents) {
+//                    val newMeme: Memes = document.toObject(Memes::class.java)
+//                    memes += newMeme
+//                }
+//
+//                val shuffledMemes = memes.shuffled()
+//                completed(shuffledMemes)
+//            }
+//    }
+
 fun getAllMemeObjects(completed: (List<Memes>) -> Unit) {
 
     var memes: List<Memes> = listOf<Memes>()
@@ -318,7 +367,7 @@ fun getAllMemeObjects(completed: (List<Memes>) -> Unit) {
 
 
 /*
-  //Getting
+
     fun checkForMemeChanges(dayLimit: Long, uid: String, completed: (Memes) -> Unit) {
         Log.d("DayLimit", "Current day limit $dayLimit")
 

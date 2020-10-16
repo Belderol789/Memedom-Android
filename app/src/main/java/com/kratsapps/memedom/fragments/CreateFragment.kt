@@ -45,7 +45,6 @@ class CreateFragment : Fragment() {
         Log.d("CreateActivity", "Resetting")
         resetValues()
         super.onDestroy()
-
     }
 
     private fun setupUI() {
