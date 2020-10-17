@@ -22,27 +22,26 @@ import java.io.Serializable
 
 class CredentialActivity : AppCompatActivity() {
 
-    var user: MemeDomUser = MemeDomUser()
-    var isSignup: Boolean = false
+    var memeDomUser: MemeDomUser = MemeDomUser()
+    var userSignup: Boolean = false
     private lateinit var auth: FirebaseAuth
 
     lateinit var progressOverlay: View
     lateinit var callbackManager: CallbackManager
-    lateinit var rootView: View
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_credential)
         auth = FirebaseAuth.getInstance()
-        isSignup = intent.getBooleanExtra("CREDENTIAL_ACTION", false)
-        Log.i("Navigation", "Navigated to Credential with isSignup ${isSignup}")
+        userSignup = intent.getBooleanExtra("CREDENTIAL_ACTION", false)
+        Log.i("Navigation", "Navigated to Credential with isSignup ${userSignup}")
         setupUI()
     }
 
     fun setupUI() {
         progressOverlay = findViewById(R.id.progress_overlay)
         buttonEmail.setOnClickListener{
-            if(isSignup) {
+            if(userSignup) {
                 navigateToSignup(true)
             } else {
                 navigateToLogin()
@@ -84,17 +83,17 @@ class CredentialActivity : AppCompatActivity() {
         ) { `object`, response ->
             try {
                 Log.d("Facebook", "Facebook Object $`object`")
-                user.birthday = `object`.getString("birthday")
-                user.name = `object`.getString("first_name")
+                memeDomUser.birthday = `object`.getString("birthday")
+                memeDomUser.name = `object`.getString("first_name")
 
                 val picture = `object`.getJSONObject("picture")
                 val data = picture.getJSONObject("data")
                 val url = data.getString("url")
-                user.profilePhoto = url
+                memeDomUser.profilePhoto = url
 
                 val email: String
                 if (`object`.has("email")) {
-                    user.email = `object`.getString("email")
+                    memeDomUser.email = `object`.getString("email")
                 }
             } catch (e: JSONException) {
                 e.printStackTrace()
@@ -137,12 +136,12 @@ class CredentialActivity : AppCompatActivity() {
     fun updateUI(firebaseUser: FirebaseUser?) {
         Log.d("Firestore", "Adding New User")
         if (firebaseUser != null) {
-            user.uid = firebaseUser.uid
-            if(isSignup) {
+            memeDomUser.uid = firebaseUser.uid
+            if(userSignup) {
                 progressOverlay.visibility = View.GONE
                 navigateToSignup(false)
             } else {
-                FirestoreHandler().getUserDataWith(user.uid, {
+                FirestoreHandler().getUserDataWith(memeDomUser.uid, {
                     DatabaseManager(this).convertUserObject(it, "MainUser")
                     progressOverlay.visibility = View.GONE
                     val intent: Intent = Intent(this, MainActivity::class.java)
@@ -160,15 +159,16 @@ class CredentialActivity : AppCompatActivity() {
 
     private fun navigateToLogin() {
         val intent: Intent = Intent(this, LoginActivity::class.java)
-        intent.putExtra("MEMEDOM_USER", user as Serializable)
+        intent.putExtra("MEMEDOM_USER", memeDomUser as Serializable)
         startActivity(intent)
     }
 
-    private fun navigateToSignup(isEmail: Boolean) {
+    private fun navigateToSignup(userEmail: Boolean) {
         val intent: Intent = Intent(this, SignupActivity::class.java)
-        intent.putExtra("AUTH_METHOD", isEmail)
-        intent.putExtra("MEMEDOM_USER", user as Serializable)
+        intent.putExtra("AUTH_METHOD", userEmail)
+        if(memeDomUser.uid != null) {
+            intent.putExtra("MEMEDOM_USER", memeDomUser as Serializable)
+        }
         startActivity(intent)
     }
-
 }

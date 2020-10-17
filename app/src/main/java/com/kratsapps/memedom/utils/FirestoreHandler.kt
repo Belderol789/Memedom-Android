@@ -1,6 +1,5 @@
 package com.kratsapps.memedom.utils
 
-import android.content.Context
 import android.util.Log
 import com.google.firebase.firestore.FieldValue
 import com.google.firebase.firestore.Query
@@ -10,11 +9,8 @@ import com.google.firebase.ktx.Firebase
 import com.kratsapps.memedom.models.Comments
 import com.kratsapps.memedom.models.MemeDomUser
 import com.kratsapps.memedom.models.Memes
-import org.w3c.dom.Comment
-import java.lang.reflect.Field
 import java.text.SimpleDateFormat
 import java.util.*
-import kotlin.collections.ArrayList
 import kotlin.collections.HashMap
 import kotlin.math.round
 
@@ -28,6 +24,9 @@ class FirestoreHandler {
     private val USERS_PATH = "User"
     private val APP_SETTINGS = "AppSettings"
     private val DAY_LIMIT = "DayLimit"
+
+    private val DESCENDING = Query.Direction.DESCENDING
+    private val ASCENDING = Query.Direction.ASCENDING
 
     //Adding
     fun addDataToFirestore(path: String, document: String, hashMap: HashMap<String, Any>, success: (String?) -> Unit) {
@@ -189,7 +188,7 @@ class FirestoreHandler {
         firestoreDB
             .collection(MEMES_PATH)
             .whereGreaterThan("postDate", tomorrow)
-            .orderBy("postDate", Query.Direction.DESCENDING)
+            .orderBy("postDate", DESCENDING)
             .limit(100)
             .get()
             .addOnSuccessListener { documents ->
@@ -207,7 +206,7 @@ class FirestoreHandler {
             .collection(COMMENTS_PATH)
             .document(postID)
             .collection(COMMENTS_PATH)
-            .orderBy("commentRepliesCount", Query.Direction.DESCENDING)
+            .orderBy("commentRepliesCount", DESCENDING)
             .get()
             .addOnSuccessListener {
                 var comments: List<Comments> = listOf()
@@ -296,11 +295,34 @@ class FirestoreHandler {
 
                 for(reply in documents) {
                     val newReply = reply.toObject(Comments::class.java)
+                    Log.d("Replies", "Reply ${newReply.showActions}")
                     replies += newReply
                 }
-
                 success(replies)
+            }
+    }
 
+    fun getAllMemesOfMainUser(uid: String, memes: (List<Memes>) -> Unit) {
+
+        Log.d("UserMemes", "Getting Memes of $uid")
+
+        firestoreDB
+            .collection(MEMES_PATH)
+            .whereEqualTo("postUserUID", uid)
+            .get()
+            .addOnSuccessListener { snapshot ->
+                var userMemes: List<Memes> = listOf()
+                for (document in snapshot) {
+                    val userMeme = document.toObject(Memes::class.java)
+                    userMemes += userMeme
+                }
+
+                Log.d("UserMemes", "Got memes $userMemes")
+
+                memes(userMemes)
+            }
+            .addOnFailureListener {
+                Log.d("UserNames", "Failed to get memes ${it.localizedMessage}")
             }
     }
 

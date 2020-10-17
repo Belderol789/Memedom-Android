@@ -68,7 +68,7 @@ class FeedAdapter(private val feedList: List<Memes>, private val activity: Activ
 
         Glide.with(feedAdapterContext)
             .load(currentItem.postProfileURL)
-            .centerCrop()
+            .circleCrop()
             .into(holder.postProfilePic)
         holder.feedDate.text = currentItem.postDateString()
 
@@ -142,12 +142,7 @@ class FeedAdapter(private val feedList: List<Memes>, private val activity: Activ
         holder.postUserInfo.visibility = View.VISIBLE
         holder.pointsTextView.text = "${updatedPoints}"
         holder.pointsTextView.setTextColor(appFGColor)
-        holder.pointsIcon.setColorFilter(
-            ContextCompat.getColor(
-                feedAdapterContext,
-                R.color.appFGColor
-            )
-        )
+
         if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.M) {
             holder.shareBtn.setTextColor(appFGColor)
             holder.commentsBtn.setTextColor(appFGColor)

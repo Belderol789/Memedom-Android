@@ -1,7 +1,6 @@
 package com.kratsapps.memedom
 
 import DefaultItemDecorator
-import android.R.color
 import android.content.Context
 import android.content.res.ColorStateList
 import android.graphics.Color
@@ -18,10 +17,7 @@ import android.view.inputmethod.InputMethodManager
 import android.widget.EditText
 import androidx.annotation.RequiresApi
 import androidx.appcompat.app.AppCompatActivity
-import androidx.core.content.ContextCompat
-import androidx.core.view.ViewCompat
 import androidx.recyclerview.widget.LinearLayoutManager
-import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.facebook.internal.Utility.generateRandomString
 import com.kratsapps.memedom.models.Comments
@@ -30,10 +26,6 @@ import com.kratsapps.memedom.utils.DatabaseManager
 import com.kratsapps.memedom.utils.FirestoreHandler
 import com.kratsapps.memedom.utils.hideKeyboard
 import kotlinx.android.synthetic.main.activity_comments.*
-import kotlinx.android.synthetic.main.activity_credential.view.*
-import kotlinx.android.synthetic.main.comments_item.*
-import kotlinx.android.synthetic.main.fragment_home.*
-import org.w3c.dom.Comment
 
 
 class CommentsActivity : AppCompatActivity() {
@@ -99,7 +91,7 @@ class CommentsActivity : AppCompatActivity() {
                 .into(commentsImage)
             Glide.with(this)
                 .load(postMeme.postProfileURL)
-                .centerCrop()
+                .circleCrop()
                 .into(commentsProfilePic)
         }
     }
@@ -157,7 +149,7 @@ class CommentsActivity : AppCompatActivity() {
                     "commentDate" to today,
                     "commentLikers" to arrayListOf<String>(mainUserUID),
                     "commentRepliesCount" to 0,
-                    "isComments" to true
+                    "showActions" to true
                 )
 
                 val newComment = Comments()
@@ -169,7 +161,7 @@ class CommentsActivity : AppCompatActivity() {
                 newComment.commentDate = today
                 newComment.commentLikers = arrayListOf<String>(mainUserUID)
                 newComment.commentRepliesCount = 0
-                newComment.isComments = true
+                newComment.showActions = true
 
                 Log.d("Comments", "Sorted Comments ${comments.count()}")
 

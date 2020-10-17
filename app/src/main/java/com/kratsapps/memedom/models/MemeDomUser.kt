@@ -14,6 +14,7 @@ class MemeDomUser: Serializable {
     var profilePhoto: String = ""
     var uid: String = ""
     var email: String = ""
+    var links: List<String> = listOf()
     var liked: HashMap<String, Any> = hashMapOf()
 
     fun getUserAge(): Int {

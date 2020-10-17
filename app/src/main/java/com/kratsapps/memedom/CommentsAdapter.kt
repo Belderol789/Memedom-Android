@@ -5,28 +5,18 @@ import android.content.Context
 import android.content.Intent
 import android.content.res.ColorStateList
 import android.graphics.Color
-import android.graphics.PorterDuff
 import android.os.Build
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.*
 import androidx.annotation.RequiresApi
-import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.kratsapps.memedom.models.Comments
-import com.kratsapps.memedom.models.MemeDomUser
-import com.kratsapps.memedom.models.Memes
 import com.kratsapps.memedom.utils.DatabaseManager
-import com.kratsapps.memedom.utils.DoubleClickListener
 import com.kratsapps.memedom.utils.FirestoreHandler
-import kotlinx.android.synthetic.main.activity_comments.*
-import kotlinx.android.synthetic.main.activity_comments.view.*
 import kotlinx.android.synthetic.main.comments_item.view.*
-import kotlinx.android.synthetic.main.feed_item.view.*
-import org.w3c.dom.Comment
 
 
 class CommentsAdapter(private val commentList: List<Comments>, private val activity: Activity): RecyclerView.Adapter<CommentsAdapter.CommentViewHolder>() {
@@ -48,13 +38,15 @@ class CommentsAdapter(private val commentList: List<Comments>, private val activ
         // User info
         Glide.with(commentAdapterContext)
             .load(currentComment.userPhotoURL)
-            .centerCrop()
+            .circleCrop()
             .into(holder.userPhotoURL)
         holder.userName.setText(currentComment.userName)
         holder.commentDate.setText(currentComment.commentDateString())
         holder.commentText.setText(currentComment.commentText)
 
-        if (currentComment.isComments) {
+        Log.d("Replies","Reply ${currentComment.commentID} isComments ${currentComment.showActions}")
+
+        if (currentComment.showActions) {
             holder.commentActionLayout.visibility = View.VISIBLE
         } else {
             holder.commentActionLayout.visibility = View.GONE

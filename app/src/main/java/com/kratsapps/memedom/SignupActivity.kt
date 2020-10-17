@@ -38,13 +38,13 @@ class SignupActivity : AppCompatActivity() {
     lateinit var progressOverlay: View
 
     private val mAuth: FirebaseAuth? = null
-    var isEmail: Boolean = true
+    var userEmail: Boolean = true
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_signup)
         auth = FirebaseAuth.getInstance()
-        isEmail = intent.getBooleanExtra("AUTH_METHOD", true)
+        userEmail = intent.getBooleanExtra("AUTH_METHOD", true)
 
         Log.i("Navigation", "Navigated to Signup")
         setupUI()
@@ -71,12 +71,7 @@ class SignupActivity : AppCompatActivity() {
     }
 
     private fun setupUI() {
-
-        val actionBar = supportActionBar
-        actionBar!!.title = "Signup"
-
         progressOverlay = findViewById(R.id.progress_overlay)
-
         screenWidth = ScreenSize().getScreenWidth()
 
         Log.d("Screen Size", "ScreenWidth ${screenWidth}")
@@ -90,7 +85,7 @@ class SignupActivity : AppCompatActivity() {
         scrollViewSignup.setOnTouchListener(View.OnTouchListener { v, event -> true })
 
         //For Facebook
-        if (!isEmail) {
+        if (!userEmail) {
             memeDomuser = intent.extras?.get("MEMEDOM_USER") as MemeDomUser
             layoutAuth.visibility = View.INVISIBLE
             textEditUsername.setText(memeDomuser.name)
@@ -110,7 +105,7 @@ class SignupActivity : AppCompatActivity() {
 
     private fun setupActionButtons() {
         // Authentication
-        if (isEmail) {
+        if (userEmail) {
             buttonNextAuth.setOnClickListener{
                 checkIfFieldsHaveValues()
             }

@@ -20,11 +20,9 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import com.bumptech.glide.Glide
 import com.facebook.internal.Utility
 import com.kratsapps.memedom.models.Comments
-import com.kratsapps.memedom.models.Memes
 import com.kratsapps.memedom.utils.DatabaseManager
 import com.kratsapps.memedom.utils.FirestoreHandler
 import com.kratsapps.memedom.utils.hideKeyboard
-import kotlinx.android.synthetic.main.activity_comments.*
 import kotlinx.android.synthetic.main.activity_reply.*
 
 class ReplyActivity : AppCompatActivity() {
@@ -115,7 +113,7 @@ class ReplyActivity : AppCompatActivity() {
                     "commentDate" to today,
                     "commentLikers" to arrayListOf<String>(mainUserUID),
                     "commentRepliesCount" to 0,
-                    "isComments" to false
+                    "showActions" to false
                 )
 
                 val newComment = Comments()
@@ -127,7 +125,7 @@ class ReplyActivity : AppCompatActivity() {
                 newComment.commentDate = today
                 newComment.commentLikers = arrayListOf<String>(mainUserUID)
                 newComment.commentRepliesCount = 0
-                newComment.isComments = false
+                newComment.showActions = false
 
                 Log.d("Comments", "Sorted Comments ${replies.count()}")
 
@@ -149,7 +147,6 @@ class ReplyActivity : AppCompatActivity() {
                 FirestoreHandler().sendUserReplyToFirestore(commentReply, replyID, replies.count(), commentHash)
             }
         }
-
     }
 
     @RequiresApi(Build.VERSION_CODES.LOLLIPOP)

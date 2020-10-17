@@ -151,10 +151,12 @@ class HomeFragment : Fragment() {
         }
     }
 
-    private fun navigateToCredentialView(isSignup: Boolean) {
-        val intent: Intent = Intent(this.context, CredentialActivity::class.java)
-        intent.putExtra("CREDENTIAL_ACTION", isSignup)
-        startActivity(intent)
+    private fun navigateToCredentialView(userSignup: Boolean) {
+        activity?.let{
+            val intent = Intent(it, CredentialActivity::class.java)
+            intent.putExtra("CREDENTIAL_ACTION", userSignup)
+            it.startActivity(intent)
+        }
     }
 
     private fun updateSegments(type: Int) {
