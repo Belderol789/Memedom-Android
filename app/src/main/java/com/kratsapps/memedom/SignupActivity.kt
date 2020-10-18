@@ -300,7 +300,9 @@ class SignupActivity : AppCompatActivity() {
                 "uid" to memeDomuser.uid,
                 "gender" to memeDomuser.gender,
                 "email" to memeDomuser.email,
-                "liked" to hashMapOf(memeDomuser.uid to 0)
+                "liked" to hashMapOf(memeDomuser.uid to 0),
+                "gallery" to listOf<String>(),
+                "bio" to ""
             )
 
             val profileImage = imageButtonProfile.drawable
