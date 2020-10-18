@@ -11,6 +11,7 @@ import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Button
 import android.widget.ImageButton
 import android.widget.LinearLayout
 import android.widget.TextView
@@ -99,7 +100,7 @@ class ProfileFragment : Fragment() {
             val params = profileView.layoutParams as ConstraintLayout.LayoutParams
             params.height = height
             params.width = width
-            params.topMargin = height + 950
+            params.topMargin = height + 800
             profileView.requestLayout()
         }
 
@@ -109,22 +110,36 @@ class ProfileFragment : Fragment() {
                 profileView
                     .animate()
                     .setDuration(500)
-                    .translationY((-(height) + 950).toFloat())
+                    .translationY((-(height) + 800).toFloat())
                     .withEndAction {
-                        expandBtn.setImageResource(R.drawable.ic_action_down_arrow)
                         profileIsExpanded = !profileIsExpanded
                     }
+
+                expandBtn
+                    .animate()
+                    .setDuration(500)
+                    .rotationBy(180f)
+                    .start()
             } else {
                 profileView
                     .animate()
                     .setDuration(500)
                     .translationY(-0F)
                     .withEndAction {
-                        expandBtn.setImageResource(R.drawable.ic_action_up_arrow)
                         profileIsExpanded = !profileIsExpanded
                     }
+                expandBtn
+                    .animate()
+                    .setDuration(500)
+                    .rotationBy(180f)
+                    .start()
 
             }
+        }
+
+        val editBtn = rootView.findViewById<Button>(R.id.editButton)
+        editBtn.setOnClickListener {
+
         }
     }
 

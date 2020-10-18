@@ -14,6 +14,10 @@ class MemeDomUser: Serializable {
     var profilePhoto: String = ""
     var uid: String = ""
     var email: String = ""
+    var bio: String = ""
+    var likes: List<String> = listOf()
+    var dislikes: List<String> = listOf()
+
     var links: List<String> = listOf()
     var liked: HashMap<String, Any> = hashMapOf()
 
