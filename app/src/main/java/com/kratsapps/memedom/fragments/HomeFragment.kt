@@ -10,7 +10,6 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Button
-import android.widget.ImageButton
 import android.widget.LinearLayout
 import androidx.annotation.NonNull
 import androidx.appcompat.widget.AppCompatRadioButton
@@ -20,6 +19,7 @@ import com.google.firebase.auth.FirebaseAuth
 import com.kratsapps.memedom.*
 import com.kratsapps.memedom.models.Memes
 import com.kratsapps.memedom.utils.DatabaseManager
+import com.kratsapps.memedom.utils.FeedAdapter
 import com.kratsapps.memedom.utils.FirestoreHandler
 
 class HomeFragment : Fragment() {
@@ -127,7 +127,8 @@ class HomeFragment : Fragment() {
         val context = this.context
         val activity = this.activity
         if (context != null && activity != null) {
-            feedAdapter = FeedAdapter(allMemes, activity)
+            feedAdapter =
+                FeedAdapter(allMemes, activity)
 
             feedRecyclerView = rootView.findViewById(R.id.recyclerViewHome) as RecyclerView
             feedRecyclerView.addItemDecoration(DefaultItemDecorator(resources.getDimensionPixelSize(R.dimen.vertical_recyclerView)))

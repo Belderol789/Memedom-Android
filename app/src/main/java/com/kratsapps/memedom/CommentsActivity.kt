@@ -22,6 +22,7 @@ import com.bumptech.glide.Glide
 import com.facebook.internal.Utility.generateRandomString
 import com.kratsapps.memedom.models.Comments
 import com.kratsapps.memedom.models.Memes
+import com.kratsapps.memedom.utils.CommentsAdapter
 import com.kratsapps.memedom.utils.DatabaseManager
 import com.kratsapps.memedom.utils.FirestoreHandler
 import com.kratsapps.memedom.utils.hideKeyboard
@@ -188,7 +189,8 @@ class CommentsActivity : AppCompatActivity() {
         val context = applicationContext
         val activity = this
         if (activity != null) {
-            val commentsAdapter = CommentsAdapter(comments, activity)
+            val commentsAdapter =
+                CommentsAdapter(comments, activity)
 
             commentsRecyclerView.addItemDecoration(DefaultItemDecorator(resources.getDimensionPixelSize(R.dimen.vertical_recyclerView)))
             commentsRecyclerView.adapter = commentsAdapter

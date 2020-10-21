@@ -20,6 +20,7 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import com.bumptech.glide.Glide
 import com.facebook.internal.Utility
 import com.kratsapps.memedom.models.Comments
+import com.kratsapps.memedom.utils.CommentsAdapter
 import com.kratsapps.memedom.utils.DatabaseManager
 import com.kratsapps.memedom.utils.FirestoreHandler
 import com.kratsapps.memedom.utils.hideKeyboard
@@ -164,7 +165,8 @@ class ReplyActivity : AppCompatActivity() {
         val context = applicationContext
         val activity = this
         if (activity != null) {
-            val commentsAdapter = CommentsAdapter(replies, activity)
+            val commentsAdapter =
+                CommentsAdapter(replies, activity)
 
             replyRecyclerView.addItemDecoration(DefaultItemDecorator(resources.getDimensionPixelSize(R.dimen.vertical_recyclerView)))
             replyRecyclerView.adapter = commentsAdapter

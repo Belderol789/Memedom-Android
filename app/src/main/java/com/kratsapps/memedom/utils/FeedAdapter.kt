@@ -1,12 +1,10 @@
-package com.kratsapps.memedom
+package com.kratsapps.memedom.utils
 
 import android.app.Activity
 import android.content.Context
-import android.content.DialogInterface
 import android.content.Intent
 import android.content.res.ColorStateList
 import android.graphics.Color
-import android.graphics.PorterDuff
 import android.os.Build
 import android.util.Log
 import android.view.LayoutInflater
@@ -17,11 +15,10 @@ import androidx.annotation.RequiresApi
 import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
+import com.kratsapps.memedom.CommentsActivity
+import com.kratsapps.memedom.R
 import com.kratsapps.memedom.models.MemeDomUser
 import com.kratsapps.memedom.models.Memes
-import com.kratsapps.memedom.utils.DatabaseManager
-import com.kratsapps.memedom.utils.DoubleClickListener
-import com.kratsapps.memedom.utils.FirestoreHandler
 import kotlinx.android.synthetic.main.feed_item.view.*
 
 
@@ -183,7 +180,10 @@ class FeedAdapter(private val feedList: List<Memes>, private val activity: Activ
         val intent: Intent = Intent(feedAdapterContext, CommentsActivity::class.java)
         intent.putExtra("CommentMeme", meme)
         feedAdapterContext.startActivity(intent)
-        activity.overridePendingTransition(R.anim.enter_activity, R.anim.enter_activity)
+        activity.overridePendingTransition(
+            R.anim.enter_activity,
+            R.anim.enter_activity
+        )
     }
 }
 

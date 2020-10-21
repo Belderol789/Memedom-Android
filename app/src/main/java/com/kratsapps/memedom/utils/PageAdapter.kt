@@ -1,6 +1,6 @@
 @file:Suppress("Annotator")
 
-package com.kratsapps.memedom
+package com.kratsapps.memedom.utils
 
 import android.content.Context
 import androidx.fragment.app.Fragment

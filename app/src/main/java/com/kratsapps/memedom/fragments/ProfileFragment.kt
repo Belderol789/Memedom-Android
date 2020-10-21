@@ -20,8 +20,8 @@ import androidx.recyclerview.widget.GridLayoutManager.SpanSizeLookup
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
-import com.kratsapps.memedom.FeedAdapter
-import com.kratsapps.memedom.ImageAdapter
+import com.kratsapps.memedom.utils.FeedAdapter
+import com.kratsapps.memedom.utils.ImageAdapter
 import com.kratsapps.memedom.R
 import com.kratsapps.memedom.utils.DatabaseManager
 import com.kratsapps.memedom.utils.FirestoreHandler
@@ -67,7 +67,8 @@ class ProfileFragment : Fragment() {
         val mainUserID = DatabaseManager(profileContext).getMainUserID()
         if(mainUserID != null && this.activity != null) {
             FirestoreHandler().getAllMemesOfMainUser(mainUserID) {
-                val feedAdapter = FeedAdapter(it, this.activity!!)
+                val feedAdapter =
+                    FeedAdapter(it, this.activity!!)
                 profileRecyclerView.addItemDecoration(DefaultItemDecorator(resources.getDimensionPixelSize(R.dimen.vertical_recyclerView)))
                 profileRecyclerView.adapter = feedAdapter
                 profileRecyclerView.layoutManager = LinearLayoutManager(activity)
@@ -143,7 +144,7 @@ class ProfileFragment : Fragment() {
 
         val editBtn = rootView.findViewById<Button>(R.id.editButton)
         editBtn.setOnClickListener {
-            
+
         }
     }
 
@@ -154,7 +155,8 @@ class ProfileFragment : Fragment() {
         val images = listOf<String>(testImageURL, testImageURL, testImageURL, testImageURL, testImageURL, testImageURL, testImageURL, testImageURL, testImageURL, testImageURL, testImageURL)
             //DatabaseManager(profileContext).retrieveSavedUser()?.gallery
         if (context != null && activity != null && images != null) {
-            galleryAdapter = ImageAdapter(images, activity)
+            galleryAdapter =
+                ImageAdapter(images, activity)
             galleryRecyclerView.addItemDecoration(DefaultItemDecorator(resources.getDimensionPixelSize(R.dimen.vertical_recyclerView)))
             galleryRecyclerView.adapter = galleryAdapter
             galleryRecyclerView.layoutManager = LinearLayoutManager(activity)

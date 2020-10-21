@@ -1,4 +1,4 @@
-package com.kratsapps.memedom
+package com.kratsapps.memedom.utils
 
 import android.app.Activity
 import android.content.Context
@@ -13,9 +13,9 @@ import android.view.ViewGroup
 import androidx.annotation.RequiresApi
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
+import com.kratsapps.memedom.R
+import com.kratsapps.memedom.ReplyActivity
 import com.kratsapps.memedom.models.Comments
-import com.kratsapps.memedom.utils.DatabaseManager
-import com.kratsapps.memedom.utils.FirestoreHandler
 import kotlinx.android.synthetic.main.comments_item.view.*
 
 
@@ -29,7 +29,9 @@ class CommentsAdapter(private val commentList: List<Comments>, private val activ
             parent, false
         )
         commentAdapterContext = parent.context
-        return CommentViewHolder(itemView)
+        return CommentViewHolder(
+            itemView
+        )
     }
 
     @RequiresApi(Build.VERSION_CODES.M)
@@ -127,7 +129,10 @@ class CommentsAdapter(private val commentList: List<Comments>, private val activ
         val intent: Intent = Intent(commentAdapterContext, ReplyActivity::class.java)
         intent.putExtra("CommentReply", comment)
         commentAdapterContext.startActivity(intent)
-        activity.overridePendingTransition(R.anim.enter_activity, R.anim.enter_activity)
+        activity.overridePendingTransition(
+            R.anim.enter_activity,
+            R.anim.enter_activity
+        )
     }
 }
 
