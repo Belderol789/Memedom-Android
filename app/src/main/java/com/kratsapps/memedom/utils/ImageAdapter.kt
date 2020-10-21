@@ -9,10 +9,11 @@ import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.kratsapps.memedom.R
+import com.kratsapps.memedom.fragments.ProfileFragment
 import kotlinx.android.synthetic.main.image_cell.view.*
 
 
-class ImageAdapter(private var imageList: MutableList<String>, private val activity: Activity): RecyclerView.Adapter<ImageAdapter.ImageViewHolder>() {
+class ImageAdapter(private val imageList: MutableList<String>, private val activity: Activity, private val fragment: ProfileFragment): RecyclerView.Adapter<ImageAdapter.ImageViewHolder>() {
 
     lateinit var adapterContext: Context
 
@@ -50,6 +51,7 @@ class ImageAdapter(private var imageList: MutableList<String>, private val activ
     fun removeAt(position: Int) {
         Log.d("ImageList", "Count before ${imageList.count()}")
         imageList.removeAt(position)
+
         notifyItemRemoved(position)
         notifyItemRangeChanged(position, imageList.count())
         Log.d("ImageList", "Count after ${imageList.count()}")

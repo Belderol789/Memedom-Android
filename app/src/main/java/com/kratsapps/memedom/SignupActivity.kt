@@ -293,44 +293,35 @@ class SignupActivity : AppCompatActivity() {
             AndroidUtils().animateView(progressOverlay, View.VISIBLE, 0.4f, 200)
             memeDomuser.birthday = birthday
 
-            val newUser: HashMap<String, Any> = hashMapOf(
-                "name" to memeDomuser.name,
-                "birthday" to memeDomuser.birthday,
-                "profilePhoto" to memeDomuser.profilePhoto,
-                "uid" to memeDomuser.uid,
-                "gender" to memeDomuser.gender,
-                "email" to memeDomuser.email,
-                "liked" to hashMapOf(memeDomuser.uid to 0),
-                "gallery" to listOf<String>(),
-                "bio" to ""
-            )
-
             val profileImage = imageButtonProfile.drawable
             if (profileImage != null) {
                 FireStorageHandler().uploadPhotoWith(memeDomuser.uid, profileImage, {
-                    if (it != null) {
-                        memeDomuser.profilePhoto = it
-                        val profilePhoto: HashMap<kotlin.String, kotlin.Any> =
-                            kotlin.collections.hashMapOf(
-                                "profilePhoto" to it
-                            )
-                        FirestoreHandler()
-                            .updateDatabaseObject("User", memeDomuser.uid, profilePhoto)
-
-                        DatabaseManager(this).convertUserObject(memeDomuser, "MainUser")
-                    }
+                    memeDomuser.profilePhoto = it
+                    memeDomuser.bio = ""
+                    memeDomuser.gallery = listOf()
+                    val newUser: HashMap<String, Any> = hashMapOf(
+                        "name" to memeDomuser.name,
+                        "birthday" to memeDomuser.birthday,
+                        "profilePhoto" to memeDomuser.profilePhoto,
+                        "uid" to memeDomuser.uid,
+                        "gender" to memeDomuser.gender,
+                        "email" to memeDomuser.email,
+                        "liked" to hashMapOf(memeDomuser.uid to 0),
+                        "gallery" to memeDomuser.gallery,
+                        "bio" to memeDomuser.bio
+                    )
+                    FirestoreHandler().addDataToFirestore("User", memeDomuser.uid, newUser, {
+                        progressOverlay.visibility = View.GONE
+                        if (it != null) {
+                            setupAlertDialog(it)
+                        } else {
+                            DatabaseManager(this).convertUserObject(memeDomuser, "MainUser")
+                            navigateToMain()
+                        }
+                    })
                 })
             }
 
-            FirestoreHandler().addDataToFirestore("User", memeDomuser.uid, newUser, {
-                progressOverlay.visibility = View.GONE
-                if (it != null) {
-                    setupAlertDialog(it)
-                } else {
-                    DatabaseManager(this).convertUserObject(memeDomuser, "MainUser")
-                    navigateToMain()
-                }
-            })
         } else {
             setupAlertDialog("Missing birthday or username")
         }

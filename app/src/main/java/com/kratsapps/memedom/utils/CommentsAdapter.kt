@@ -13,6 +13,7 @@ import android.view.ViewGroup
 import androidx.annotation.RequiresApi
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
+import com.kratsapps.memedom.Assets
 import com.kratsapps.memedom.R
 import com.kratsapps.memedom.ReplyActivity
 import com.kratsapps.memedom.models.Comments
@@ -100,14 +101,15 @@ class CommentsAdapter(private val commentList: List<Comments>, private val activ
         }
     }
 
-    @RequiresApi(Build.VERSION_CODES.M)
     private fun setLikeBtn(holder: CommentViewHolder, active: Boolean) {
-        if (active) {
-            holder.upvoteBtn.setTextColor(Color.parseColor("#FACE0D"))
-            holder.upvoteBtn.setCompoundDrawableTintList(ColorStateList.valueOf(Color.parseColor("#FACE0D")))
-        } else {
-            holder.upvoteBtn.setTextColor(Color.parseColor("#C0C0C0"))
-            holder.upvoteBtn.setCompoundDrawableTintList(ColorStateList.valueOf(Color.parseColor("#C0C0C0")))
+        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.M) {
+            if (active) {
+                holder.upvoteBtn.setTextColor(Assets().appFGColor)
+                holder.upvoteBtn.setCompoundDrawableTintList(ColorStateList.valueOf(Assets().appFGColor))
+            } else {
+                holder.upvoteBtn.setTextColor(Color.parseColor("#C0C0C0"))
+                holder.upvoteBtn.setCompoundDrawableTintList(ColorStateList.valueOf(Color.parseColor("#C0C0C0")))
+            }
         }
     }
 

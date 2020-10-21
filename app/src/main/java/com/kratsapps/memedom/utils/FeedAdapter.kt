@@ -15,6 +15,7 @@ import androidx.annotation.RequiresApi
 import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
+import com.kratsapps.memedom.Assets
 import com.kratsapps.memedom.CommentsActivity
 import com.kratsapps.memedom.R
 import com.kratsapps.memedom.models.MemeDomUser
@@ -125,15 +126,15 @@ class FeedAdapter(private val feedList: List<Memes>, private val activity: Activ
         holder.postUserInfo.visibility = View.GONE
 
         if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.M) {
-            holder.shareBtn.setTextColor(Color.parseColor("#C0C0C0"))
-            holder.commentsBtn.setTextColor(Color.parseColor("#C0C0C0"))
+            holder.shareBtn.setTextColor(Assets().appFGColor)
+            holder.commentsBtn.setTextColor(Assets().appFGColor)
             holder.shareBtn.setCompoundDrawableTintList(ColorStateList.valueOf(Color.parseColor("#C0C0C0")))
             holder.commentsBtn.setCompoundDrawableTintList(ColorStateList.valueOf(Color.parseColor("#C0C0C0")))
         }
     }
 
     private fun activatePoints(holder: FeedViewHolder, updatedPoints: Int) {
-        val appFGColor = Color.parseColor("#FACE0D")
+        val appFGColor = Assets().appFGColor
 
         holder.pointsLayout.visibility = View.VISIBLE
         holder.postUserInfo.visibility = View.VISIBLE
@@ -143,8 +144,8 @@ class FeedAdapter(private val feedList: List<Memes>, private val activity: Activ
         if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.M) {
             holder.shareBtn.setTextColor(appFGColor)
             holder.commentsBtn.setTextColor(appFGColor)
-            holder.shareBtn.setCompoundDrawableTintList(ColorStateList.valueOf(Color.parseColor("#FACE0D")))
-            holder.commentsBtn.setCompoundDrawableTintList(ColorStateList.valueOf(Color.parseColor("#FACE0D")))
+            holder.shareBtn.setCompoundDrawableTintList(ColorStateList.valueOf(Assets().appFGColor))
+            holder.commentsBtn.setCompoundDrawableTintList(ColorStateList.valueOf(Assets().appFGColor))
         }
         holder.pointsTextView.setTextColor(appFGColor)
         holder.pointsIcon.setColorFilter(
