@@ -7,9 +7,10 @@
     <color name="appBGColor">#111111</color>
     <color name="appBGColorLight">#202121</color>
     <color name="appSecondaryColor">#C0C0C0</color>
-    <color name="whiteColor">#ffffff</color>
+    <color name="whiteColor">#FFFFFF</color>
     <color name="transparent">#00ff0000</color>
     <color name="clearBlack">#40000000</color>
+    <color name="errorColor">#FF0000</color>
     //#070707
     //#30444E
 </resources>

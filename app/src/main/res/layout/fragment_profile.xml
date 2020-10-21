@@ -35,34 +35,21 @@
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent" />
 
-            <ImageButton
-                android:id="@+id/profilePhoto"
-                android:layout_width="60dp"
-                android:layout_height="60dp"
-                android:layout_marginStart="14dp"
-                android:layout_marginTop="8dp"
-                android:background="@drawable/round_imageview"
-                android:src="@drawable/ic_action_name"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/linearLayout3" />
-
             <LinearLayout
                 android:id="@+id/statsLayout"
                 android:layout_width="0dp"
                 android:layout_height="60dp"
-                android:layout_marginStart="8dp"
-                android:layout_marginTop="8dp"
-                android:layout_marginEnd="16dp"
+                android:layout_marginTop="20dp"
                 android:divider="@drawable/divider_horizontal"
                 android:gravity="center"
                 android:orientation="horizontal"
                 android:showDividers="middle"
                 app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toEndOf="@id/profilePhoto"
+                app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/linearLayout3">
 
                 <LinearLayout
-                    android:layout_width="80dp"
+                    android:layout_width="60dp"
                     android:layout_height="wrap_content"
                     android:divider="@drawable/divider_vertical"
                     android:gravity="center"
@@ -89,7 +76,7 @@
                 </LinearLayout>
 
                 <LinearLayout
-                    android:layout_width="80dp"
+                    android:layout_width="60dp"
                     android:layout_height="wrap_content"
                     android:divider="@drawable/divider_vertical"
                     android:gravity="center"
@@ -116,7 +103,7 @@
                 </LinearLayout>
 
                 <LinearLayout
-                    android:layout_width="80dp"
+                    android:layout_width="60dp"
                     android:layout_height="wrap_content"
                     android:divider="@drawable/divider_vertical"
                     android:gravity="center"
@@ -141,6 +128,7 @@
                         android:textColor="@color/whiteColor"
                         android:textStyle="bold" />
                 </LinearLayout>
+
             </LinearLayout>
 
             <LinearLayout
@@ -181,14 +169,14 @@
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="16dp"
-                android:layout_marginTop="8dp"
+                android:layout_marginTop="16dp"
                 android:layout_marginEnd="16dp"
                 android:text="Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries, but also the leap into electronic typesetting, remaining essentially unchanged. It was popularised in the 1960s with the release of Letraset sheets containing Lorem Ipsum passages, and more recently with desktop publishing software like Aldus PageMaker including versions of Lorem Ipsum."
                 android:textColor="@color/whiteColor"
                 android:textSize="12sp"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/statsLayout" />
+                app:layout_constraintTop_toBottomOf="@+id/profilePhoto" />
 
             <Button
                 android:id="@+id/editButton"
@@ -212,6 +200,31 @@
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/textView" />
+
+            <ImageView
+                android:id="@+id/profilePhoto"
+                android:layout_width="80dp"
+                android:layout_height="80dp"
+                android:layout_marginStart="14dp"
+                android:layout_marginTop="8dp"
+                android:background="@drawable/round_imageview"
+                android:src="@drawable/ic_action_name"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/linearLayout3" />
+
+            <ImageButton
+                android:id="@+id/imageButton"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginEnd="-16dp"
+                android:layout_marginBottom="-16dp"
+                android:layout_weight="1"
+                android:alpha="1"
+                android:background="@color/transparent"
+                android:src="@drawable/ic_action_down_camera"
+                android:tint="@color/whiteColor"
+                app:layout_constraintBottom_toBottomOf="@+id/profilePhoto"
+                app:layout_constraintEnd_toEndOf="@+id/profilePhoto" />
 
         </androidx.constraintlayout.widget.ConstraintLayout>
 
