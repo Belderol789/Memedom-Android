@@ -4,10 +4,14 @@ import DefaultItemDecorator
 import android.app.Activity
 import android.content.Context
 import android.content.Intent
+import android.graphics.Color
+import android.graphics.PorterDuff
 import android.graphics.drawable.Drawable
 import android.os.Build
 import android.os.Bundle
 import android.provider.MediaStore
+import android.text.Editable
+import android.text.TextWatcher
 import android.util.DisplayMetrics
 import android.util.Log
 import android.view.LayoutInflater
@@ -27,6 +31,7 @@ import com.google.firebase.firestore.FirestoreRegistrar
 import com.kratsapps.memedom.R
 import com.kratsapps.memedom.models.MemeDomUser
 import com.kratsapps.memedom.utils.*
+import kotlinx.android.synthetic.main.activity_comments.*
 import kotlinx.android.synthetic.main.fragment_create.*
 import kotlinx.android.synthetic.main.fragment_profile.*
 
@@ -99,6 +104,8 @@ class ProfileFragment : Fragment() {
         val mainUser = DatabaseManager(profileContext).retrieveSavedUser()
         val mainUserID = mainUser?.uid
 
+        saveBtn.visibility = View.INVISIBLE
+
         if (mainUser != null) {
             username.setText(mainUser.name)
             gender.setText(mainUser.gender)
@@ -144,6 +151,7 @@ class ProfileFragment : Fragment() {
                     .rotationBy(180f)
                     .start()
             } else {
+                saveBtn.visibility = View.INVISIBLE
                 profileView
                     .animate()
                     .setDuration(500)
@@ -162,12 +170,28 @@ class ProfileFragment : Fragment() {
 
         photoBtn.setOnClickListener {
             profilePhotoSelected = true
+            saveBtn.visibility = View.VISIBLE
             prepOpenImageGallery()
         }
         addGalleryBtn.setOnClickListener {
             profilePhotoSelected = false
+            saveBtn.visibility = View.VISIBLE
             prepOpenImageGallery()
         }
+
+        bioText.addTextChangedListener(object : TextWatcher {
+
+            override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
+
+            @RequiresApi(Build.VERSION_CODES.LOLLIPOP)
+            override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
+                if (count > 0) {
+                    saveBtn.visibility = View.VISIBLE
+                }
+            }
+
+            override fun afterTextChanged(s: Editable?) {}
+        })
 
         if (mainUserID != null && mainUser != null) {
             Log.d("Saving", "Saving $mainUserID")
@@ -198,6 +222,11 @@ class ProfileFragment : Fragment() {
                 }
             }
         }
+    }
+
+    public fun showSave() {
+        val saveBtn = rootView.findViewById<Button>(R.id.saveBtn)
+        saveBtn.visibility = View.VISIBLE
     }
 
     private fun prepOpenImageGallery() {

@@ -14,6 +14,7 @@ import com.facebook.FacebookSdk
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseUser
 import com.kratsapps.memedom.fragments.*
+import com.kratsapps.memedom.utils.DatabaseManager
 import com.kratsapps.memedom.utils.FirestoreHandler
 import kotlinx.android.synthetic.main.activity_main.*
 
@@ -60,8 +61,11 @@ class MainActivity : AppCompatActivity() {
 
     private fun checkLikedStatus() {
         val user = FirebaseAuth.getInstance().getCurrentUser()
+        val mainUID = DatabaseManager(this).getMainUserID()
         if(user != null) {
             FirestoreHandler().checkMatchingStatus(user.uid)
+        } else if (mainUID != null) {
+            FirestoreHandler().checkMatchingStatus(mainUID)
         }
     }
 

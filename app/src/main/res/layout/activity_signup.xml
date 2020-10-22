@@ -4,7 +4,18 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="@color/appBGColor"
     tools:context=".SignupActivity">
+
+    <ImageView
+        android:id="@+id/imageView"
+        android:layout_width="80dp"
+        android:layout_height="80dp"
+        android:layout_marginTop="100dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:srcCompat="@mipmap/ic_launcher_memedom" />
 
     <HorizontalScrollView
         android:id="@+id/scrollViewSignup"
@@ -28,9 +39,9 @@
 
             <LinearLayout
                 android:id="@+id/layoutAuth"
-                android:layout_width="match_parent"
+                android:layout_width="350dp"
                 android:layout_height="match_parent"
-                android:divider="@drawable/divider_vertical"
+                android:divider="@drawable/divider_vertical_long"
                 android:gravity="center"
                 android:orientation="vertical"
                 android:paddingHorizontal="16dp"
@@ -45,28 +56,33 @@
                     android:id="@+id/layoutEmail"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:divider="@drawable/divider_vertical"
+                    android:divider="@drawable/divider_vertical_long"
                     android:orientation="horizontal"
                     android:showDividers="middle">
 
                     <ImageView
                         android:id="@+id/imageviewEmail"
-                        android:layout_width="55dp"
-                        android:layout_height="55dp"
+                        android:layout_width="30dp"
+                        android:layout_height="30dp"
+                        android:layout_gravity="center_vertical"
                         android:contentDescription="@string/icon_for_email"
-                        app:srcCompat="@mipmap/ic_launcher" />
+                        app:srcCompat="@drawable/ic_action_email"
+                        app:tint="@color/appFGColor" />
 
                     <com.google.android.material.textfield.TextInputLayout
                         android:id="@+id/textInputEmail"
                         android:layout_width="match_parent"
-                        android:layout_height="match_parent">
+                        android:layout_height="50dp"
+                        android:textColorHint="@color/whiteColor"
+                        app:hintTextAppearance="@style/TextAppearence.App.TextInputLayout">
 
                         <com.google.android.material.textfield.TextInputEditText
                             android:id="@+id/editTextEmail"
                             android:layout_width="match_parent"
                             android:layout_height="match_parent"
                             android:hint="@string/hint_email"
-                            android:textAppearance="@style/TextAppearance.AppCompat.Body1" />
+                            android:textAppearance="@style/TextAppearance.AppCompat.Body1"
+                            android:textColor="@color/whiteColor"/>
                     </com.google.android.material.textfield.TextInputLayout>
 
                 </LinearLayout>
@@ -81,22 +97,27 @@
 
                     <ImageView
                         android:id="@+id/imageviewPassword"
-                        android:layout_width="55dp"
-                        android:layout_height="55dp"
+                        android:layout_width="30dp"
+                        android:layout_height="30dp"
+                        android:layout_gravity="center_vertical"
                         android:contentDescription="@string/icon_for_password"
-                        app:srcCompat="@mipmap/ic_launcher" />
+                        app:srcCompat="@drawable/ic_action_password"
+                        app:tint="@color/appFGColor" />
 
                     <com.google.android.material.textfield.TextInputLayout
                         android:id="@+id/textInputPassword"
                         android:layout_width="match_parent"
-                        android:layout_height="match_parent">
+                        android:layout_height="50dp"
+                        android:textColorHint="@color/whiteColor"
+                        app:hintTextAppearance="@style/TextAppearence.App.TextInputLayout">
 
                         <com.google.android.material.textfield.TextInputEditText
                             android:id="@+id/editTextPassword"
                             android:layout_width="match_parent"
                             android:layout_height="match_parent"
                             android:hint="@string/hint_password"
-                            android:textAppearance="@style/TextAppearance.AppCompat.Body1" />
+                            android:textAppearance="@style/TextAppearance.AppCompat.Body1"
+                            android:textColor="@color/whiteColor"/>
                     </com.google.android.material.textfield.TextInputLayout>
 
                 </LinearLayout>
@@ -105,8 +126,10 @@
                     android:id="@+id/buttonNextAuth"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:background="@drawable/soft_button"
+                    android:background="@drawable/soft_button_disabled"
                     android:text="@string/next"
+                    android:textAllCaps="false"
+                    android:textColor="@color/whiteColor"
                     app:layout_constraintTop_toTopOf="@+id/authentication_view"
                     tools:layout_editor_absoluteX="307dp" />
 
@@ -114,9 +137,9 @@
 
             <LinearLayout
                 android:id="@+id/layoutUsername"
-                android:layout_width="match_parent"
+                android:layout_width="350dp"
                 android:layout_height="match_parent"
-                android:divider="@drawable/divider_vertical"
+                android:divider="@drawable/divider_vertical_long"
                 android:gravity="center"
                 android:orientation="vertical"
                 android:paddingHorizontal="16dp"
@@ -135,6 +158,8 @@
                     app:layout_constraintBottom_toBottomOf="@id/layoutFieldsUsername"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
+                    android:src="@drawable/ic_action_create"
+                    android:background="@drawable/round_imageview"
                     android:contentDescription="TODO" />
 
                 <LinearLayout
@@ -153,22 +178,27 @@
 
                     <ImageView
                         android:id="@+id/imageviewIconUsername"
-                        android:layout_width="55dp"
-                        android:layout_height="55dp"
+                        android:layout_width="30dp"
+                        android:layout_height="30dp"
                         android:contentDescription="@string/icon_for_username"
-                        app:srcCompat="@mipmap/ic_launcher" />
+                        android:layout_gravity="center_vertical"
+                        app:srcCompat="@drawable/ic_action_name"
+                        app:tint="@color/appFGColor" />
 
                     <com.google.android.material.textfield.TextInputLayout
                         android:id="@+id/inputFieldUsername"
                         android:layout_width="match_parent"
-                        android:layout_height="match_parent">
+                        android:layout_height="50dp"
+                        android:textColorHint="@color/whiteColor"
+                        app:hintTextAppearance="@style/TextAppearence.App.TextInputLayout">
 
                         <com.google.android.material.textfield.TextInputEditText
                             android:id="@+id/textEditUsername"
                             android:layout_width="match_parent"
                             android:layout_height="match_parent"
                             android:hint="@string/hint_username"
-                            android:textAppearance="@style/TextAppearance.AppCompat.Body1" />
+                            android:textAppearance="@style/TextAppearance.AppCompat.Body1"
+                            android:textColor="@color/whiteColor" />
                     </com.google.android.material.textfield.TextInputLayout>
 
                 </LinearLayout>
@@ -177,8 +207,10 @@
                     android:id="@+id/buttonNextUsername"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:background="@drawable/soft_button"
+                    android:background="@drawable/soft_button_disabled"
                     android:text="@string/next"
+                    android:textAllCaps="false"
+                    android:textColor="@color/whiteColor"
                     android:visibility="visible"
                     app:layout_constraintTop_toTopOf="@+id/authentication_view"
                     tools:layout_editor_absoluteX="307dp" />
@@ -187,7 +219,7 @@
 
             <LinearLayout
                 android:id="@+id/layoutGender"
-                android:layout_width="match_parent"
+                android:layout_width="350dp"
                 android:layout_height="match_parent"
                 android:divider="@drawable/divider_vertical"
                 android:gravity="center"
@@ -257,8 +289,10 @@
                     android:id="@+id/buttonNextGender"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:background="@drawable/soft_button"
+                    android:background="@drawable/soft_button_disabled"
                     android:text="@string/next"
+                    android:textAllCaps="false"
+                    android:textColor="@color/whiteColor"
                     android:visibility="visible"
                     app:layout_constraintTop_toTopOf="@+id/authentication_view"
                     tools:layout_editor_absoluteX="307dp" />
@@ -267,7 +301,7 @@
 
             <LinearLayout
                 android:id="@+id/layoutBirthday"
-                android:layout_width="match_parent"
+                android:layout_width="350dp"
                 android:layout_height="match_parent"
                 android:divider="@drawable/divider_vertical"
                 android:gravity="center"
@@ -296,22 +330,27 @@
 
                     <ImageView
                         android:id="@+id/imageviewIconBirthday"
-                        android:layout_width="55dp"
-                        android:layout_height="55dp"
+                        android:layout_width="30dp"
+                        android:layout_height="30dp"
+                        android:layout_gravity="center_vertical"
                         android:contentDescription="@string/icon_for_username"
-                        app:srcCompat="@mipmap/ic_launcher" />
+                        app:srcCompat="@drawable/ic_action_cake"
+                        app:tint="@color/appFGColor" />
 
                     <com.google.android.material.textfield.TextInputLayout
                         android:id="@+id/textInputBirthday"
                         android:layout_width="match_parent"
-                        android:layout_height="match_parent">
+                        android:layout_height="50dp"
+                        android:textColorHint="@color/whiteColor"
+                        app:hintTextAppearance="@style/TextAppearence.App.TextInputLayout">
 
                         <com.google.android.material.textfield.TextInputEditText
                             android:id="@+id/textEditBirthday"
                             android:layout_width="match_parent"
                             android:layout_height="match_parent"
                             android:hint="@string/hint_birthday"
-                            android:textAppearance="@style/TextAppearance.AppCompat.Body1" />
+                            android:textAppearance="@style/TextAppearance.AppCompat.Body1"
+                            android:textColor="@color/whiteColor"/>
                     </com.google.android.material.textfield.TextInputLayout>
 
                 </LinearLayout>
@@ -320,8 +359,10 @@
                     android:id="@+id/buttonNextBirthday"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:background="@drawable/soft_button"
+                    android:background="@drawable/soft_button_disabled"
                     android:text="@string/next"
+                    android:textAllCaps="false"
+                    android:textColor="@color/whiteColor"
                     android:visibility="visible"
                     app:layout_constraintTop_toTopOf="@+id/authentication_view"
                     tools:layout_editor_absoluteX="307dp" />

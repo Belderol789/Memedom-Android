@@ -38,6 +38,7 @@ class ImageAdapter(private val imageList: MutableList<String>, private val activ
 
         holder.deleteBtn.setOnClickListener {
             removeAt(position)
+            fragment.showSave()
         }
     }
 

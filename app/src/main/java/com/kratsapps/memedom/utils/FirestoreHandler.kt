@@ -271,10 +271,7 @@ class FirestoreHandler {
                         Log.d("Firestore-matching", "Current users $key and $value")
                         if (value >= 10) {
                             getUserDataWith(key, {
-                                Log.d(
-                                    "Firestore-matching",
-                                    "Got user data ${it.name} ${it.profilePhoto}"
-                                )
+                                Log.d("Firestore-matching", "Got user data ${it.name} ${it.profilePhoto}")
                             })
                             // display popup
                         }

@@ -4,22 +4,22 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="@color/appBGColor"
     tools:context=".LoginActivity">
 
     <LinearLayout
         android:id="@+id/layoutLoginAuth"
-        android:layout_width="match_parent"
+        android:layout_width="350dp"
         android:layout_height="wrap_content"
-        android:divider="@drawable/divider_vertical"
-        android:gravity="center"
+        android:divider="@drawable/divider_vertical_long"
         android:orientation="vertical"
         android:paddingHorizontal="16dp"
         android:showDividers="middle"
         android:visibility="visible"
         app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent">
-
 
         <LinearLayout
             android:id="@+id/layoutLoginEmail"
@@ -31,22 +31,28 @@
 
             <ImageView
                 android:id="@+id/imageviewLoginEmail"
-                android:layout_width="45dp"
-                android:layout_height="50dp"
+                android:layout_width="30dp"
+                android:layout_height="30dp"
+                android:layout_gravity="bottom"
                 android:contentDescription="@string/icon_for_email"
-                app:srcCompat="@mipmap/ic_launcher" />
+                app:srcCompat="@drawable/ic_action_email"
+                app:tint="@color/appFGColor" />
 
             <com.google.android.material.textfield.TextInputLayout
                 android:id="@+id/textInputLoginEmail"
                 android:layout_width="match_parent"
-                android:layout_height="match_parent">
+                android:layout_height="50dp"
+                android:textColorHint="@color/whiteColor"
+                app:hintTextAppearance="@style/TextAppearence.App.TextInputLayout">
 
                 <com.google.android.material.textfield.TextInputEditText
                     android:id="@+id/editTextLoginEmail"
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
+                    android:backgroundTint="@color/appBGColor"
                     android:hint="@string/hint_email"
-                    android:textAppearance="@style/TextAppearance.AppCompat.Body1" />
+                    android:textAppearance="@style/TextAppearance.AppCompat.Body1"
+                    android:textColor="@color/whiteColor" />
             </com.google.android.material.textfield.TextInputLayout>
 
         </LinearLayout>
@@ -55,28 +61,33 @@
             android:id="@+id/layoutLoginPassword"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:divider="@drawable/divider_vertical"
+            android:divider="@drawable/divider_vertical_long"
             android:orientation="horizontal"
             android:showDividers="middle">
 
             <ImageView
                 android:id="@+id/imageviewLoginPassword"
-                android:layout_width="45dp"
-                android:layout_height="50dp"
+                android:layout_width="30dp"
+                android:layout_height="30dp"
+                android:layout_gravity="bottom"
                 android:contentDescription="@string/icon_for_password"
-                app:srcCompat="@mipmap/ic_launcher" />
+                app:srcCompat="@drawable/ic_action_password"
+                app:tint="@color/appFGColor" />
 
             <com.google.android.material.textfield.TextInputLayout
                 android:id="@+id/textInputLoginPassword"
                 android:layout_width="match_parent"
-                android:layout_height="match_parent">
+                android:layout_height="50dp"
+                android:textColorHint="@color/whiteColor"
+                app:hintTextAppearance="@style/TextAppearence.App.TextInputLayout">
 
                 <com.google.android.material.textfield.TextInputEditText
                     android:id="@+id/editTextLoginPassword"
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
                     android:hint="@string/hint_password"
-                    android:textAppearance="@style/TextAppearance.AppCompat.Body1" />
+                    android:textAppearance="@style/TextAppearance.AppCompat.Body1"
+                    android:textColor="@color/whiteColor" />
             </com.google.android.material.textfield.TextInputLayout>
 
         </LinearLayout>
@@ -85,7 +96,9 @@
             android:id="@+id/buttonNextLoginAuth"
             android:layout_width="match_parent"
             android:layout_height="45dp"
+            android:layout_gravity="center"
             android:background="@drawable/soft_button"
+            android:gravity="center"
             android:text="@string/next"
             app:layout_constraintTop_toTopOf="@+id/authentication_view"
             tools:layout_editor_absoluteX="307dp" />
@@ -100,5 +113,16 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
+
+    <ImageView
+        android:id="@+id/imageView2"
+        android:layout_width="100dp"
+        android:layout_height="100dp"
+        android:contentDescription="TODO"
+        app:layout_constraintBottom_toTopOf="@+id/layoutLoginAuth"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:srcCompat="@mipmap/ic_launcher_memedom" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

@@ -5,10 +5,13 @@ import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.graphics.Color
+import android.graphics.PorterDuff
 import android.os.Build
 import android.os.Bundle
 import android.provider.MediaStore
+import android.text.Editable
 import android.text.InputType
+import android.text.TextWatcher
 import android.util.Log
 import android.view.MotionEvent
 import android.view.View
@@ -22,6 +25,7 @@ import com.bumptech.glide.Glide
 import com.google.firebase.auth.FirebaseAuth
 import com.kratsapps.memedom.models.MemeDomUser
 import com.kratsapps.memedom.utils.*
+import kotlinx.android.synthetic.main.activity_comments.*
 import kotlinx.android.synthetic.main.activity_signup.*
 import java.text.SimpleDateFormat
 import java.util.*
@@ -49,6 +53,7 @@ class SignupActivity : AppCompatActivity() {
         Log.i("Navigation", "Navigated to Signup")
         setupUI()
         setupActionButtons()
+        setupTextEdits()
     }
 
     override fun onRequestPermissionsResult(
@@ -266,10 +271,11 @@ class SignupActivity : AppCompatActivity() {
         super.onActivityResult(requestCode, resultCode, data)
         if (resultCode == RESULT_OK) {
             if (requestCode == IMAGE_GALLERY_REQUEST_CODE && data != null && data.data != null) {
+                imageButtonProfile.drawable.setTint(Color.parseColor("#00ff0000"))
                 val imageData = data.data
                 Glide.with(this)
                     .load(imageData)
-                    .centerCrop()
+                    .circleCrop()
                     .into(imageButtonProfile)
             }
         }
@@ -325,6 +331,45 @@ class SignupActivity : AppCompatActivity() {
         } else {
             setupAlertDialog("Missing birthday or username")
         }
+    }
+
+    private fun setupTextEdits() {
+        editTextPassword.addTextChangedListener(object : TextWatcher {
+
+            override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
+
+            @RequiresApi(Build.VERSION_CODES.LOLLIPOP)
+            override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
+                buttonNextAuth.setBackgroundResource(R.drawable.soft_button)
+            }
+
+            override fun afterTextChanged(s: Editable?) {}
+        })
+
+        textEditUsername.addTextChangedListener(object : TextWatcher {
+
+            override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
+
+            @RequiresApi(Build.VERSION_CODES.LOLLIPOP)
+            override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
+                buttonNextUsername.setBackgroundResource(R.drawable.soft_button)
+            }
+
+            override fun afterTextChanged(s: Editable?) {}
+        })
+
+        textEditBirthday.addTextChangedListener(object : TextWatcher {
+
+            override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
+
+            @RequiresApi(Build.VERSION_CODES.LOLLIPOP)
+            override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
+                buttonNextBirthday.setBackgroundResource(R.drawable.soft_button)
+            }
+
+            override fun afterTextChanged(s: Editable?) {}
+        })
+
     }
 
 }
