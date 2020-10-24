@@ -321,7 +321,8 @@ class SignupActivity : AppCompatActivity() {
                         "email" to memeDomuser.email,
                         "liked" to hashMapOf(memeDomuser.uid to 0),
                         "gallery" to memeDomuser.gallery,
-                        "bio" to memeDomuser.bio
+                        "bio" to memeDomuser.bio,
+                        "matches" to listOf<String>()
                     )
                     FirestoreHandler().addDataToFirestore("User", memeDomuser.uid, newUser, {
                         progressOverlay.visibility = View.GONE

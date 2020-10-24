@@ -17,6 +17,7 @@ import androidx.fragment.app.Fragment
 import com.bumptech.glide.Glide
 import com.kratsapps.memedom.CommentsActivity
 import com.kratsapps.memedom.R
+import com.kratsapps.memedom.models.MemeDomUser
 import com.kratsapps.memedom.models.Memes
 import com.kratsapps.memedom.utils.AndroidUtils
 import com.kratsapps.memedom.utils.DatabaseManager
@@ -69,25 +70,24 @@ class CreateFragment : Fragment() {
         }
 
         buttonPost.setOnClickListener {
-            if (imageViewMeme.drawable != null) {
+            val savedUser = DatabaseManager(this.context!!).retrieveSavedUser()
+            if (imageViewMeme.drawable != null && savedUser != null) {
                 Log.d("Create", "Has Image from gallery")
                 it.visibility = View.INVISIBLE
-                sendPostToFirestore()
+                sendPostToFirestore(savedUser)
             } else {
                 setupAlertDialog("Meme is missing!")
             }
         }
     }
 
-    private fun sendPostToFirestore() {
+    private fun sendPostToFirestore(savedUser: MemeDomUser) {
 
         var progressOverlay: View = rootView.findViewById(R.id.progress_overlay)
 
         val title = editTextTitle.text.toString()
         val postID = generateRandomString()
         val today = System.currentTimeMillis()
-
-        val savedUser = DatabaseManager(this.context!!).retrieveSavedUser()
 
         AndroidUtils().animateView(progressOverlay, View.VISIBLE, 0.4f, 200)
 

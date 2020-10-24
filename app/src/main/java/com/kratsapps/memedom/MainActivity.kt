@@ -3,6 +3,7 @@ package com.kratsapps.memedom
 import android.content.Context
 import android.graphics.Rect
 import android.os.Bundle
+import android.util.Log
 import android.view.MotionEvent
 import android.view.View
 import android.view.inputmethod.InputMethodManager
@@ -32,7 +33,7 @@ class MainActivity : AppCompatActivity() {
         setContentView(R.layout.activity_main)
         activateFacebook()
         setupBottomNavigation()
-        checkLikedStatus()
+        checkMatchingStatus()
     }
 
     private fun setupBottomNavigation() {
@@ -59,13 +60,17 @@ class MainActivity : AppCompatActivity() {
         FacebookSdk.fullyInitialize()
     }
 
-    private fun checkLikedStatus() {
+    private fun checkMatchingStatus() {
         val user = FirebaseAuth.getInstance().getCurrentUser()
         val mainUID = DatabaseManager(this).getMainUserID()
         if(user != null) {
-            FirestoreHandler().checkMatchingStatus(user.uid)
+            FirestoreHandler().checkMatchingStatus(this.applicationContext, user.uid, {
+                Log.d("Matching", "Got User ${it.uid}")
+            })
         } else if (mainUID != null) {
-            FirestoreHandler().checkMatchingStatus(mainUID)
+            FirestoreHandler().checkMatchingStatus(this.applicationContext, mainUID, {
+                Log.d("Matching", "Got User ${it.uid}")
+            })
         }
     }
 

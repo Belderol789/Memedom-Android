@@ -1,5 +1,6 @@
 package com.kratsapps.memedom.utils
 
+import android.content.Context
 import android.util.Log
 import com.google.firebase.firestore.FieldValue
 import com.google.firebase.firestore.Query
@@ -104,18 +105,11 @@ class FirestoreHandler {
             .update(hashMap)
     }
 
-    fun updateArrayDatabaseObject(path: String, document: String, value: String, points: Long) {
-        var fieldValue: FieldValue = FieldValue.arrayUnion(value)
-
-        Log.d("Firestore", "Updated Field value $fieldValue")
-
+    fun updateArrayDatabaseObject(path: String, document: String, hashMap: HashMap<String, Any>) {
         firestoreDB
             .collection(path)
             .document(document)
-            .update(
-                "postLikers", fieldValue,
-                "postPoints", points
-            )
+            .update(hashMap)
     }
 
     fun updateCommentPoints(uid: String, postID: String, commentID: String) {
@@ -252,7 +246,7 @@ class FirestoreHandler {
             }
     }
 
-    fun checkMatchingStatus(uid: String) {
+    fun checkMatchingStatus(context: Context, uid: String, popUpData: (MemeDomUser) -> Unit) {
 
         Log.d("Firestore-matching", "$uid")
 
@@ -269,9 +263,16 @@ class FirestoreHandler {
                     val likedHashMap = snapshot.get("liked") as HashMap<String, Long>
                     for ((key, value) in likedHashMap) {
                         Log.d("Firestore-matching", "Current users $key and $value")
-                        if (value >= 10) {
+                        val memeDomuser = DatabaseManager(context).retrieveSavedUser()
+                        if (value == 10L && memeDomuser != null) {
                             getUserDataWith(key, {
-                                Log.d("Firestore-matching", "Got user data ${it.name} ${it.profilePhoto}")
+                                if(!memeDomuser.matches.contains(it.uid)) {
+                                    popUpData(it)
+                                    var fieldValue: FieldValue = FieldValue.arrayUnion(it.uid)
+                                    updateDatabaseObject(USERS_PATH, uid, hashMapOf("matches" to fieldValue))
+                                    memeDomuser.matches += it.uid
+                                    DatabaseManager(context).convertUserObject(memeDomuser, "MainUser")
+                                }
                             })
                             // display popup
                         }

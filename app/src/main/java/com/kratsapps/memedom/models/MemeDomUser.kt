@@ -17,7 +17,7 @@ class MemeDomUser: Serializable {
     var bio: String = ""
     var gallery: List<String> = listOf()
 
-    var links: List<String> = listOf()
+    var matches: List<String> = listOf()
     var liked: HashMap<String, Any> = hashMapOf()
 
     fun getUserAge(): Int {

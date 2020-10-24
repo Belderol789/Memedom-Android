@@ -15,6 +15,7 @@ import androidx.annotation.RequiresApi
 import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
+import com.google.firebase.firestore.FieldValue
 import com.kratsapps.memedom.Assets
 import com.kratsapps.memedom.CommentsActivity
 import com.kratsapps.memedom.R
@@ -73,6 +74,16 @@ class FeedAdapter(private val feedList: List<Memes>, private val activity: Activ
         val mainUser = DatabaseManager(feedAdapterContext).retrieveSavedUser()
         val postLikers = currentItem.postLikers
 
+        holder.likeBtn.setOnClickListener {
+            if(mainUser?.uid != null) {
+                if(!postLikers.contains(mainUser.uid)) {
+                    //animate in crown
+                    currentItem.postLikers += mainUser.uid
+                    animateLikeImageView(holder, mainUser, currentItem)
+                }
+            }
+        }
+
         holder.feedImage.setOnClickListener(object: DoubleClickListener() {
             override fun onSingleClick(v: View?) {
                 Log.d("Gesture", "User has tapped once")
@@ -94,14 +105,23 @@ class FeedAdapter(private val feedList: List<Memes>, private val activity: Activ
         })
 
         if(mainUser != null) {
-            if(postLikers.contains(mainUser.uid)) {
-                activatePoints(holder, currentPostLikes)
+
+            Log.d("Matches", "Current matches ${mainUser.matches} currentItem ${currentItem.postUserUID}")
+
+            if(mainUser.matches.contains(currentItem.postUserUID)) {
+                activatePoints(holder, currentPostLikes, Assets().specialColor, R.color.specialColor)
+            } else if(postLikers.contains(mainUser.uid)) {
+                activatePoints(holder, currentPostLikes, Assets().appFGColor, R.color.appFGColor)
             } else {
                 deactivatePoints(holder)
             }
         } else {
             deactivatePoints(holder)
         }
+    }
+
+    private fun specializePost(holder: FeedViewHolder) {
+
     }
 
     private fun animateLikeImageView(holder: FeedViewHolder, mainUser: MemeDomUser, meme: Memes) {
@@ -115,8 +135,15 @@ class FeedAdapter(private val feedList: List<Memes>, private val activity: Activ
                 holder.pointsLayout.visibility = View.VISIBLE
                 holder.postUserInfo.visibility = View.VISIBLE
                 val updatedPoints = meme.postLikers.count() + 1
-                activatePoints(holder, updatedPoints)
-                FirestoreHandler().updateArrayDatabaseObject("Memes", meme.postID, mainUser.uid, updatedPoints.toLong())
+                activatePoints(holder, updatedPoints, Assets().appFGColor, R.color.appFGColor)
+
+                val fieldValue: FieldValue = FieldValue.arrayUnion(mainUser.uid)
+                val updatedPointsHash = hashMapOf<String, Any>(
+                    "postLikers" to fieldValue,
+                    "postPoints" to updatedPoints.toLong()
+                )
+
+                FirestoreHandler().updateArrayDatabaseObject("Memes", meme.postID, updatedPointsHash)
                 FirestoreHandler().updateLikedDatabase(mainUser.uid, meme.postUserUID)
             }
     }
@@ -133,26 +160,22 @@ class FeedAdapter(private val feedList: List<Memes>, private val activity: Activ
         }
     }
 
-    private fun activatePoints(holder: FeedViewHolder, updatedPoints: Int) {
-        val appFGColor = Assets().appFGColor
-
+    private fun activatePoints(holder: FeedViewHolder, updatedPoints: Int, color: Int, rColor: Int) {
         holder.pointsLayout.visibility = View.VISIBLE
         holder.postUserInfo.visibility = View.VISIBLE
+        holder.likeBtn.visibility = View.GONE
         holder.pointsTextView.text = "${updatedPoints}"
-        holder.pointsTextView.setTextColor(appFGColor)
+        holder.pointsTextView.setTextColor(color)
 
         if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.M) {
-            holder.shareBtn.setTextColor(appFGColor)
-            holder.commentsBtn.setTextColor(appFGColor)
-            holder.shareBtn.setCompoundDrawableTintList(ColorStateList.valueOf(Assets().appFGColor))
-            holder.commentsBtn.setCompoundDrawableTintList(ColorStateList.valueOf(Assets().appFGColor))
+            holder.shareBtn.setTextColor(color)
+            holder.commentsBtn.setTextColor(color)
+            holder.shareBtn.setCompoundDrawableTintList(ColorStateList.valueOf(color))
+            holder.commentsBtn.setCompoundDrawableTintList(ColorStateList.valueOf(color))
         }
-        holder.pointsTextView.setTextColor(appFGColor)
+        holder.pointsTextView.setTextColor(color)
         holder.pointsIcon.setColorFilter(
-            ContextCompat.getColor(
-                feedAdapterContext,
-                R.color.appFGColor
-            )
+            ContextCompat.getColor(feedAdapterContext, rColor)
         )
     }
 
@@ -165,6 +188,7 @@ class FeedAdapter(private val feedList: List<Memes>, private val activity: Activ
 
         val shareBtn: Button = itemView.postShareBtn
         val commentsBtn: Button = itemView.postCommentsBtn
+        val likeBtn: ImageButton = itemView.postLikeBtn
 
         val pointsTextView: TextView = itemView.pointsTextView
         val pointsIcon: ImageView = itemView.pointsIcon

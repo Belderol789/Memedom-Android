@@ -52,7 +52,7 @@
 
     <ImageButton
         android:id="@+id/addImageButton"
-        android:src="@drawable/ic_action_create"
+        android:src="@drawable/ic_action_plus"
         android:background="@drawable/round_button"
         android:layout_width="45dp"
         android:layout_height="45dp"

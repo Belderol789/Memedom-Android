@@ -89,7 +89,7 @@
                 android:divider="@drawable/divider_horizontal"
                 android:orientation="horizontal"
                 android:showDividers="middle"
-                android:visibility="gone">
+                android:visibility="invisible">
 
                 <ImageView
                     android:id="@+id/postProfilePic"
@@ -124,6 +124,18 @@
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/feedImage">
+
+            <ImageButton
+                android:id="@+id/postLikeBtn"
+                android:layout_width="100dp"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:backgroundTint="@color/transparent"
+                android:src="@drawable/ic_action_like"
+                android:gravity="center"
+                android:scaleType="center"
+                android:tint="@color/whiteColor"
+                tools:targetApi="m" />
 
             <Button
                 style="@style/Widget.AppCompat.Button.Borderless.Colored"
@@ -198,7 +210,7 @@
                 android:layout_weight="1"
                 android:gravity="center"
                 android:text="2.4k"
-                android:textAlignment="viewStart"
+                android:textAlignment="textStart"
                 android:textColor="@color/appFGColor"
                 android:textStyle="bold" />
         </LinearLayout>
