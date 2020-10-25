@@ -6,11 +6,16 @@ import android.os.Bundle
 import android.util.Log
 import android.view.MotionEvent
 import android.view.View
+import android.view.animation.AccelerateInterpolator
+import android.view.animation.AlphaAnimation
+import android.view.animation.Animation
 import android.view.inputmethod.InputMethodManager
 import android.widget.EditText
+import android.widget.ImageView
 import androidx.annotation.NonNull
 import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
+import com.bumptech.glide.Glide
 import com.facebook.FacebookSdk
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseUser
@@ -18,6 +23,7 @@ import com.kratsapps.memedom.fragments.*
 import com.kratsapps.memedom.utils.DatabaseManager
 import com.kratsapps.memedom.utils.FirestoreHandler
 import kotlinx.android.synthetic.main.activity_main.*
+import kotlinx.android.synthetic.main.activity_main.view.*
 
 
 class MainActivity : AppCompatActivity() {
@@ -63,15 +69,63 @@ class MainActivity : AppCompatActivity() {
     private fun checkMatchingStatus() {
         val user = FirebaseAuth.getInstance().getCurrentUser()
         val mainUID = DatabaseManager(this).getMainUserID()
+
         if(user != null) {
             FirestoreHandler().checkMatchingStatus(this.applicationContext, user.uid, {
-                Log.d("Matching", "Got User ${it.uid}")
+                matchView.visibility = View.VISIBLE
+                matchView.infoTextView.text = "You've liked ${it.name} \nmemes 10 times!"
+                Glide.with(this)
+                    .load(it.profilePhoto)
+                    .circleCrop()
+                    .into(matchView.profilePhoto)
+                fadeOutAndHideImage(matchView.memeImageView)
+                Log.d("Firestore-matching", "Got User ${it.uid}")
             })
         } else if (mainUID != null) {
             FirestoreHandler().checkMatchingStatus(this.applicationContext, mainUID, {
-                Log.d("Matching", "Got User ${it.uid}")
+                matchView.visibility = View.VISIBLE
+                matchView.infoTextView.text = "You've liked ${it.name} \nmemes 10 times!"
+                Glide.with(this)
+                    .load(it.profilePhoto)
+                    .circleCrop()
+                    .into(matchView.profilePhoto)
+                fadeOutAndHideImage(matchView.memeImageView)
+                Log.d("Firestore-matching", "Got User ${it.uid}")
             })
         }
+
+        matchView.profileBtn.setOnClickListener {
+            restartMatchView()
+        }
+
+        matchView.cancelBtn.setOnClickListener {
+            restartMatchView()
+        }
+
+        matchView.matchBtn.setOnClickListener {
+            restartMatchView()
+        }
+
+    }
+
+    private fun fadeOutAndHideImage(img: ImageView) {
+        val fadeOut = AlphaAnimation(1F, 0F)
+        fadeOut.setInterpolator(AccelerateInterpolator())
+        fadeOut.setDuration(2500)
+
+        fadeOut.setAnimationListener(object: Animation.AnimationListener {
+            override fun onAnimationEnd(animation:Animation) {
+                img.setVisibility(View.GONE)
+            }
+            override fun onAnimationRepeat(animation:Animation) {}
+            override  fun onAnimationStart(animation:Animation) {}
+        })
+        img.startAnimation(fadeOut)
+    }
+
+    private fun restartMatchView() {
+        matchView.visibility = View.INVISIBLE
+        matchView.memeImageView.alpha = 1.0f
     }
 
     private fun checkLoginStatus() {

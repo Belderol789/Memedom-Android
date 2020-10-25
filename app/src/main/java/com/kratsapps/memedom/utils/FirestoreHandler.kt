@@ -274,7 +274,6 @@ class FirestoreHandler {
                                     DatabaseManager(context).convertUserObject(memeDomuser, "MainUser")
                                 }
                             })
-                            // display popup
                         }
                     }
                 }
