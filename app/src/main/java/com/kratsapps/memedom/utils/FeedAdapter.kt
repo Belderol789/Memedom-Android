@@ -24,7 +24,7 @@ import com.kratsapps.memedom.models.Memes
 import kotlinx.android.synthetic.main.feed_item.view.*
 
 
-class FeedAdapter(private val feedList: List<Memes>, private val activity: Activity): RecyclerView.Adapter<FeedAdapter.FeedViewHolder>() {
+class FeedAdapter(private var feedList: MutableList<Memes>, private val activity: Activity): RecyclerView.Adapter<FeedAdapter.FeedViewHolder>() {
 
     lateinit var feedAdapterContext: Context
 
@@ -84,18 +84,19 @@ class FeedAdapter(private val feedList: List<Memes>, private val activity: Activ
             }
         }
 
-        holder.feedImage.setOnClickListener(object: DoubleClickListener() {
+        holder.feedImage.setOnClickListener(object : DoubleClickListener() {
             override fun onSingleClick(v: View?) {
                 Log.d("Gesture", "User has tapped once")
-                if(mainUser?.uid != null && postLikers.contains(mainUser.uid)) {
+                if (mainUser?.uid != null && postLikers.contains(mainUser.uid)) {
                     navigateToComments(currentItem)
                     //make sure when user logs out, all data is destroyed
                 }
             }
+
             override fun onDoubleClick(v: View?) {
                 Log.d("Gesture", "User has tapped twice")
-                if(mainUser?.uid != null) {
-                    if(!postLikers.contains(mainUser.uid)) {
+                if (mainUser?.uid != null) {
+                    if (!postLikers.contains(mainUser.uid)) {
                         //animate in crown
                         currentItem.postLikers += mainUser.uid
                         animateLikeImageView(holder, mainUser, currentItem)
@@ -106,10 +107,18 @@ class FeedAdapter(private val feedList: List<Memes>, private val activity: Activ
 
         if(mainUser != null) {
 
-            Log.d("Matches", "Current matches ${mainUser.matches} currentItem ${currentItem.postUserUID}")
+            Log.d(
+                "Matches",
+                "Current matches ${mainUser.matches} currentItem ${currentItem.postUserUID}"
+            )
 
             if(mainUser.matches.contains(currentItem.postUserUID)) {
-                activatePoints(holder, currentPostLikes, Assets().specialColor, R.color.specialColor)
+                activatePoints(
+                    holder,
+                    currentPostLikes,
+                    Assets().specialColor,
+                    R.color.specialColor
+                )
             } else if(postLikers.contains(mainUser.uid)) {
                 activatePoints(holder, currentPostLikes, Assets().appFGColor, R.color.appFGColor)
             } else {
@@ -143,7 +152,11 @@ class FeedAdapter(private val feedList: List<Memes>, private val activity: Activ
                     "postPoints" to updatedPoints.toLong()
                 )
 
-                FirestoreHandler().updateArrayDatabaseObject("Memes", meme.postID, updatedPointsHash)
+                FirestoreHandler().updateArrayDatabaseObject(
+                    "Memes",
+                    meme.postID,
+                    updatedPointsHash
+                )
                 FirestoreHandler().updateLikedDatabase(mainUser.uid, meme.postUserUID, 1)
             }
     }
@@ -210,6 +223,17 @@ class FeedAdapter(private val feedList: List<Memes>, private val activity: Activ
             R.anim.enter_activity
         )
     }
+
+    fun clear() {
+        feedList.clear()
+        notifyDataSetChanged()
+    }
+
+    fun addItems(memes: MutableList<Memes>) {
+        feedList = memes
+        notifyDataSetChanged()
+    }
+
 }
 
 

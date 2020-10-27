@@ -5,7 +5,6 @@ import android.content.Context
 import android.content.Intent
 import android.os.Bundle
 import android.util.Log
-import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -13,10 +12,14 @@ import android.widget.Button
 import android.widget.LinearLayout
 import androidx.annotation.NonNull
 import androidx.appcompat.widget.AppCompatRadioButton
+import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
+import androidx.swiperefreshlayout.widget.SwipeRefreshLayout.OnRefreshListener
 import com.google.firebase.auth.FirebaseAuth
-import com.kratsapps.memedom.*
+import com.kratsapps.memedom.CredentialActivity
+import com.kratsapps.memedom.R
 import com.kratsapps.memedom.models.Memes
 import com.kratsapps.memedom.utils.DatabaseManager
 import com.kratsapps.memedom.utils.FeedAdapter
@@ -30,8 +33,9 @@ class HomeFragment : Fragment() {
     lateinit var homeContext: Context
     lateinit var feedAdapter: FeedAdapter
     lateinit var feedRecyclerView: RecyclerView
+    lateinit var homeSwipe: SwipeRefreshLayout
 
-    private var allMemes: List<Memes> = listOf<Memes>()
+    private var allMemes: MutableList<Memes> = mutableListOf<Memes>()
     var firebaseAuth: FirebaseAuth? = null
     var mAuthListener: FirebaseAuth.AuthStateListener? = null
 
@@ -41,6 +45,7 @@ class HomeFragment : Fragment() {
             FirestoreHandler().checkForFreshMemes(dayLimit) {
                 Log.d("Memes", "Got all new memes ${it.count()}")
                 allMemes = it
+                homeSwipe.isRefreshing = false
                 if(homeContext != null) {
                     setupFeedView()
                 }
@@ -95,7 +100,7 @@ class HomeFragment : Fragment() {
 
         firebaseAuth = FirebaseAuth.getInstance()
         mAuthListener = FirebaseAuth.AuthStateListener() {
-            fun onAuthStateChanged(@NonNull firebaseAuth:FirebaseAuth) {
+            fun onAuthStateChanged(@NonNull firebaseAuth: FirebaseAuth) {
                 val user = FirebaseAuth.getInstance().getCurrentUser()
                 if (user != null) {
                     val credentialView = rootView.findViewById(R.id.credentialViewHome) as LinearLayout
@@ -120,6 +125,15 @@ class HomeFragment : Fragment() {
             Log.d("Segment", "Popular segment tapped")
             updateSegments(1)
         }
+
+
+        homeSwipe = rootView.findViewById<SwipeRefreshLayout>(R.id.homeSwipe)
+        homeSwipe.setOnRefreshListener(OnRefreshListener {
+            getAllMemes()
+        })
+        homeSwipe.setColorSchemeResources(android.R.color.holo_blue_bright,
+            android.R.color.holo_orange_light)
+
     }
 
     private fun setupFeedView() {
@@ -131,7 +145,13 @@ class HomeFragment : Fragment() {
                 FeedAdapter(allMemes, activity)
 
             feedRecyclerView = rootView.findViewById(R.id.recyclerViewHome) as RecyclerView
-            feedRecyclerView.addItemDecoration(DefaultItemDecorator(resources.getDimensionPixelSize(R.dimen.vertical_recyclerView)))
+            feedRecyclerView.addItemDecoration(
+                DefaultItemDecorator(
+                    resources.getDimensionPixelSize(
+                        R.dimen.vertical_recyclerView
+                    )
+                )
+            )
             feedRecyclerView.adapter = feedAdapter
             feedRecyclerView.layoutManager = LinearLayoutManager(activity)
             feedRecyclerView.setHasFixedSize(true)

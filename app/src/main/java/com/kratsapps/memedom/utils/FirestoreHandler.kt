@@ -155,7 +155,7 @@ class FirestoreHandler {
     }
 
     //Getting
-    fun checkForFreshMemes(dayLimit: Long, completed: (List<Memes>) -> Unit) {
+    fun checkForFreshMemes(dayLimit: Long, completed: (MutableList<Memes>) -> Unit) {
 
         Log.d("DayLimit", "Current day limit $dayLimit")
 
@@ -186,10 +186,10 @@ class FirestoreHandler {
             .limit(100)
             .get()
             .addOnSuccessListener { documents ->
-                var memes: List<Memes> = arrayListOf()
+                var memes: MutableList<Memes> = arrayListOf()
                 for (document in documents) {
                     val newMeme: Memes = document.toObject(Memes::class.java)
-                    memes += newMeme
+                    memes.add(newMeme)
                 }
                 completed(memes)
             }
@@ -319,7 +319,7 @@ class FirestoreHandler {
             }
     }
 
-    fun getAllMemesOfMainUser(uid: String, memes: (List<Memes>) -> Unit) {
+    fun getAllMemesOfMainUser(uid: String, memes: (MutableList<Memes>) -> Unit) {
 
         Log.d("UserMemes", "Getting Memes of $uid")
 
@@ -328,10 +328,10 @@ class FirestoreHandler {
             .whereEqualTo("postUserUID", uid)
             .get()
             .addOnSuccessListener { snapshot ->
-                var userMemes: List<Memes> = listOf()
+                var userMemes: MutableList<Memes> = mutableListOf()
                 for (document in snapshot) {
                     val userMeme = document.toObject(Memes::class.java)
-                    userMemes += userMeme
+                    userMemes.add(userMeme)
                 }
 
                 Log.d("UserMemes", "Got memes $userMemes")

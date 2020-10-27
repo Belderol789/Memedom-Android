@@ -79,8 +79,7 @@ class ProfileFragment : Fragment() {
         val mainUserID = DatabaseManager(profileContext).getMainUserID()
         if(mainUserID != null && this.activity != null) {
             FirestoreHandler().getAllMemesOfMainUser(mainUserID) {
-                val feedAdapter =
-                    FeedAdapter(it, this.activity!!)
+                val feedAdapter =  FeedAdapter(it, this.activity!!)
                 profileRecyclerView.addItemDecoration(DefaultItemDecorator(resources.getDimensionPixelSize(R.dimen.vertical_recyclerView)))
                 profileRecyclerView.adapter = feedAdapter
                 profileRecyclerView.layoutManager = LinearLayoutManager(activity)
