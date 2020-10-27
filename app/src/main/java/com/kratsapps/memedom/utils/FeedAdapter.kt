@@ -144,7 +144,7 @@ class FeedAdapter(private val feedList: List<Memes>, private val activity: Activ
                 )
 
                 FirestoreHandler().updateArrayDatabaseObject("Memes", meme.postID, updatedPointsHash)
-                FirestoreHandler().updateLikedDatabase(mainUser.uid, meme.postUserUID)
+                FirestoreHandler().updateLikedDatabase(mainUser.uid, meme.postUserUID, 1)
             }
     }
 

@@ -20,6 +20,7 @@ import com.facebook.FacebookSdk
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseUser
 import com.kratsapps.memedom.fragments.*
+import com.kratsapps.memedom.models.MemeDomUser
 import com.kratsapps.memedom.utils.DatabaseManager
 import com.kratsapps.memedom.utils.FirestoreHandler
 import kotlinx.android.synthetic.main.activity_main.*
@@ -33,6 +34,8 @@ class MainActivity : AppCompatActivity() {
     val notifFragment = NotificationsFragment()
     val msgFragment = MessagesFragment()
     val createFragment = CreateFragment()
+
+    var currentMatchUser: MemeDomUser? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -72,6 +75,7 @@ class MainActivity : AppCompatActivity() {
 
         if(user != null) {
             FirestoreHandler().checkMatchingStatus(this.applicationContext, user.uid, {
+                currentMatchUser = it
                 matchView.visibility = View.VISIBLE
                 matchView.infoTextView.text = "You've liked ${it.name} \nmemes 10 times!"
                 Glide.with(this)
@@ -83,6 +87,7 @@ class MainActivity : AppCompatActivity() {
             })
         } else if (mainUID != null) {
             FirestoreHandler().checkMatchingStatus(this.applicationContext, mainUID, {
+                currentMatchUser = it
                 matchView.visibility = View.VISIBLE
                 matchView.infoTextView.text = "You've liked ${it.name} \nmemes 10 times!"
                 Glide.with(this)
@@ -99,19 +104,24 @@ class MainActivity : AppCompatActivity() {
         }
 
         matchView.cancelBtn.setOnClickListener {
-            restartMatchView()
+            if (currentMatchUser != null) {
+                FirestoreHandler().rejectUser(currentMatchUser!!, this.applicationContext)
+                restartMatchView()
+            }
         }
 
         matchView.matchBtn.setOnClickListener {
-            restartMatchView()
+            if (currentMatchUser != null) {
+                FirestoreHandler().matchUser(currentMatchUser!!, this.applicationContext)
+                restartMatchView()
+            }
         }
-
     }
 
     private fun fadeOutAndHideImage(img: ImageView) {
         val fadeOut = AlphaAnimation(1F, 0F)
         fadeOut.setInterpolator(AccelerateInterpolator())
-        fadeOut.setDuration(2500)
+        fadeOut.setDuration(3000)
 
         fadeOut.setAnimationListener(object: Animation.AnimationListener {
             override fun onAnimationEnd(animation:Animation) {
@@ -126,6 +136,7 @@ class MainActivity : AppCompatActivity() {
     private fun restartMatchView() {
         matchView.visibility = View.INVISIBLE
         matchView.memeImageView.alpha = 1.0f
+        currentMatchUser?.let { currentMatchUser = null }
     }
 
     private fun checkLoginStatus() {

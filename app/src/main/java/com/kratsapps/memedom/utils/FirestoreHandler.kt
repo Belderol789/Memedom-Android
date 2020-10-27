@@ -82,9 +82,9 @@ class FirestoreHandler {
     }
 
     //Editing
-    fun updateLikedDatabase(mainUserID: String, postUserID: String) {
+    fun updateLikedDatabase(mainUserID: String, postUserID: String, plus: Long) {
         getCurrentNumberOfLikes(mainUserID, postUserID, {
-            val updatedCount = it?.plus(1)
+            val updatedCount = it?.plus(plus)
             val updatedLike = hashMapOf(postUserID to updatedCount)
             val updateLiked: HashMap<String, Any> = hashMapOf(
                 "liked" to updatedLike
@@ -264,20 +264,40 @@ class FirestoreHandler {
                     for ((key, value) in likedHashMap) {
                         Log.d("Firestore-matching", "Current users $key and $value")
                         val memeDomuser = DatabaseManager(context).retrieveSavedUser()
-                        if (value == 10L && memeDomuser != null) {
+                        if (value == 10L &&
+                            memeDomuser != null &&
+                            !memeDomuser.matches.contains(key) &&
+                            !memeDomuser.rejects.contains(key))
+                        {
                             getUserDataWith(key, {
-                                if(!memeDomuser.matches.contains(it.uid)) {
-                                    popUpData(it)
-                                    var fieldValue: FieldValue = FieldValue.arrayUnion(it.uid)
-                                    updateDatabaseObject(USERS_PATH, uid, hashMapOf("matches" to fieldValue))
-                                    memeDomuser.matches += it.uid
-                                    DatabaseManager(context).convertUserObject(memeDomuser, "MainUser")
-                                }
+                                popUpData(it)
                             })
                         }
                     }
                 }
             }
+    }
+
+    fun rejectUser(matchUser: MemeDomUser, context: Context) {
+        val memeDomuser = DatabaseManager(context).retrieveSavedUser()
+        if(memeDomuser != null && !memeDomuser.rejects.contains(matchUser.uid)) {
+            var fieldValue: FieldValue = FieldValue.arrayUnion(matchUser.uid)
+            updateDatabaseObject(USERS_PATH, memeDomuser.uid, hashMapOf("rejects" to fieldValue))
+
+            memeDomuser.rejects += matchUser.uid
+            DatabaseManager(context).convertUserObject(memeDomuser, "MainUser")
+        }
+    }
+
+    fun matchUser(matchUser: MemeDomUser, context: Context) {
+        val memeDomuser = DatabaseManager(context).retrieveSavedUser()
+        if(memeDomuser != null && !memeDomuser.matches.contains(matchUser.uid)) {
+            var fieldValue: FieldValue = FieldValue.arrayUnion(matchUser.uid)
+            updateDatabaseObject(USERS_PATH, memeDomuser.uid, hashMapOf("matches" to fieldValue))
+
+            memeDomuser.matches += matchUser.uid
+            DatabaseManager(context).convertUserObject(memeDomuser, "MainUser")
+        }
     }
 
     fun getAllReplies(comment: Comments, success: (List<Comments>) -> Unit) {

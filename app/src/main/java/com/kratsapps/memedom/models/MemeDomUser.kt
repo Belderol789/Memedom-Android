@@ -17,6 +17,7 @@ class MemeDomUser: Serializable {
     var bio: String = ""
     var gallery: List<String> = listOf()
 
+    var rejects: List<String> = listOf()
     var matches: List<String> = listOf()
     var liked: HashMap<String, Any> = hashMapOf()
 

@@ -44,7 +44,6 @@ class CommentsActivity : AppCompatActivity() {
             comments = it
             comments.sortedBy { it.commentDate }
             Log.d("Comments", "Got new comments $comments")
-            //setup recycler view
             setupFeedView()
         })
     }
@@ -75,11 +74,12 @@ class CommentsActivity : AppCompatActivity() {
                 commentsPointsLayout.visibility = View.VISIBLE
                 commentsUserInfo.visibility = View.VISIBLE
                 if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.M) {
-                    val appFGColor = Color.parseColor("#FACE0D")
+                    val appFGColor = Color.parseColor("#8FD6EF")
                     commentsCommentsBtn.setTextColor(appFGColor)
                     commentsShareBtn.setTextColor(appFGColor)
                     commentsCommentsBtn.setCompoundDrawableTintList(ColorStateList.valueOf(appFGColor))
                     commentsShareBtn.setCompoundDrawableTintList(ColorStateList.valueOf(appFGColor))
+
                 }
             } else {
                 commentsPointsLayout.visibility = View.GONE
@@ -117,7 +117,7 @@ class CommentsActivity : AppCompatActivity() {
                 if (count > 0) {
                     sendButton.isEnabled = true
                     sendButton.drawable.setColorFilter(
-                        Color.parseColor("#FACE0D"),
+                        Color.parseColor("#8FD6EF"),
                         PorterDuff.Mode.SRC_ATOP
                     )
                     editTextTextMultiLine.getBackground().setTint(Color.parseColor("#FACE0D"))
