@@ -40,8 +40,9 @@ class FeedAdapter(private var feedList: MutableList<Memes>, private val activity
     @RequiresApi(Build.VERSION_CODES.M)
     override fun onBindViewHolder(holder: FeedViewHolder, position: Int) {
         val currentItem = feedList[position]
-        val postUD: String = currentItem.postID
+        val postUID: String = currentItem.postID
         val postUserID: String = currentItem.postUserUID
+
         var currentPostLikes = currentItem.getPostLikeCount()
 
         Log.d("Scrolling", "Scrolled through meme ${currentItem.postTitle}")
@@ -50,21 +51,13 @@ class FeedAdapter(private var feedList: MutableList<Memes>, private val activity
             .load(currentItem.postImageURL)
             .centerCrop()
             .into(holder.feedImage)
-
         holder.postUserName.text = currentItem.postUsername
         holder.likeImageView.alpha = 0f
-
         val shareCount = if(currentItem.postShares >= 10) "${currentItem.postShares}" else ""
         holder.shareBtn.text = shareCount
-
         val commentsCount = if(currentItem.postComments >= 10) "${currentItem.postComments}"  else ""
         holder.commentsBtn.text = commentsCount
-
-        holder.commentsBtn.setOnClickListener {
-            navigateToComments(currentItem)
-        }
         holder.feedTitle.text = currentItem.postTitle
-
         Glide.with(feedAdapterContext)
             .load(currentItem.postProfileURL)
             .circleCrop()
@@ -73,6 +66,37 @@ class FeedAdapter(private var feedList: MutableList<Memes>, private val activity
 
         val mainUser = DatabaseManager(feedAdapterContext).retrieveSavedUser()
         val postLikers = currentItem.postLikers
+
+        holder.reportButton.setOnClickListener {
+            if(mainUser != null) { holder.linearReport.visibility = View.VISIBLE }
+        }
+
+        holder.cancelBtn.setOnClickListener {
+            holder.linearReport.visibility = View.GONE
+        }
+
+        holder.reportBtn.setOnClickListener {
+            if (mainUser != null) {
+                holder.card_view.setBackgroundResource(R.color.errorColor)
+                holder.linearReport.visibility = View.GONE
+                mainUser.rejectedMemes += postUID
+                DatabaseManager(feedAdapterContext).convertUserObject(mainUser!!, "MainUser")
+            }
+        }
+
+        holder.likeBtn.setOnClickListener {
+            if(mainUser?.uid != null) {
+                if(!postLikers.contains(mainUser.uid)) {
+                    //animate in crown
+                    currentItem.postLikers += mainUser.uid
+                    animateLikeImageView(holder, mainUser, currentItem)
+                }
+            }
+        }
+
+        holder.commentsBtn.setOnClickListener {
+            navigateToComments(currentItem)
+        }
 
         holder.likeBtn.setOnClickListener {
             if(mainUser?.uid != null) {
@@ -212,6 +236,13 @@ class FeedAdapter(private var feedList: MutableList<Memes>, private val activity
         val postUserName = itemView.postUsername
 
         val likeImageView = itemView.likeImageView
+
+        val linearReport = itemView.linearReport
+        val reportButton = itemView.reportButton
+        val reportBtn = itemView.reportBtn
+        val cancelBtn = itemView.cancelBtn
+
+        val card_view = itemView.card_view
     }
 
     private fun navigateToComments(meme: Memes) {

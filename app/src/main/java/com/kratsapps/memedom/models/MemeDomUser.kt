@@ -21,6 +21,8 @@ class MemeDomUser: Serializable {
     var matches: List<String> = listOf()
     var liked: HashMap<String, Any> = hashMapOf()
 
+    var rejectedMemes: List<String> = listOf()
+
     fun getUserAge(): Int {
         val sdf = SimpleDateFormat("dd MMMM yyyy")
         val date = sdf.parse(birthday)

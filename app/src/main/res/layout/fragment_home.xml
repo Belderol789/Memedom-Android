@@ -75,7 +75,7 @@
         android:baselineAligned="false"
         android:orientation="horizontal"
         android:paddingTop="20dp"
-        app:layout_constraintBottom_toBottomOf="@+id/recyclerViewHome"
+        app:layout_constraintBottom_toBottomOf="@+id/homeSwipe"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent">
 

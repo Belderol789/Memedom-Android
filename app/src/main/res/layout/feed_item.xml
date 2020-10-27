@@ -7,8 +7,8 @@
     android:layout_height="wrap_content"
     android:layout_marginTop="0dp"
     android:backgroundTint="@color/appBGColorLight"
-    app:cardCornerRadius="8dp"
     android:elevation="20dp"
+    app:cardCornerRadius="8dp"
     tools:targetApi="lollipop">
 
     <androidx.constraintlayout.widget.ConstraintLayout
@@ -56,8 +56,8 @@
                 android:layout_width="wrap_content"
                 android:layout_height="25dp"
                 android:divider="@drawable/divider_horizontal"
-                android:showDividers="middle"
-                android:orientation="horizontal">
+                android:orientation="horizontal"
+                android:showDividers="middle">
 
                 <TextView
                     android:id="@+id/feedTitle"
@@ -131,25 +131,25 @@
                 android:layout_height="match_parent"
                 android:layout_weight="1"
                 android:backgroundTint="@color/transparent"
-                android:src="@drawable/ic_action_like"
                 android:gravity="center"
                 android:scaleType="center"
+                android:src="@drawable/ic_action_like"
                 android:tint="@color/whiteColor"
                 tools:targetApi="m" />
 
             <Button
-                style="@style/Widget.AppCompat.Button.Borderless.Colored"
                 android:id="@+id/postShareBtn"
-                android:backgroundTint="@color/transparent"
+                style="@style/Widget.AppCompat.Button.Borderless.Colored"
                 android:layout_width="wrap_content"
                 android:layout_height="match_parent"
                 android:layout_weight="1"
+                android:backgroundTint="@color/transparent"
                 android:drawableStart="@drawable/ic_action_share"
                 android:drawableTint="@color/whiteColor"
                 android:text="10"
-                android:textSize="12dip"
                 android:textColor="@color/whiteColor"
-                tools:targetApi="m"/>
+                android:textSize="12dip"
+                tools:targetApi="m" />
 
             <Button
                 android:id="@+id/postCommentsBtn"
@@ -160,9 +160,9 @@
                 android:drawableStart="@drawable/ic_action_chat"
                 android:drawableTint="@color/whiteColor"
                 android:text="10"
-                android:textSize="12dip"
                 android:textAlignment="center"
                 android:textColor="@color/whiteColor"
+                android:textSize="12dip"
                 tools:targetApi="m" />
 
         </LinearLayout>
@@ -213,6 +213,37 @@
                 android:textAlignment="textStart"
                 android:textColor="@color/appFGColor"
                 android:textStyle="bold" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/linearReport"
+            android:layout_width="wrap_content"
+            android:layout_height="50dp"
+            android:divider="@drawable/divider_horizontal"
+            android:orientation="horizontal"
+            android:showDividers="middle"
+            android:visibility="gone"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent">
+
+            <Button
+                android:id="@+id/reportBtn"
+                android:layout_width="100dp"
+                android:layout_height="wrap_content"
+                android:background="@drawable/soft_button"
+                android:text="Report"
+                android:textColor="@color/whiteColor" />
+
+            <Button
+                android:id="@+id/cancelBtn"
+                android:layout_width="100dp"
+                android:layout_height="wrap_content"
+                android:background="@drawable/soft_button_disabled"
+                android:text="Cancel"
+                android:textColor="@color/whiteColor" />
+
         </LinearLayout>
 
     </androidx.constraintlayout.widget.ConstraintLayout>

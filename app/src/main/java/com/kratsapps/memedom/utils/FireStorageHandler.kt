@@ -31,7 +31,7 @@ class FireStorageHandler {
         val photoRef = profilePhotoRef.child(id)
         var uploadTask = photoRef.putBytes(data)
 
-        val urlTask = uploadTask.addOnFailureListener{ e ->
+        uploadTask.addOnFailureListener{ e ->
             Log.d("Storage", "Image not saved", e)
         }.addOnSuccessListener { taskSnapshot ->
             photoRef.downloadUrl.addOnSuccessListener {

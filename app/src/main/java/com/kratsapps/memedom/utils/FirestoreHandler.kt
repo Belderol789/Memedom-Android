@@ -155,7 +155,7 @@ class FirestoreHandler {
     }
 
     //Getting
-    fun checkForFreshMemes(dayLimit: Long, completed: (MutableList<Memes>) -> Unit) {
+    fun checkForFreshMemes(mainUser: MemeDomUser?, dayLimit: Long, completed: (MutableList<Memes>) -> Unit) {
 
         Log.d("DayLimit", "Current day limit $dayLimit")
 
@@ -189,7 +189,14 @@ class FirestoreHandler {
                 var memes: MutableList<Memes> = arrayListOf()
                 for (document in documents) {
                     val newMeme: Memes = document.toObject(Memes::class.java)
-                    memes.add(newMeme)
+                    if (mainUser != null) {
+                        if(!mainUser.rejects.contains(newMeme.postUserUID) && !mainUser.rejectedMemes.contains(newMeme.postID)) {
+                            memes.add(newMeme)
+                        }
+                    } else {
+                        memes.add(newMeme)
+                    }
+
                 }
                 completed(memes)
             }

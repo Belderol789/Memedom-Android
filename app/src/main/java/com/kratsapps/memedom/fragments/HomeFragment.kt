@@ -41,8 +41,9 @@ class HomeFragment : Fragment() {
 
 
     private fun getAllMemes() {
+        val mainUser = DatabaseManager(this.context!!).retrieveSavedUser()
         FirestoreHandler().getAppSettings() { points, dayLimit ->
-            FirestoreHandler().checkForFreshMemes(dayLimit) {
+            FirestoreHandler().checkForFreshMemes(mainUser, dayLimit) {
                 Log.d("Memes", "Got all new memes ${it.count()}")
                 allMemes = it
                 homeSwipe.isRefreshing = false
