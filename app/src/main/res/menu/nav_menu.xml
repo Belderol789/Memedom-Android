@@ -4,27 +4,27 @@
     <item
         android:id="@+id/ic_home"
         android:icon="@drawable/ic_action_home"
-        android:title="" />
+        android:title="Kingdom" />
 
     <item
         android:id="@+id/ic_profile"
         android:icon="@drawable/ic_action_name"
-        android:title=""/>
+        android:title="Profile"/>
 
     <item
         android:id="@+id/ic_create"
         android:icon="@drawable/ic_action_create"
         android:iconTint="@color/appFGColor"
-        android:title=""/>
+        android:title="Create"/>
 
     <item
         android:id="@+id/ic_notifs"
         android:icon="@drawable/ic_action_notif"
-        android:title=""/>
+        android:title="Notifs"/>
 
     <item
         android:id="@+id/ic_chat"
         android:icon="@drawable/ic_action_chat"
-        android:title=""/>
+        android:title="Chat"/>
 
 </menu>

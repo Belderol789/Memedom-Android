@@ -65,6 +65,7 @@ class FeedAdapter(private var feedList: MutableList<Memes>, private val activity
         holder.feedDate.text = currentItem.postDateString()
 
         val mainUser = DatabaseManager(feedAdapterContext).retrieveSavedUser()
+        val mainUserID = mainUser?.uid
         val postLikers = currentItem.postLikers
 
         holder.reportButton.setOnClickListener {
@@ -85,27 +86,20 @@ class FeedAdapter(private var feedList: MutableList<Memes>, private val activity
         }
 
         holder.likeBtn.setOnClickListener {
-            if(mainUser?.uid != null) {
-                if(!postLikers.contains(mainUser.uid)) {
+            if(mainUserID != null && mainUser != null) {
+                if(!postLikers.contains(mainUserID)) {
                     //animate in crown
-                    currentItem.postLikers += mainUser.uid
+                    currentItem.postLikers += mainUserID
                     animateLikeImageView(holder, mainUser, currentItem)
+
+                    mainUser.rejectedMemes += postUID
+                    DatabaseManager(feedAdapterContext).convertUserObject(mainUser!!, "MainUser")
                 }
             }
         }
 
         holder.commentsBtn.setOnClickListener {
             navigateToComments(currentItem)
-        }
-
-        holder.likeBtn.setOnClickListener {
-            if(mainUser?.uid != null) {
-                if(!postLikers.contains(mainUser.uid)) {
-                    //animate in crown
-                    currentItem.postLikers += mainUser.uid
-                    animateLikeImageView(holder, mainUser, currentItem)
-                }
-            }
         }
 
         holder.feedImage.setOnClickListener(object : DoubleClickListener() {

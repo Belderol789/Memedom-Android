@@ -13,7 +13,7 @@ import com.kratsapps.memedom.fragments.ProfileFragment
 import kotlinx.android.synthetic.main.image_cell.view.*
 
 
-class ImageAdapter(private val imageList: MutableList<String>, private val activity: Activity, private val fragment: ProfileFragment): RecyclerView.Adapter<ImageAdapter.ImageViewHolder>() {
+class ImageAdapter(private val imageList: MutableList<String>, private val activity: Activity, private val fragment: ProfileFragment?): RecyclerView.Adapter<ImageAdapter.ImageViewHolder>() {
 
     lateinit var adapterContext: Context
 
@@ -38,7 +38,7 @@ class ImageAdapter(private val imageList: MutableList<String>, private val activ
 
         holder.deleteBtn.setOnClickListener {
             removeAt(position)
-            fragment.showSave()
+            fragment?.showSave()
         }
     }
 

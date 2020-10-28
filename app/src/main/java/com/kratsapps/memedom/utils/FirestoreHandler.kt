@@ -2,12 +2,14 @@ package com.kratsapps.memedom.utils
 
 import android.content.Context
 import android.util.Log
+import com.facebook.internal.Mutable
 import com.google.firebase.firestore.FieldValue
 import com.google.firebase.firestore.Query
 import com.google.firebase.firestore.SetOptions
 import com.google.firebase.firestore.ktx.firestore
 import com.google.firebase.ktx.Firebase
 import com.kratsapps.memedom.models.Comments
+import com.kratsapps.memedom.models.Matches
 import com.kratsapps.memedom.models.MemeDomUser
 import com.kratsapps.memedom.models.Memes
 import java.text.SimpleDateFormat
@@ -25,12 +27,18 @@ class FirestoreHandler {
     private val USERS_PATH = "User"
     private val APP_SETTINGS = "AppSettings"
     private val DAY_LIMIT = "DayLimit"
+    private val MATCHES = "Matched"
 
     private val DESCENDING = Query.Direction.DESCENDING
     private val ASCENDING = Query.Direction.ASCENDING
 
     //Adding
-    fun addDataToFirestore(path: String, document: String, hashMap: HashMap<String, Any>, success: (String?) -> Unit) {
+    fun addDataToFirestore(
+        path: String,
+        document: String,
+        hashMap: HashMap<String, Any>,
+        success: (String?) -> Unit
+    ) {
         firestoreDB
             .collection(path)
             .document(document)
@@ -44,24 +52,34 @@ class FirestoreHandler {
             }
     }
 
-    fun sendUserCommentToFirestore(postID: String, commentID: String, newCount: Int, hashMap: HashMap<String, Any>) {
+    fun sendUserCommentToFirestore(
+        postID: String,
+        commentID: String,
+        newCount: Int,
+        hashMap: HashMap<String, Any>
+    ) {
         firestoreDB
             .collection(COMMENTS_PATH)
             .document(postID)
             .collection(COMMENTS_PATH)
             .document(commentID)
             .set(hashMap)
-            .addOnFailureListener{
+            .addOnFailureListener {
                 Log.d("Comment", "Comment Error $it")
             }
 
-            firestoreDB
-                .collection(MEMES_PATH)
-                .document(postID)
-                .update("postComments", newCount)
+        firestoreDB
+            .collection(MEMES_PATH)
+            .document(postID)
+            .update("postComments", newCount)
     }
 
-    fun sendUserReplyToFirestore(comment: Comments, replyID: String, replyCount: Int, hashMap: HashMap<String, Any>) {
+    fun sendUserReplyToFirestore(
+        comment: Comments,
+        replyID: String,
+        replyCount: Int,
+        hashMap: HashMap<String, Any>
+    ) {
 
         firestoreDB
             .collection(REPLIES_PATH)
@@ -69,7 +87,7 @@ class FirestoreHandler {
             .collection(REPLIES_PATH)
             .document(replyID)
             .set(hashMap)
-            .addOnFailureListener{
+            .addOnFailureListener {
                 Log.d("Comment", "Comment Error $it")
             }
 
@@ -155,7 +173,11 @@ class FirestoreHandler {
     }
 
     //Getting
-    fun checkForFreshMemes(mainUser: MemeDomUser?, dayLimit: Long, completed: (MutableList<Memes>) -> Unit) {
+    fun checkForFreshMemes(
+        mainUser: MemeDomUser?,
+        dayLimit: Long,
+        completed: (MutableList<Memes>) -> Unit
+    ) {
 
         Log.d("DayLimit", "Current day limit $dayLimit")
 
@@ -190,7 +212,9 @@ class FirestoreHandler {
                 for (document in documents) {
                     val newMeme: Memes = document.toObject(Memes::class.java)
                     if (mainUser != null) {
-                        if(!mainUser.rejects.contains(newMeme.postUserUID) && !mainUser.rejectedMemes.contains(newMeme.postID)) {
+                        if (!mainUser.rejects.contains(newMeme.postUserUID)
+                            && !mainUser.rejectedMemes.contains(newMeme.postID)
+                        ) {
                             memes.add(newMeme)
                         }
                     } else {
@@ -230,7 +254,11 @@ class FirestoreHandler {
             }
     }
 
-    fun getCurrentNumberOfLikes(mainuserID: String, postUserID: String, completed: (currentLikes: Long?) -> Unit) {
+    fun getCurrentNumberOfLikes(
+        mainuserID: String,
+        postUserID: String,
+        completed: (currentLikes: Long?) -> Unit
+    ) {
         firestoreDB
             .collection(USERS_PATH)
             .document(mainuserID)
@@ -268,14 +296,21 @@ class FirestoreHandler {
 
                 if (snapshot != null && snapshot.exists()) {
                     val likedHashMap = snapshot.get("liked") as HashMap<String, Long>
+                    val memeDomuser = DatabaseManager(context).retrieveSavedUser()
+                    Log.d(
+                        "Firestore-matching",
+                        "Matches ${memeDomuser?.matches} Rejects ${memeDomuser?.rejects}"
+                    )
+
                     for ((key, value) in likedHashMap) {
+
                         Log.d("Firestore-matching", "Current users $key and $value")
-                        val memeDomuser = DatabaseManager(context).retrieveSavedUser()
+
                         if (value == 10L &&
                             memeDomuser != null &&
                             !memeDomuser.matches.contains(key) &&
-                            !memeDomuser.rejects.contains(key))
-                        {
+                            !memeDomuser.rejects.contains(key)
+                        ) {
                             getUserDataWith(key, {
                                 popUpData(it)
                             })
@@ -287,23 +322,87 @@ class FirestoreHandler {
 
     fun rejectUser(matchUser: MemeDomUser, context: Context) {
         val memeDomuser = DatabaseManager(context).retrieveSavedUser()
-        if(memeDomuser != null && !memeDomuser.rejects.contains(matchUser.uid)) {
-            var fieldValue: FieldValue = FieldValue.arrayUnion(matchUser.uid)
-            updateDatabaseObject(USERS_PATH, memeDomuser.uid, hashMapOf("rejects" to fieldValue))
+        if (memeDomuser != null && !memeDomuser.rejects.contains(matchUser.uid)) {
+            //var fieldValue: FieldValue = FieldValue.arrayUnion(matchUser.uid)
+            //updateDatabaseObject(USERS_PATH, memeDomuser.uid, hashMapOf("rejects" to fieldValue))
 
             memeDomuser.rejects += matchUser.uid
             DatabaseManager(context).convertUserObject(memeDomuser, "MainUser")
         }
     }
 
+    fun checkNewMatches(context: Context, completed: (MutableList<Matches>) -> Unit) {
+        val mainUser = DatabaseManager(context).retrieveSavedUser()
+        if (mainUser != null) {
+            firestoreDB
+                .collection(MATCHES)
+                .document(mainUser.uid)
+                .collection(MATCHES)
+                .addSnapshotListener { value, error ->
+                    if (error != null) {
+                        Log.w("Firestore-matching", "listen failed $error")
+                        return@addSnapshotListener
+                    }
+                    if (value?.documents != null) {
+
+                        var newMatches: MutableList<Matches> = mutableListOf()
+
+                        for (match in value?.documents) {
+                            val matchingUser = match.toObject(Matches::class.java)
+
+                            Log.d("Firestore-matching", "Got matched user ${matchingUser?.uid}")
+
+                            if (matchingUser != null) {
+                                newMatches.add(matchingUser)
+                            }
+                        }
+
+                        completed(newMatches)
+
+                    }
+                }
+        }
+    }
+
     fun matchUser(matchUser: MemeDomUser, context: Context) {
+
+        val mainUser = DatabaseManager(context).retrieveSavedUser()
+        val today = System.currentTimeMillis()
+
+        if (mainUser != null) {
+            Log.d(
+                "Matching-Sending",
+                "Sending Match from ${mainUser.uid} to MatchUser ${matchUser.uid}"
+            )
+
+            val data: HashMap<String, Any> = hashMapOf(
+                "name" to mainUser.name,
+                "profilePhoto" to mainUser.profilePhoto,
+                "uid" to mainUser.uid,
+                "matchDate" to today,
+                "matchText" to ""
+            )
+
+            firestoreDB
+                .collection(MATCHES)
+                .document(matchUser.uid)
+                .collection(MATCHES)
+                .document(mainUser.uid)
+                .set(data)
+        }
+        // Send to matching firebase
+    }
+
+    fun matchWithUser(matchUser: MemeDomUser, context: Context) {
         val memeDomuser = DatabaseManager(context).retrieveSavedUser()
-        if(memeDomuser != null && !memeDomuser.matches.contains(matchUser.uid)) {
+        if (memeDomuser != null && !memeDomuser.matches.contains(matchUser.uid)) {
             var fieldValue: FieldValue = FieldValue.arrayUnion(matchUser.uid)
             updateDatabaseObject(USERS_PATH, memeDomuser.uid, hashMapOf("matches" to fieldValue))
 
             memeDomuser.matches += matchUser.uid
             DatabaseManager(context).convertUserObject(memeDomuser, "MainUser")
+
+            updateLikedDatabase(memeDomuser.uid!!, matchUser.uid!!, 1)
         }
     }
 
@@ -317,7 +416,7 @@ class FirestoreHandler {
 
                 var replies: List<Comments> = listOf()
 
-                for(reply in documents) {
+                for (reply in documents) {
                     val newReply = reply.toObject(Comments::class.java)
                     Log.d("Replies", "Reply ${newReply.showActions}")
                     replies += newReply

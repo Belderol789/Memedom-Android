@@ -1,6 +1,7 @@
 package com.kratsapps.memedom
 
 import android.content.Context
+import android.content.Intent
 import android.graphics.Rect
 import android.os.Bundle
 import android.util.Log
@@ -21,6 +22,7 @@ import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseUser
 import com.kratsapps.memedom.fragments.*
 import com.kratsapps.memedom.models.MemeDomUser
+import com.kratsapps.memedom.models.Memes
 import com.kratsapps.memedom.utils.DatabaseManager
 import com.kratsapps.memedom.utils.FirestoreHandler
 import kotlinx.android.synthetic.main.activity_main.*
@@ -100,7 +102,10 @@ class MainActivity : AppCompatActivity() {
         }
 
         matchView.profileBtn.setOnClickListener {
-            restartMatchView()
+            if(currentMatchUser != null) {
+                proceedToProfile()
+                restartMatchView()
+            }
         }
 
         matchView.cancelBtn.setOnClickListener {
@@ -118,10 +123,16 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
+    private fun proceedToProfile() {
+        val intent: Intent = Intent(this@MainActivity, ProfileActivity::class.java)
+        intent.putExtra("MatchedUser", currentMatchUser)
+        startActivity(intent)
+    }
+
     private fun fadeOutAndHideImage(img: ImageView) {
         val fadeOut = AlphaAnimation(1F, 0F)
         fadeOut.setInterpolator(AccelerateInterpolator())
-        fadeOut.setDuration(3000)
+        fadeOut.setDuration(2500)
 
         fadeOut.setAnimationListener(object: Animation.AnimationListener {
             override fun onAnimationEnd(animation:Animation) {

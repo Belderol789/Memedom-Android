@@ -5,7 +5,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@color/appBGColor"
-    tools:context=".fragments.ProfileFragment">
+    tools:context=".ProfileActivity">
 
     <androidx.cardview.widget.CardView
         android:id="@+id/profile_cardView"
@@ -141,11 +141,12 @@
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="16dp"
+                android:layout_marginTop="8dp"
                 android:layout_marginEnd="16dp"
                 android:orientation="vertical"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/expandBtn">
+                app:layout_constraintTop_toBottomOf="@+id/choicesLayout">
 
                 <TextView
                     android:id="@+id/username"
@@ -169,7 +170,7 @@
 
             </LinearLayout>
 
-            <EditText
+            <TextView
                 android:id="@+id/bioText"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
@@ -177,7 +178,6 @@
                 android:layout_marginTop="16dp"
                 android:layout_marginEnd="16dp"
                 android:backgroundTint="@color/appFGColor"
-                android:hint="Write About Yourself"
                 android:textColor="@color/whiteColor"
                 android:textColorHint="@color/appSecondaryColor"
                 android:textSize="12sp"
@@ -195,7 +195,7 @@
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/addGalleryBtn" />
+                app:layout_constraintTop_toBottomOf="@+id/bioText" />
 
             <ImageView
                 android:id="@+id/profilePhoto"
@@ -208,47 +208,40 @@
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/linearLayout3" />
 
-            <ImageButton
-                android:id="@+id/photoBtn"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginEnd="-16dp"
-                android:layout_marginBottom="-16dp"
-                android:layout_weight="1"
-                android:alpha="1"
-                android:background="@color/transparent"
-                android:src="@drawable/ic_action_down_camera"
-                android:tint="@color/whiteColor"
-                app:layout_constraintBottom_toBottomOf="@+id/profilePhoto"
-                app:layout_constraintEnd_toEndOf="@+id/profilePhoto" />
-
-            <Button
-                android:id="@+id/saveBtn"
-                android:layout_width="70dp"
-                android:layout_height="30dp"
-                android:layout_marginEnd="16dp"
-                android:background="@drawable/soft_button"
-                android:text="Save"
-                android:textAllCaps="false"
-                android:textColor="@color/whiteColor"
-                android:textSize="12sp"
-                android:visibility="invisible"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintTop_toTopOf="parent" />
-
-            <Button
-                android:id="@+id/addGalleryBtn"
-                android:layout_width="130dp"
-                android:layout_height="30dp"
+            <LinearLayout
+                android:id="@+id/choicesLayout"
+                android:layout_width="match_parent"
+                android:layout_height="50dp"
+                android:layout_marginStart="8dp"
                 android:layout_marginTop="8dp"
-                android:layout_marginEnd="16dp"
-                android:background="@drawable/soft_button"
-                android:text="Add Personal Photos"
-                android:textAllCaps="false"
-                android:textColor="@color/whiteColor"
-                android:textSize="12sp"
+                android:layout_marginEnd="8dp"
+                android:divider="@drawable/divider_horizontal"
+                android:orientation="horizontal"
+                android:showDividers="middle"
                 app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/bioText" />
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/expandBtn">
+
+                <Button
+                    android:id="@+id/rejectBtn"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:background="@drawable/soft_button_disabled"
+                    android:text="Reject"
+                    android:textAllCaps="false"
+                    android:textColor="@color/whiteColor" />
+
+                <Button
+                    android:id="@+id/matchBtn"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:background="@drawable/soft_button"
+                    android:text="Match"
+                    android:textColor="@color/whiteColor"
+                    android:textStyle="bold" />
+            </LinearLayout>
 
         </androidx.constraintlayout.widget.ConstraintLayout>
 
@@ -263,5 +256,77 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
+
+    <androidx.cardview.widget.CardView
+        android:id="@+id/congratsView"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        app:cardBackgroundColor="@color/clearBlack"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        tools:visibility="visibile">
+
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+
+            <androidx.cardview.widget.CardView
+                android:layout_width="250dp"
+                android:layout_height="180dp"
+                android:visibility="visible"
+                app:cardBackgroundColor="@color/appBGColor"
+                app:cardCornerRadius="8dp"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent">
+
+                <androidx.constraintlayout.widget.ConstraintLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent">
+
+                    <TextView
+                        android:id="@+id/congratsText"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="16dp"
+                        android:layout_marginTop="8dp"
+                        android:layout_marginEnd="16dp"
+                        android:text="Congrats on connecting with $username. \nYou can start chatting if they accept your invitation"
+                        android:textAlignment="center"
+                        android:textColor="@color/whiteColor"
+                        android:textSize="12sp"
+                        app:layout_constraintBottom_toTopOf="@+id/linearLayout4"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toTopOf="parent" />
+
+                    <LinearLayout
+                        android:id="@+id/linearLayout4"
+                        android:layout_width="0dp"
+                        android:layout_height="45dp"
+                        android:orientation="horizontal"
+                        app:layout_constraintBottom_toBottomOf="parent"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintStart_toStartOf="parent">
+
+                        <Button
+                            android:id="@+id/okBtn"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="1"
+                            android:background="@color/appFGColor"
+                            android:text="Ok" />
+                    </LinearLayout>
+
+                </androidx.constraintlayout.widget.ConstraintLayout>
+
+            </androidx.cardview.widget.CardView>
+
+        </androidx.constraintlayout.widget.ConstraintLayout>
+
+    </androidx.cardview.widget.CardView>
 
 </androidx.constraintlayout.widget.ConstraintLayout>
