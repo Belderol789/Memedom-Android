@@ -6,6 +6,9 @@ import java.text.SimpleDateFormat
 import java.util.*
 
 class Memes : Serializable {
+    var userGender: String = ""
+    var userAge: Long = 0
+
     var postID: String = ""
     var postTitle: String = ""
     var postImageURL: String = ""

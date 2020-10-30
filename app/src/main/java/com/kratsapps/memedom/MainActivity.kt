@@ -23,9 +23,8 @@ import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseUser
 import com.kratsapps.memedom.fragments.*
 import com.kratsapps.memedom.models.MemeDomUser
-import com.kratsapps.memedom.models.Memes
 import com.kratsapps.memedom.utils.DatabaseManager
-import com.kratsapps.memedom.utils.FirestoreHandler
+import com.kratsapps.memedom.firebaseutils.FirestoreHandler
 import kotlinx.android.synthetic.main.activity_main.*
 import kotlinx.android.synthetic.main.activity_main.view.*
 
@@ -34,7 +33,7 @@ class MainActivity : AppCompatActivity() {
 
     val profileFragment = ProfileFragment()
     val homeFragment = HomeFragment()
-    val notifFragment = NotificationsFragment()
+    val notifFragment = SettingsFragment()
     val msgFragment = MessagesFragment()
     val createFragment = CreateFragment()
 

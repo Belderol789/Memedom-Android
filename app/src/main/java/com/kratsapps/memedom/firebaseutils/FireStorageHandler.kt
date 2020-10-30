@@ -1,19 +1,16 @@
-package com.kratsapps.memedom.utils
+package com.kratsapps.memedom.firebaseutils
 
 import android.content.Context
 import android.graphics.Bitmap
 import android.graphics.ImageDecoder
 import android.graphics.drawable.BitmapDrawable
 import android.graphics.drawable.Drawable
-import android.media.Image
 import android.net.Uri
 import android.os.Build
 import android.provider.MediaStore
 import android.util.Log
-import androidx.core.content.ContentProviderCompat.requireContext
 import com.google.firebase.ktx.Firebase
 import com.google.firebase.storage.ktx.storage
-import kotlinx.android.synthetic.main.activity_signup.*
 import java.io.ByteArrayOutputStream
 
 class FireStorageHandler {

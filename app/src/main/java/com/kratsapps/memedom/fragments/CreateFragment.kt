@@ -12,7 +12,6 @@ import android.view.ViewGroup
 import android.widget.*
 import androidx.annotation.RequiresApi
 import androidx.appcompat.app.AlertDialog
-import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import com.bumptech.glide.Glide
 import com.kratsapps.memedom.CommentsActivity
@@ -21,10 +20,9 @@ import com.kratsapps.memedom.models.MemeDomUser
 import com.kratsapps.memedom.models.Memes
 import com.kratsapps.memedom.utils.AndroidUtils
 import com.kratsapps.memedom.utils.DatabaseManager
-import com.kratsapps.memedom.utils.FireStorageHandler
-import com.kratsapps.memedom.utils.FirestoreHandler
+import com.kratsapps.memedom.firebaseutils.FireStorageHandler
+import com.kratsapps.memedom.firebaseutils.FirestoreHandler
 import kotlinx.android.synthetic.main.fragment_create.*
-import java.util.*
 import kotlin.collections.HashMap
 
 class CreateFragment : Fragment() {
@@ -96,6 +94,8 @@ class CreateFragment : Fragment() {
             if (memeImageURL != null && savedUser != null) {
 
                 val newPost: HashMap<String, Any> = hashMapOf(
+                    "userAge" to savedUser.getUserAge().toLong(),
+                    "userGender" to savedUser.gender,
                     "postID" to postID,
                     "postTitle" to title,
                     "postDate" to today,

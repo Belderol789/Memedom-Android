@@ -22,7 +22,7 @@
             android:orientation="horizontal">
 
             <androidx.appcompat.widget.AppCompatRadioButton
-                android:id="@+id/linkSegment"
+                android:id="@+id/memedomSegment"
                 android:layout_width="0dp"
                 android:layout_height="50dp"
                 android:layout_weight="1"
@@ -30,11 +30,11 @@
                 android:button="@android:color/transparent"
                 android:checked="true"
                 android:gravity="center"
-                android:text="@string/links"
+                android:text="@string/memedom"
                 android:textColor="@color/appFGColor" />
 
             <androidx.appcompat.widget.AppCompatRadioButton
-                android:id="@+id/freeMemeSegment"
+                android:id="@+id/matchSegment"
                 android:layout_width="0dp"
                 android:layout_height="50dp"
                 android:layout_weight="1"
@@ -42,28 +42,31 @@
                 android:button="@android:color/transparent"
                 android:checked="false"
                 android:gravity="center"
-                android:text="@string/freeMeme"
+                android:text="@string/matched"
                 android:textColor="@color/appFGColor" />
         </RadioGroup>
     </LinearLayout>
 
     <androidx.swiperefreshlayout.widget.SwipeRefreshLayout
-        xmlns:android="http://schemas.android.com/apk/res/android"
         android:id="@+id/homeSwipe"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent">
-
-    <androidx.recyclerview.widget.RecyclerView
-        android:id="@+id/recyclerViewHome"
-        android:layout_width="match_parent"
+        android:layout_width="0dp"
         android:layout_height="0dp"
-        android:clipToPadding="false"
-        android:padding="4dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/linearRadios"
-        tools:listitem="@layout/feed_item" />
+        app:layout_constraintTop_toBottomOf="@+id/linearRadios">
+
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/recyclerViewHome"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:clipToPadding="false"
+            android:padding="4dp"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/linearRadios"
+            tools:listitem="@layout/feed_item" />
 
     </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>
 

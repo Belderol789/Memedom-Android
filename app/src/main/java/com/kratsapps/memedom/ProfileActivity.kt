@@ -1,29 +1,18 @@
 package com.kratsapps.memedom
 
 import DefaultItemDecorator
-import android.app.Activity
 import android.graphics.Point
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
-import android.util.DisplayMetrics
-import android.util.Log
 import android.view.View
-import android.view.animation.*
-import android.widget.ImageView
-import androidx.cardview.widget.CardView
 import androidx.constraintlayout.widget.ConstraintLayout
-import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.LinearLayoutManager
-import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
-import com.kratsapps.memedom.fragments.ProfileFragment
 import com.kratsapps.memedom.models.MemeDomUser
-import com.kratsapps.memedom.models.Memes
-import com.kratsapps.memedom.utils.DatabaseManager
-import com.kratsapps.memedom.utils.FeedAdapter
-import com.kratsapps.memedom.utils.FirestoreHandler
-import com.kratsapps.memedom.utils.ImageAdapter
+import com.kratsapps.memedom.adapters.FeedAdapter
+import com.kratsapps.memedom.firebaseutils.FirestoreHandler
+import com.kratsapps.memedom.adapters.ImageAdapter
 import kotlinx.android.synthetic.main.activity_profile.*
 
 class ProfileActivity : AppCompatActivity() {

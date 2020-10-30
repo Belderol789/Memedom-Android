@@ -1,4 +1,4 @@
-package com.kratsapps.memedom.utils
+package com.kratsapps.memedom.adapters
 
 import android.app.Activity
 import android.content.Context

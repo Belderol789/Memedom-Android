@@ -22,20 +22,22 @@ import com.kratsapps.memedom.CredentialActivity
 import com.kratsapps.memedom.R
 import com.kratsapps.memedom.models.Memes
 import com.kratsapps.memedom.utils.DatabaseManager
-import com.kratsapps.memedom.utils.FeedAdapter
-import com.kratsapps.memedom.utils.FirestoreHandler
+import com.kratsapps.memedom.adapters.FeedAdapter
+import com.kratsapps.memedom.firebaseutils.FirestoreHandler
 
 class HomeFragment : Fragment() {
 
     lateinit var rootView: View
-    lateinit var linkSegment: AppCompatRadioButton
-    lateinit var freeMemeSegment: AppCompatRadioButton
+    lateinit var matchedSegment: AppCompatRadioButton
+    lateinit var memedomSegment: AppCompatRadioButton
     lateinit var homeContext: Context
     lateinit var feedAdapter: FeedAdapter
     lateinit var feedRecyclerView: RecyclerView
     lateinit var homeSwipe: SwipeRefreshLayout
 
-    private var allMemes: MutableList<Memes> = mutableListOf<Memes>()
+    private var filteredMemems = mutableListOf<Memes>()
+    private var allMemes = mutableListOf<Memes>()
+    private var matchedMemes = mutableListOf<Memes>()
     var firebaseAuth: FirebaseAuth? = null
     var mAuthListener: FirebaseAuth.AuthStateListener? = null
 
@@ -45,10 +47,18 @@ class HomeFragment : Fragment() {
         FirestoreHandler().getAppSettings() { points, dayLimit ->
             FirestoreHandler().checkForFreshMemes(mainUser, dayLimit) {
                 Log.d("Memes", "Got all new memes ${it.count()}")
-                allMemes = it
+                filteredMemems.addAll(it)
+                allMemes.addAll(it)
                 homeSwipe.isRefreshing = false
                 if(homeContext != null) {
                     setupFeedView()
+                }
+                if(mainUser != null) {
+                    it.forEach {
+                        if(mainUser.matches.contains(it.postUserUID)) {
+                            matchedMemes.add(it)
+                        }
+                    }
                 }
             }
         }
@@ -113,18 +123,19 @@ class HomeFragment : Fragment() {
 
     private fun setupUI() {
 
-        linkSegment = rootView.findViewById(R.id.linkSegment)
-        freeMemeSegment = rootView.findViewById(R.id.freeMemeSegment)
+        memedomSegment = rootView.findViewById(R.id.memedomSegment)
+        matchedSegment = rootView.findViewById(R.id.matchSegment)
 
-        Log.d("HomeContext", "Views initialized $freeMemeSegment")
+        Log.d("HomeContext", "Views initialized $memedomSegment")
 
-        linkSegment.setOnClickListener{
-            Log.d("Segment", "Link segment tapped")
-            updateSegments(0)
+        matchedSegment.setOnClickListener{
+            Log.d("Segment", "Link segment tapped ${matchedMemes.count()}")
+            updateSegments("Matched")
+
         }
-        freeMemeSegment.setOnClickListener{
-            Log.d("Segment", "Popular segment tapped")
-            updateSegments(1)
+        memedomSegment.setOnClickListener{
+            Log.d("Segment", "Popular segment tapped ${allMemes.count()}")
+            updateSegments("Memedom")
         }
 
 
@@ -142,8 +153,7 @@ class HomeFragment : Fragment() {
         val context = this.context
         val activity = this.activity
         if (context != null && activity != null) {
-            feedAdapter =
-                FeedAdapter(allMemes, activity)
+            feedAdapter = FeedAdapter(filteredMemems, activity)
 
             feedRecyclerView = rootView.findViewById(R.id.recyclerViewHome) as RecyclerView
             feedRecyclerView.addItemDecoration(
@@ -181,13 +191,22 @@ class HomeFragment : Fragment() {
         }
     }
 
-    private fun updateSegments(type: Int) {
-        if(type == 0) {
-            linkSegment.isChecked = true
-            freeMemeSegment.isChecked = false
-        } else if (type == 1) {
-            freeMemeSegment.isChecked = true
-            linkSegment.isChecked = false
+    private fun updateSegments(type: String) {
+
+        feedAdapter.clear()
+
+        if(type.equals("Matched")) {
+            filteredMemems.addAll(matchedMemes)
+            matchedSegment.isChecked = true
+            memedomSegment.isChecked = false
+        } else {
+            filteredMemems.addAll(allMemes)
+            memedomSegment.isChecked = true
+            matchedSegment.isChecked = false
         }
+
+        Log.d("Filtering", "Filtered Memes ${filteredMemems.count()}")
+        feedAdapter.addItems(filteredMemems)
+
     }
 }

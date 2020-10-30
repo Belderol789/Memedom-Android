@@ -1,4 +1,4 @@
-package com.kratsapps.memedom.utils
+package com.kratsapps.memedom.adapters
 
 import android.app.Activity
 import android.content.Context
@@ -18,6 +18,8 @@ import com.kratsapps.memedom.Assets
 import com.kratsapps.memedom.R
 import com.kratsapps.memedom.ReplyActivity
 import com.kratsapps.memedom.models.Comments
+import com.kratsapps.memedom.utils.DatabaseManager
+import com.kratsapps.memedom.firebaseutils.FirestoreHandler
 import kotlinx.android.synthetic.main.comments_item.view.*
 
 

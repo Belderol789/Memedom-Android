@@ -14,7 +14,7 @@ import com.google.firebase.auth.FirebaseUser
 import com.kratsapps.memedom.models.MemeDomUser
 import com.kratsapps.memedom.utils.AndroidUtils
 import com.kratsapps.memedom.utils.DatabaseManager
-import com.kratsapps.memedom.utils.FirestoreHandler
+import com.kratsapps.memedom.firebaseutils.FirestoreHandler
 import kotlinx.android.synthetic.main.activity_credential.*
 import org.json.JSONException
 import java.io.Serializable

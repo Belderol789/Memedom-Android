@@ -22,9 +22,9 @@ import com.bumptech.glide.Glide
 import com.facebook.internal.Utility.generateRandomString
 import com.kratsapps.memedom.models.Comments
 import com.kratsapps.memedom.models.Memes
-import com.kratsapps.memedom.utils.CommentsAdapter
+import com.kratsapps.memedom.adapters.CommentsAdapter
 import com.kratsapps.memedom.utils.DatabaseManager
-import com.kratsapps.memedom.utils.FirestoreHandler
+import com.kratsapps.memedom.firebaseutils.FirestoreHandler
 import com.kratsapps.memedom.utils.hideKeyboard
 import kotlinx.android.synthetic.main.activity_comments.*
 

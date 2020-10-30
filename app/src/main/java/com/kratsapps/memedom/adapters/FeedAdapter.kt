@@ -1,4 +1,4 @@
-package com.kratsapps.memedom.utils
+package com.kratsapps.memedom.adapters
 
 import android.app.Activity
 import android.content.Context
@@ -21,12 +21,16 @@ import com.kratsapps.memedom.CommentsActivity
 import com.kratsapps.memedom.R
 import com.kratsapps.memedom.models.MemeDomUser
 import com.kratsapps.memedom.models.Memes
+import com.kratsapps.memedom.utils.DatabaseManager
+import com.kratsapps.memedom.utils.DoubleClickListener
+import com.kratsapps.memedom.firebaseutils.FirestoreHandler
 import kotlinx.android.synthetic.main.feed_item.view.*
 
 
 class FeedAdapter(private var feedList: MutableList<Memes>, private val activity: Activity): RecyclerView.Adapter<FeedAdapter.FeedViewHolder>() {
 
     lateinit var feedAdapterContext: Context
+    var filteredFeedList = feedList
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): FeedViewHolder {
         val itemView = LayoutInflater.from(parent.context).inflate(
@@ -39,7 +43,7 @@ class FeedAdapter(private var feedList: MutableList<Memes>, private val activity
 
     @RequiresApi(Build.VERSION_CODES.M)
     override fun onBindViewHolder(holder: FeedViewHolder, position: Int) {
-        val currentItem = feedList[position]
+        val currentItem = filteredFeedList[position]
         val postUID: String = currentItem.postID
         val postUserID: String = currentItem.postUserUID
 
@@ -212,7 +216,7 @@ class FeedAdapter(private var feedList: MutableList<Memes>, private val activity
         )
     }
 
-    override fun getItemCount() = feedList.size
+    override fun getItemCount() = filteredFeedList.size
 
     class FeedViewHolder(itemView: View): RecyclerView.ViewHolder(itemView) {
         val feedImage: ImageButton = itemView.feedImage
@@ -252,12 +256,12 @@ class FeedAdapter(private var feedList: MutableList<Memes>, private val activity
     }
 
     fun clear() {
-        feedList.clear()
+        filteredFeedList.clear()
         notifyDataSetChanged()
     }
 
     fun addItems(memes: MutableList<Memes>) {
-        feedList = memes
+        filteredFeedList = memes
         notifyDataSetChanged()
     }
 

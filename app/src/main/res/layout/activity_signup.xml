@@ -233,6 +233,14 @@
                 app:layout_constraintStart_toStartOf="@id/layoutUsername"
                 app:layout_constraintTop_toTopOf="parent">
 
+                <TextView
+                    android:id="@+id/textView6"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text=" Looking for"
+                    android:textColor="@color/whiteColor"
+                    android:textStyle="bold" />
+
                 <LinearLayout
                     android:id="@+id/linearRadios"
                     android:layout_width="match_parent"

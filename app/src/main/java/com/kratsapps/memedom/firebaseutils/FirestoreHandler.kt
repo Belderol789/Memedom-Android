@@ -1,8 +1,7 @@
-package com.kratsapps.memedom.utils
+package com.kratsapps.memedom.firebaseutils
 
 import android.content.Context
 import android.util.Log
-import com.facebook.internal.Mutable
 import com.google.firebase.firestore.FieldValue
 import com.google.firebase.firestore.Query
 import com.google.firebase.firestore.SetOptions
@@ -12,6 +11,7 @@ import com.kratsapps.memedom.models.Comments
 import com.kratsapps.memedom.models.Matches
 import com.kratsapps.memedom.models.MemeDomUser
 import com.kratsapps.memedom.models.Memes
+import com.kratsapps.memedom.utils.DatabaseManager
 import java.text.SimpleDateFormat
 import java.util.*
 import kotlin.collections.HashMap
@@ -173,11 +173,7 @@ class FirestoreHandler {
     }
 
     //Getting
-    fun checkForFreshMemes(
-        mainUser: MemeDomUser?,
-        dayLimit: Long,
-        completed: (MutableList<Memes>) -> Unit
-    ) {
+    fun checkForFreshMemes(mainUser: MemeDomUser?, dayLimit: Long, completed: (MutableList<Memes>) -> Unit) {
 
         Log.d("DayLimit", "Current day limit $dayLimit")
 
@@ -201,20 +197,29 @@ class FirestoreHandler {
             "Today ${convertLongToTime(today)} Days after ${convertLongToTime(tomorrow)}"
         )
 
+        var findGender: String = "Female"
+        if(mainUser?.gender.equals("Other")) {
+            findGender = "Other"
+        } else if (mainUser?.gender.equals("Female")) {
+            findGender = "Male"
+        }
+
         firestoreDB
             .collection(MEMES_PATH)
+            .whereEqualTo("userGender", findGender)
             .whereGreaterThan("postDate", tomorrow)
             .orderBy("postDate", DESCENDING)
             .limit(100)
             .get()
             .addOnSuccessListener { documents ->
+
+                Log.d("Filtering", "Found memes ${documents.count()} for gender $findGender")
+
                 var memes: MutableList<Memes> = arrayListOf()
                 for (document in documents) {
                     val newMeme: Memes = document.toObject(Memes::class.java)
                     if (mainUser != null) {
-                        if (!mainUser.rejects.contains(newMeme.postUserUID)
-                            && !mainUser.rejectedMemes.contains(newMeme.postID)
-                        ) {
+                        if (!mainUser.rejects.contains(newMeme.postUserUID) && !mainUser.rejectedMemes.contains(newMeme.postID)) {
                             memes.add(newMeme)
                         }
                     } else {
@@ -222,6 +227,9 @@ class FirestoreHandler {
                     }
 
                 }
+
+                Log.d("Memes", "Completed getting memes")
+
                 completed(memes)
             }
     }
@@ -309,7 +317,7 @@ class FirestoreHandler {
                         if (value == 10L &&
                             memeDomuser != null &&
                             !memeDomuser.matches.contains(key)
-                            //&& !memeDomuser.rejects.contains(key)
+                            && !memeDomuser.rejects.contains(key)
                         ) {
                             getUserDataWith(key, {
                                 popUpData(it)
@@ -328,6 +336,7 @@ class FirestoreHandler {
 
             memeDomuser.rejects += matchUser.uid
             DatabaseManager(context).convertUserObject(memeDomuser, "MainUser")
+            updateLikedDatabase(memeDomuser.uid!!, matchUser.uid!!, 1)
         }
     }
 
@@ -391,6 +400,7 @@ class FirestoreHandler {
                 .set(data)
         }
         // Send to matching firebase
+        matchWithUser(matchUser, context)
     }
 
     fun matchWithUser(matchUser: MemeDomUser, context: Context) {

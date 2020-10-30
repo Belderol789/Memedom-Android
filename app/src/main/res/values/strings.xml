@@ -31,8 +31,8 @@
     <string name="female">Female</string>
     <string name="other">Other</string>
     <string name="freeMeme">Popular</string>
-    <string name="links">Links</string>
-    <string name="fresh">Fresh</string>
+    <string name="memedom">Memedom</string>
+    <string name="matched">Matched</string>
 
     <string-array name="feed_segments">
         <item>Connections</item>

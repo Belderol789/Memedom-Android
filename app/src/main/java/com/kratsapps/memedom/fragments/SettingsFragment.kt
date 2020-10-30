@@ -8,11 +8,10 @@ import android.view.ViewGroup
 import com.kratsapps.memedom.R
 
 
-class NotificationsFragment : Fragment() {
+class SettingsFragment : Fragment() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-
     }
 
     override fun onCreateView(
@@ -20,7 +19,7 @@ class NotificationsFragment : Fragment() {
         savedInstanceState: Bundle?
     ): View? {
         // Inflate the layout for this fragment
-        val rootView = inflater.inflate(R.layout.fragment_profile, container, false)
+        val rootView = inflater.inflate(R.layout.fragment_settings, container, false)
         return rootView
     }
 
