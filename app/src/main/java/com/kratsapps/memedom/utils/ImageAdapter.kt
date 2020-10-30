@@ -34,6 +34,7 @@ class ImageAdapter(private val imageList: MutableList<String>, private val activ
         Glide.with(activity)
             .load(imageList[position])
             .centerCrop()
+            .thumbnail(0.25f)
             .into(holder.imageCell)
 
         holder.deleteBtn.setOnClickListener {

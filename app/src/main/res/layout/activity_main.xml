@@ -134,7 +134,6 @@
                         android:alpha="1"
                         android:scaleType="centerCrop"
                         android:background="@color/appBGColorLight"
-                        android:src="@mipmap/ic_launcher_test_meme"
                         app:layout_constraintBottom_toBottomOf="parent"
                         app:layout_constraintEnd_toEndOf="parent"
                         app:layout_constraintStart_toStartOf="parent"

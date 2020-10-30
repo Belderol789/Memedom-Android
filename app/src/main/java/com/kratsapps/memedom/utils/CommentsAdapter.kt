@@ -11,6 +11,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.annotation.RequiresApi
+import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.kratsapps.memedom.Assets
@@ -42,6 +43,7 @@ class CommentsAdapter(private val commentList: List<Comments>, private val activ
         Glide.with(commentAdapterContext)
             .load(currentComment.userPhotoURL)
             .circleCrop()
+            .error(ContextCompat.getDrawable(this.commentAdapterContext, R.drawable.ic_action_name))
             .into(holder.userPhotoURL)
         holder.userName.setText(currentComment.userName)
         holder.commentDate.setText(currentComment.commentDateString())

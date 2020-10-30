@@ -4,6 +4,7 @@ import android.content.Context
 import android.content.Intent
 import android.graphics.Rect
 import android.os.Bundle
+import android.os.CountDownTimer
 import android.util.Log
 import android.view.MotionEvent
 import android.view.View
@@ -71,6 +72,8 @@ class MainActivity : AppCompatActivity() {
         FacebookSdk.fullyInitialize()
     }
 
+
+
     private fun checkMatchingStatus() {
         val user = FirebaseAuth.getInstance().getCurrentUser()
         val mainUID = DatabaseManager(this).getMainUserID()
@@ -84,6 +87,14 @@ class MainActivity : AppCompatActivity() {
                     .load(it.profilePhoto)
                     .circleCrop()
                     .into(matchView.profilePhoto)
+
+                val randomGif = listOf(R.raw.gif1, R.raw.gif2, R.raw.gif3, R.raw.gif4, R.raw.gif5).random()
+
+                Glide.with(this)
+                    .asGif()
+                    .load(randomGif)
+                    .into(memeImageView)
+
                 fadeOutAndHideImage(matchView.memeImageView)
                 Log.d("Firestore-matching", "Got User ${it.uid}")
             })
@@ -130,18 +141,24 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun fadeOutAndHideImage(img: ImageView) {
-        val fadeOut = AlphaAnimation(1F, 0F)
-        fadeOut.setInterpolator(AccelerateInterpolator())
-        fadeOut.setDuration(2500)
+        val timer = object: CountDownTimer(3000, 1000) {
+            override fun onTick(millisUntilFinished: Long) {}
+            override fun onFinish() {
+                val fadeOut = AlphaAnimation(1F, 0F)
+                fadeOut.setInterpolator(AccelerateInterpolator())
+                fadeOut.setDuration(2000)
 
-        fadeOut.setAnimationListener(object: Animation.AnimationListener {
-            override fun onAnimationEnd(animation:Animation) {
-                img.setVisibility(View.GONE)
+                fadeOut.setAnimationListener(object: Animation.AnimationListener {
+                    override fun onAnimationEnd(animation:Animation) {
+                        img.setVisibility(View.GONE)
+                    }
+                    override fun onAnimationRepeat(animation:Animation) {}
+                    override  fun onAnimationStart(animation:Animation) {}
+                })
+                img.startAnimation(fadeOut)
             }
-            override fun onAnimationRepeat(animation:Animation) {}
-            override  fun onAnimationStart(animation:Animation) {}
-        })
-        img.startAnimation(fadeOut)
+        }
+        timer.start()
     }
 
     private fun restartMatchView() {

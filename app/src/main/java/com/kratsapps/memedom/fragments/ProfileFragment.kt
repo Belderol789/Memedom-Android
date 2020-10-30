@@ -21,6 +21,7 @@ import android.widget.*
 import androidx.annotation.RequiresApi
 import androidx.cardview.widget.CardView
 import androidx.constraintlayout.widget.ConstraintLayout
+import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.GridLayoutManager.SpanSizeLookup
@@ -115,6 +116,7 @@ class ProfileFragment : Fragment() {
             }
             Glide.with(this.activity!!)
                 .load(mainUser.profilePhoto)
+                .error(ContextCompat.getDrawable(this.context!!, R.drawable.ic_action_name))
                 .circleCrop()
                 .into(profilePhoto)
         }

@@ -308,8 +308,8 @@ class FirestoreHandler {
 
                         if (value == 10L &&
                             memeDomuser != null &&
-                            !memeDomuser.matches.contains(key) &&
-                            !memeDomuser.rejects.contains(key)
+                            !memeDomuser.matches.contains(key)
+                            //&& !memeDomuser.rejects.contains(key)
                         ) {
                             getUserDataWith(key, {
                                 popUpData(it)

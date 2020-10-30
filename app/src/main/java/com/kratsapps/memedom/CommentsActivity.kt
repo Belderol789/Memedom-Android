@@ -120,7 +120,7 @@ class CommentsActivity : AppCompatActivity() {
                         Color.parseColor("#8FD6EF"),
                         PorterDuff.Mode.SRC_ATOP
                     )
-                    editTextTextMultiLine.getBackground().setTint(Color.parseColor("#FACE0D"))
+                    editTextTextMultiLine.getBackground().setTint(Color.parseColor("#8FD6EF"))
                 } else {
                     deactivateSendButton()
                 }

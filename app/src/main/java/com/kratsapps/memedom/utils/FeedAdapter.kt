@@ -49,6 +49,7 @@ class FeedAdapter(private var feedList: MutableList<Memes>, private val activity
 
         Glide.with(feedAdapterContext)
             .load(currentItem.postImageURL)
+            .thumbnail(0.25f)
             .centerCrop()
             .into(holder.feedImage)
         holder.postUserName.text = currentItem.postUsername
@@ -61,6 +62,7 @@ class FeedAdapter(private var feedList: MutableList<Memes>, private val activity
         Glide.with(feedAdapterContext)
             .load(currentItem.postProfileURL)
             .circleCrop()
+            .error(ContextCompat.getDrawable(activity.applicationContext, R.drawable.ic_action_name))
             .into(holder.postProfilePic)
         holder.feedDate.text = currentItem.postDateString()
 
