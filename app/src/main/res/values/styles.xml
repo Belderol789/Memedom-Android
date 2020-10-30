@@ -19,5 +19,4 @@
     <style name="TextAppearence.App.TextInputLayout"  parent="@android:style/TextAppearance">
         <item name="android:textColor">@color/appFGColor</item>
     </style>
-
 </resources>

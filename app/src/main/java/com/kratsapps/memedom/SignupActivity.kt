@@ -143,6 +143,8 @@ class SignupActivity : AppCompatActivity() {
             }
         }
 
+        val segment = maleSegment
+
         maleSegment.setOnClickListener{
             Log.d("Segment", "Male segment tapped")
             memeDomuser.gender = "Male"
