@@ -32,7 +32,7 @@
             <ImageView
                 android:id="@+id/imageviewLoginEmail"
                 android:layout_width="30dp"
-                android:layout_height="30dp"
+                android:layout_height="match_parent"
                 android:layout_gravity="bottom"
                 android:contentDescription="@string/icon_for_email"
                 app:srcCompat="@drawable/ic_action_email"
@@ -67,7 +67,7 @@
             <ImageView
                 android:id="@+id/imageviewLoginPassword"
                 android:layout_width="30dp"
-                android:layout_height="30dp"
+                android:layout_height="match_parent"
                 android:layout_gravity="bottom"
                 android:contentDescription="@string/icon_for_password"
                 app:srcCompat="@drawable/ic_action_password"
@@ -115,8 +115,8 @@
 
     <ImageView
         android:id="@+id/imageView2"
-        android:layout_width="100dp"
-        android:layout_height="100dp"
+        android:layout_width="150dp"
+        android:layout_height="150dp"
         android:contentDescription="TODO"
         app:layout_constraintBottom_toTopOf="@+id/layoutLoginAuth"
         app:layout_constraintEnd_toEndOf="parent"
