@@ -44,6 +44,8 @@ class LoginActivity : AppCompatActivity() {
 
         if(!email.isEmpty() && !password.isEmpty()) {
 
+            DatabaseManager(this).saveToPrefsInt("minAge", 18)
+            DatabaseManager(this).saveToPrefsInt("maxAge", 65)
             AndroidUtils().animateView(progressOverlay, View.VISIBLE, 0.4f, 200)
 
             auth.signInWithEmailAndPassword(email, password)

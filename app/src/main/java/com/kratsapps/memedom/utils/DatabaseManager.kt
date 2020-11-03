@@ -11,6 +11,18 @@ class DatabaseManager(context: Context) {
     private val dbContext = context
     private val gson = Gson()
 
+    fun saveToPrefsInt(key: String, value: Int) {
+        val sharedPreference = dbContext.getSharedPreferences(key, Context.MODE_PRIVATE)
+        var editor = sharedPreference.edit()
+        editor.putInt(key, value)
+        editor.apply()
+    }
+
+    fun retrievePrefsInt(key: String): Int {
+        val savedInt = dbContext.getSharedPreferences(key, Context.MODE_PRIVATE).getInt(key, 0)
+        return savedInt
+    }
+
     fun convertUserObject(user: MemeDomUser, key: String) {
         var jsonString = gson.toJson(user)
 

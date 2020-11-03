@@ -173,7 +173,7 @@ class FirestoreHandler {
     }
 
     //Getting
-    fun checkForFreshMemes(mainUser: MemeDomUser?, dayLimit: Long, completed: (MutableList<Memes>) -> Unit) {
+    fun checkForFreshMemes(context: Context, mainUser: MemeDomUser?, dayLimit: Long, completed: (MutableList<Memes>) -> Unit) {
 
         Log.d("DayLimit", "Current day limit $dayLimit")
 
@@ -197,6 +197,9 @@ class FirestoreHandler {
             "Today ${convertLongToTime(today)} Days after ${convertLongToTime(tomorrow)}"
         )
 
+        val minValue = DatabaseManager(context).retrievePrefsInt("minAge")
+        val maxValue = DatabaseManager(context).retrievePrefsInt("maxAge")
+
         var findGender: String = "Female"
         if(mainUser?.gender.equals("Other")) {
             findGender = "Other"
@@ -204,10 +207,10 @@ class FirestoreHandler {
             findGender = "Male"
         }
 
+
         firestoreDB
             .collection(MEMES_PATH)
-            .whereEqualTo("userGender", findGender)
-            .whereGreaterThan("postDate", tomorrow)
+            .whereGreaterThanOrEqualTo("postDate", tomorrow)
             .orderBy("postDate", DESCENDING)
             .limit(100)
             .get()
@@ -218,8 +221,13 @@ class FirestoreHandler {
                 var memes: MutableList<Memes> = arrayListOf()
                 for (document in documents) {
                     val newMeme: Memes = document.toObject(Memes::class.java)
+
+                    Log.d("Filtering-Memes", "MemeAge ${newMeme.userAge} min $minValue max $maxValue")
+
                     if (mainUser != null) {
-                        if (!mainUser.rejects.contains(newMeme.postUserUID) && !mainUser.rejectedMemes.contains(newMeme.postID)) {
+                        if (!mainUser.rejects.contains(newMeme.postUserUID)
+                            && !mainUser.rejectedMemes.contains(newMeme.postID)
+                            && newMeme.userAge.toInt() > minValue && newMeme.userAge.toInt() < maxValue) {
                             memes.add(newMeme)
                         }
                     } else {
@@ -229,7 +237,6 @@ class FirestoreHandler {
                 }
 
                 Log.d("Memes", "Completed getting memes")
-
                 completed(memes)
             }
     }
@@ -373,7 +380,7 @@ class FirestoreHandler {
         }
     }
 
-    fun matchUser(matchUser: MemeDomUser, context: Context) {
+    fun sendMatchToUser(matchUserUID: String, context: Context) {
 
         val mainUser = DatabaseManager(context).retrieveSavedUser()
         val today = System.currentTimeMillis()
@@ -381,7 +388,7 @@ class FirestoreHandler {
         if (mainUser != null) {
             Log.d(
                 "Matching-Sending",
-                "Sending Match from ${mainUser.uid} to MatchUser ${matchUser.uid}"
+                "Sending Match from ${mainUser.uid} to MatchUser ${matchUserUID}"
             )
 
             val data: HashMap<String, Any> = hashMapOf(
@@ -394,25 +401,25 @@ class FirestoreHandler {
 
             firestoreDB
                 .collection(MATCHES)
-                .document(matchUser.uid)
+                .document(matchUserUID)
                 .collection(MATCHES)
                 .document(mainUser.uid)
                 .set(data)
         }
         // Send to matching firebase
-        matchWithUser(matchUser, context)
+        matchWithUser(matchUserUID, context)
     }
 
-    fun matchWithUser(matchUser: MemeDomUser, context: Context) {
+    fun matchWithUser(matchUserUID: String, context: Context) {
         val memeDomuser = DatabaseManager(context).retrieveSavedUser()
-        if (memeDomuser != null && !memeDomuser.matches.contains(matchUser.uid)) {
-            var fieldValue: FieldValue = FieldValue.arrayUnion(matchUser.uid)
+        if (memeDomuser != null && !memeDomuser.matches.contains(matchUserUID)) {
+            var fieldValue: FieldValue = FieldValue.arrayUnion(matchUserUID)
             updateDatabaseObject(USERS_PATH, memeDomuser.uid, hashMapOf("matches" to fieldValue))
 
-            memeDomuser.matches += matchUser.uid
+            memeDomuser.matches += matchUserUID
             DatabaseManager(context).convertUserObject(memeDomuser, "MainUser")
 
-            updateLikedDatabase(memeDomuser.uid!!, matchUser.uid!!, 1)
+            updateLikedDatabase(memeDomuser.uid!!, matchUserUID, 1)
         }
     }
 

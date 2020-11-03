@@ -22,33 +22,33 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
-
-    <LinearLayout
-        android:id="@+id/seekBarLayout"
+    <com.innovattic.rangeseekbar.RangeSeekBar
+        android:id="@+id/seekBar"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="vertical"
+        android:layout_marginStart="8dp"
+        android:layout_marginTop="8dp"
+        android:layout_marginEnd="8dp"
+        android:background="@color/transparent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/textView9">
+        app:layout_constraintTop_toBottomOf="@+id/minText"
+        app:rsb_minRange="5"
+        app:rsb_trackColor="@color/whiteColor"
+        app:rsb_trackRoundedCaps="true"
+        app:rsb_trackSelectedColor="@color/appFGColor" />
 
-        <TextView
-            android:id="@+id/seekBarText"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_margin="16sp"
-            android:text="18"
-            android:textColor="@color/whiteColor" />
-
-        <SeekBar
-            android:id="@+id/seekBar"
-            style="@android:style/Widget.DeviceDefault.SeekBar"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:max="47"
-            android:progress="18" />
-
-    </LinearLayout>
+    <TextView
+        android:id="@+id/minText"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_margin="16sp"
+        android:layout_marginStart="16dp"
+        android:layout_marginTop="16dp"
+        android:text="18"
+        android:textColor="@color/whiteColor"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/textView9" />
 
     <TextView
         android:id="@+id/textView6"
@@ -134,13 +134,13 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="16dp"
-        android:layout_marginTop="24dp"
+        android:layout_marginTop="16dp"
         android:text="Gender Filter"
         android:textColor="@color/appFGColor"
         android:textSize="18sp"
         android:textStyle="bold"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/seekBarLayout" />
+        app:layout_constraintTop_toBottomOf="@+id/seekBar" />
 
     <Button
         android:id="@+id/signoutBtn"
@@ -168,5 +168,16 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/signoutBtn" />
+
+    <TextView
+        android:id="@+id/maxText"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="16dp"
+        android:layout_marginEnd="16dp"
+        android:text="65"
+        android:textColor="@color/whiteColor"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/textView9" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

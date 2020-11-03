@@ -2,6 +2,7 @@ package com.kratsapps.memedom.adapters
 
 import android.app.Activity
 import android.content.Context
+import android.content.Intent
 import android.os.Build
 import android.util.Log
 import android.view.LayoutInflater
@@ -12,9 +13,13 @@ import android.widget.Filterable
 import androidx.annotation.RequiresApi
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
+import com.kratsapps.memedom.CommentsActivity
+import com.kratsapps.memedom.ProfileActivity
 import com.kratsapps.memedom.R
+import com.kratsapps.memedom.firebaseutils.FirestoreHandler
 import com.kratsapps.memedom.models.Matches
 import com.kratsapps.memedom.models.MemeDomUser
+import com.kratsapps.memedom.models.Memes
 import kotlinx.android.synthetic.main.matches_item.view.*
 import java.util.*
 
@@ -23,7 +28,7 @@ class MatchAdapter(private val matchList: MutableList<Matches>, private val acti
     Filterable {
 
     lateinit var matchAdapterContext: Context
-    var matchFilterList = mutableListOf<Matches>()
+    var matchFilterList = matchList
 
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): MatchViewHolder {
@@ -32,16 +37,14 @@ class MatchAdapter(private val matchList: MutableList<Matches>, private val acti
             parent, false
         )
         matchAdapterContext = parent.context
-        return MatchViewHolder(
-            itemView
-        )
+        return MatchViewHolder(itemView)
     }
 
     @RequiresApi(Build.VERSION_CODES.M)
     override fun onBindViewHolder(holder: MatchViewHolder, position: Int) {
         val currentMatch = matchFilterList[position]
 
-        Log.d("Matches", "Current match ${currentMatch.uid}")
+        Log.d("Matching-Fragment", "Current match ${currentMatch.uid} FilterList $matchFilterList")
 
         holder.usernameText.setText(currentMatch.name)
         holder.matchTextView.setText(currentMatch.matchText)
@@ -56,16 +59,22 @@ class MatchAdapter(private val matchList: MutableList<Matches>, private val acti
         } else {
             holder.matchTextView.visibility = View.VISIBLE
             holder.actionLayout.visibility = View.GONE
-
-            if(currentMatch.matchText.isBlank()) {
-                holder.chatIndicator.visibility = View.VISIBLE
-            } else {
-                holder.chatIndicator.visibility = View.INVISIBLE
-            }
         }
+
+        holder.profileBtn.setOnClickListener {
+            val intent: Intent = Intent(matchAdapterContext, ProfileActivity::class.java)
+            intent.putExtra("MatchedUser", currentMatch.uid)
+            matchAdapterContext.startActivity(intent)
+        }
+
+        holder.matchBtn.setOnClickListener {
+            FirestoreHandler().sendMatchToUser(currentMatch.uid, matchAdapterContext)
+            // Go to Chat
+        }
+
     }
 
-    override fun getItemCount() = matchList.size
+    override fun getItemCount() = matchFilterList.size
 
     class MatchViewHolder(itemView: View): RecyclerView.ViewHolder(itemView) {
         val usernameText = itemView.usernameText
@@ -74,7 +83,6 @@ class MatchAdapter(private val matchList: MutableList<Matches>, private val acti
         val actionLayout = itemView.actionLayout
         val profileBtn = itemView.profileBtn
         val matchBtn = itemView.matchBtn
-        val chatIndicator = itemView.chatIndicator
 
         val matchTextView = itemView.matchTextView
     }
@@ -108,6 +116,17 @@ class MatchAdapter(private val matchList: MutableList<Matches>, private val acti
             }
         }
     }
+
+    fun clear() {
+        matchFilterList.clear()
+        notifyDataSetChanged()
+    }
+
+    fun addItems(matches: MutableList<Matches>) {
+        matchFilterList = matches
+        notifyDataSetChanged()
+    }
+
 }
 
 

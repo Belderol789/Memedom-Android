@@ -26,28 +26,31 @@ class ProfileActivity : AppCompatActivity() {
 
         congratsView.visibility = View.GONE
 
-        val matchedUser = intent.extras?.get("MatchedUser") as? MemeDomUser
+        val matchedUserUID = intent.extras?.get("MatchedUser") as? String
 
+        if (matchedUserUID != null) {
+            getAllUserMemes(matchedUserUID)
 
-        if (matchedUser != null) {
-            setupUserData(matchedUser)
-            getAllUserMemes(matchedUser.uid)
-            congratsText.setText("Congrats on connecting! You'll be able to chat with ${matchedUser.name} if they accept your invitation")
+            FirestoreHandler().getUserDataWith(matchedUserUID, {
 
-            rejectBtn.setOnClickListener {
-                FirestoreHandler().rejectUser(matchedUser, this)
-                onBackPressed()
-            }
+                val matchedUser = it
 
-            matchBtn.setOnClickListener {
+                setupUserData(matchedUser)
 
-                congratsView.visibility = View.VISIBLE
-            }
+                rejectBtn.setOnClickListener {
+                    FirestoreHandler().rejectUser(matchedUser, this)
+                    onBackPressed()
+                }
 
-            okBtn.setOnClickListener {
-                FirestoreHandler().matchUser(matchedUser, this)
-                onBackPressed()
-            }
+                matchBtn.setOnClickListener {
+                    congratsView.visibility = View.VISIBLE
+                }
+
+                okBtn.setOnClickListener {
+                    FirestoreHandler().sendMatchToUser(matchedUser.uid, this)
+                    // Go to Chat
+                }
+            })
         }
 
         val display = windowManager.defaultDisplay
@@ -97,6 +100,7 @@ class ProfileActivity : AppCompatActivity() {
     }
 
     private fun setupUserData(matchedUser: MemeDomUser) {
+        congratsText.setText("Congrats on connecting! You'll be able to chat with ${matchedUser.name} if they accept your invitation")
         username.setText(matchedUser.name)
         gender.setText(matchedUser.gender)
 

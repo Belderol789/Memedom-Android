@@ -60,4 +60,6 @@ dependencies {
     implementation 'androidx.swiperefreshlayout:swiperefreshlayout:1.0.0'
     //gifs
     implementation 'pl.droidsonroids.gif:android-gif-drawable:1.2.17'
+    //rangeSeekBar
+    implementation 'com.github.Innovattic:range-seek-bar:v1.0.6'
 }

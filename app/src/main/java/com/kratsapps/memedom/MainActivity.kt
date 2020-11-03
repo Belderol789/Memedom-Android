@@ -127,7 +127,7 @@ class MainActivity : AppCompatActivity() {
 
         matchView.matchBtn.setOnClickListener {
             if (currentMatchUser != null) {
-                FirestoreHandler().matchUser(currentMatchUser!!, this.applicationContext)
+                FirestoreHandler().sendMatchToUser(currentMatchUser!!.uid, this.applicationContext)
                 restartMatchView()
             }
         }
@@ -135,7 +135,7 @@ class MainActivity : AppCompatActivity() {
 
     private fun proceedToProfile() {
         val intent: Intent = Intent(this@MainActivity, ProfileActivity::class.java)
-        intent.putExtra("MatchedUser", currentMatchUser)
+        intent.putExtra("MatchedUser", currentMatchUser!!.uid)
         startActivity(intent)
     }
 

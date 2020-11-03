@@ -19,7 +19,7 @@
 
     <item
         android:id="@+id/ic_notifs"
-        android:icon="@drawable/ic_action_notif"
+        android:icon="@drawable/ic_action_setting"
         android:title="Notifs"/>
 
     <item

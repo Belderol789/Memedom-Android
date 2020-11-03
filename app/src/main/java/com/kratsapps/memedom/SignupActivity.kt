@@ -312,6 +312,10 @@ class SignupActivity : AppCompatActivity() {
 
             val profileImage = imageButtonProfile.drawable
             if (profileImage != null) {
+
+                DatabaseManager(this).saveToPrefsInt("minAge", 18)
+                DatabaseManager(this).saveToPrefsInt("maxAge", 65)
+
                 FireStorageHandler().uploadPhotoWith(memeDomuser.uid, profileImage, {
                     memeDomuser.profilePhoto = it
                     memeDomuser.bio = ""

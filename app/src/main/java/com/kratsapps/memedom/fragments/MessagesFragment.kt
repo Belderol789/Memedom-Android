@@ -21,6 +21,8 @@ import com.kratsapps.memedom.adapters.MatchAdapter
 import android.app.SearchManager
 import androidx.appcompat.widget.SearchView
 import android.widget.SearchView.OnQueryTextListener
+import androidx.appcompat.widget.AppCompatRadioButton
+import com.facebook.internal.Mutable
 
 
 class MessagesFragment : Fragment() {
@@ -29,6 +31,12 @@ class MessagesFragment : Fragment() {
     lateinit var rootView: View
     lateinit var matchRecycler: RecyclerView
     lateinit var matchAdapter: MatchAdapter
+
+    lateinit var matchedSegment: AppCompatRadioButton
+    lateinit var pendingSegment: AppCompatRadioButton
+
+    var filteredMatches: MutableList<Matches> = mutableListOf()
+    var pending: MutableList<Matches> = mutableListOf()
     var matches: MutableList<Matches> = mutableListOf()
 
     override fun onAttach(context: Context) {
@@ -43,6 +51,7 @@ class MessagesFragment : Fragment() {
     ): View? {
         // Inflate the layout for this fragment
         rootView = inflater.inflate(R.layout.fragment_messages, container, false)
+        setupUI()
         getAllMatches()
         setupMatchRecycler()
         setupSearch()
@@ -50,12 +59,46 @@ class MessagesFragment : Fragment() {
     }
 
     private fun getAllMatches() {
+
         if(msgContext != null) {
+
+            val mainUser = DatabaseManager(msgContext).retrieveSavedUser()
+
             FirestoreHandler().checkNewMatches(msgContext, {
-                matches = it
-                Log.d("Firestore-matching", "Got matches ${matches.count()}")
-                setupMatchRecycler()
+
+                filteredMatches.clear()
+                matches.clear()
+                pending.clear()
+
+                for(match in it) {
+                    if(!mainUser!!.matches.contains(match.uid)) {
+                        pending.add(match)
+                    } else {
+                        matches.add(match)
+                    }
+                }
+                filteredMatches.addAll(matches)
+
+                Log.d("Matching-Fragment", "Got matches ${filteredMatches.count()}")
+
+                matchAdapter.notifyDataSetChanged()
             })
+        }
+    }
+
+    private fun setupUI() {
+
+        matchedSegment = rootView.findViewById(R.id.matchedSegment)
+        pendingSegment = rootView.findViewById(R.id.pendingSegment)
+
+        matchedSegment.setOnClickListener{
+            Log.d("Segment", "Matches segment tapped ${matches.count()}")
+            updateSegments("Matched")
+
+        }
+        pendingSegment.setOnClickListener{
+            Log.d("Segment", "Pending segment tapped ${pending.count()}")
+            updateSegments("Memedom")
         }
     }
 
@@ -88,12 +131,13 @@ class MessagesFragment : Fragment() {
     }
 
     private fun setupMatchRecycler() {
-        val context = this.context
         val activity = this.activity
+        if(msgContext != null && activity != null) {
 
-        if(context != null && activity != null) {
-            val mainUser = DatabaseManager(context).retrieveSavedUser()
-            matchAdapter = MatchAdapter(matches, activity, mainUser!!)
+            Log.d("Matching-Fragment", "Setting up recyclerView with $filteredMatches")
+
+            val mainUser = DatabaseManager(msgContext).retrieveSavedUser()
+            matchAdapter = MatchAdapter(filteredMatches, activity, mainUser!!)
 
             matchRecycler = rootView.findViewById<RecyclerView>(R.id.matchesRecycler)
             matchRecycler.adapter = matchAdapter
@@ -101,5 +145,24 @@ class MessagesFragment : Fragment() {
             matchRecycler.setHasFixedSize(true)
             matchRecycler.itemAnimator?.removeDuration
         }
+    }
+
+    private fun updateSegments(type: String) {
+
+        matchAdapter.clear()
+
+        if(type.equals("Matched")) {
+            filteredMatches.addAll(matches)
+            matchedSegment.isChecked = true
+            pendingSegment.isChecked = false
+        } else {
+            filteredMatches.addAll(pending)
+            pendingSegment.isChecked = true
+            matchedSegment.isChecked = false
+        }
+
+        Log.d("Filtering", "Filtered Matches ${filteredMatches.count()}")
+        matchAdapter.addItems(filteredMatches)
+
     }
 }

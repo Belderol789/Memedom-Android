@@ -25,7 +25,7 @@
     <LinearLayout
         android:id="@+id/linearRadios"
         android:layout_width="0dp"
-        android:layout_height="40dp"
+        android:layout_height="wrap_content"
         android:layout_marginStart="16dp"
         android:layout_marginTop="8dp"
         android:layout_marginEnd="16dp"
@@ -41,28 +41,27 @@
             <androidx.appcompat.widget.AppCompatRadioButton
                 android:id="@+id/matchedSegment"
                 android:layout_width="0dp"
-                android:layout_height="match_parent"
+                android:layout_height="50dp"
                 android:layout_weight="1"
-                android:background="@drawable/radio_button_selector_fill"
+                android:background="@drawable/radio_button_selector"
                 android:button="@android:color/transparent"
                 android:checked="true"
                 android:gravity="center"
-                android:text="Matched"
-                android:textColor="@android:color/white" />
+                android:text="Matches"
+                android:textColor="@color/appFGColor" />
 
             <androidx.appcompat.widget.AppCompatRadioButton
                 android:id="@+id/pendingSegment"
                 android:layout_width="0dp"
-                android:layout_height="match_parent"
+                android:layout_height="50dp"
                 android:layout_weight="1"
-                android:background="@drawable/radio_button_selector_fill"
+                android:background="@drawable/radio_button_selector"
                 android:button="@android:color/transparent"
                 android:checked="false"
                 android:gravity="center"
                 android:text="Pending"
                 android:textColor="@color/appFGColor" />
         </RadioGroup>
-
     </LinearLayout>
 
     <LinearLayout
@@ -87,17 +86,13 @@
 
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/matchesRecycler"
-            android:layout_width="0dp"
-            android:layout_height="0dp"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
 
     </LinearLayout>
-
-
-
-
 
 </androidx.constraintlayout.widget.ConstraintLayout>
