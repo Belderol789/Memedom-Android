@@ -1,6 +1,7 @@
 package com.kratsapps.memedom
 
 import DefaultItemDecorator
+import android.content.Intent
 import android.graphics.Point
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
@@ -19,6 +20,7 @@ class ProfileActivity : AppCompatActivity() {
 
     var galleryItems: MutableList<String> = mutableListOf()
     var profileIsExpanded: Boolean = false
+    var matchedUser: MemeDomUser? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -33,12 +35,12 @@ class ProfileActivity : AppCompatActivity() {
 
             FirestoreHandler().getUserDataWith(matchedUserUID, {
 
-                val matchedUser = it
+                matchedUser = it
 
-                setupUserData(matchedUser)
+                setupUserData(matchedUser!!)
 
                 rejectBtn.setOnClickListener {
-                    FirestoreHandler().rejectUser(matchedUser, this)
+                    FirestoreHandler().rejectUser(matchedUser!!, this)
                     onBackPressed()
                 }
 
@@ -47,8 +49,15 @@ class ProfileActivity : AppCompatActivity() {
                 }
 
                 okBtn.setOnClickListener {
-                    FirestoreHandler().sendMatchToUser(matchedUser.uid, this)
-                    // Go to Chat
+                    FirestoreHandler().sendMatchToUser(matchedUser!!.uid, this)
+
+                    val intent: Intent = Intent(this, ChatActivity::class.java)
+                    intent.putExtra("ChatUser", matchedUser)
+                    this.startActivity(intent)
+                    this.overridePendingTransition(
+                        R.anim.enter_activity,
+                        R.anim.enter_activity
+                    )
                 }
             })
         }

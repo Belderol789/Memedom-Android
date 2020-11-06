@@ -27,6 +27,7 @@ import com.kratsapps.memedom.utils.DatabaseManager
 import com.kratsapps.memedom.firebaseutils.FirestoreHandler
 import kotlinx.android.synthetic.main.activity_main.*
 import kotlinx.android.synthetic.main.activity_main.view.*
+import java.io.Serializable
 
 
 class MainActivity : AppCompatActivity() {
@@ -128,6 +129,16 @@ class MainActivity : AppCompatActivity() {
         matchView.matchBtn.setOnClickListener {
             if (currentMatchUser != null) {
                 FirestoreHandler().sendMatchToUser(currentMatchUser!!.uid, this.applicationContext)
+
+                val intent: Intent = Intent(this, ChatActivity::class.java)
+                intent.putExtra("ChatUser", currentMatchUser)
+
+                this.startActivity(intent)
+                this.overridePendingTransition(
+                    R.anim.enter_activity,
+                    R.anim.enter_activity
+                )
+                Log.d("ChatUser", "Sending Chat User $currentMatchUser")
                 restartMatchView()
             }
         }
@@ -140,7 +151,7 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun fadeOutAndHideImage(img: ImageView) {
-        val timer = object: CountDownTimer(3000, 1000) {
+        val timer = object: CountDownTimer(2000, 1000) {
             override fun onTick(millisUntilFinished: Long) {}
             override fun onFinish() {
                 val fadeOut = AlphaAnimation(1F, 0F)

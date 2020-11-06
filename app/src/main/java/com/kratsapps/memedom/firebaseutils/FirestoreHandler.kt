@@ -417,9 +417,9 @@ class FirestoreHandler {
             updateDatabaseObject(USERS_PATH, memeDomuser.uid, hashMapOf("matches" to fieldValue))
 
             memeDomuser.matches += matchUserUID
-            DatabaseManager(context).convertUserObject(memeDomuser, "MainUser")
 
-            updateLikedDatabase(memeDomuser.uid!!, matchUserUID, 1)
+            //DatabaseManager(context).convertUserObject(memeDomuser, "MainUser")
+            //updateLikedDatabase(memeDomuser.uid!!, matchUserUID, 1)
         }
     }
 
