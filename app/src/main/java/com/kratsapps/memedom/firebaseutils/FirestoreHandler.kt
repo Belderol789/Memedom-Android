@@ -1,16 +1,14 @@
 package com.kratsapps.memedom.firebaseutils
 
 import android.content.Context
+import android.graphics.Color.convert
 import android.util.Log
 import com.google.firebase.firestore.FieldValue
 import com.google.firebase.firestore.Query
 import com.google.firebase.firestore.SetOptions
 import com.google.firebase.firestore.ktx.firestore
 import com.google.firebase.ktx.Firebase
-import com.kratsapps.memedom.models.Comments
-import com.kratsapps.memedom.models.Matches
-import com.kratsapps.memedom.models.MemeDomUser
-import com.kratsapps.memedom.models.Memes
+import com.kratsapps.memedom.models.*
 import com.kratsapps.memedom.utils.DatabaseManager
 import java.text.SimpleDateFormat
 import java.util.*
@@ -28,6 +26,7 @@ class FirestoreHandler {
     private val APP_SETTINGS = "AppSettings"
     private val DAY_LIMIT = "DayLimit"
     private val MATCHES = "Matched"
+    private val CHAT_PATH = "Chats"
 
     private val DESCENDING = Query.Direction.DESCENDING
     private val ASCENDING = Query.Direction.ASCENDING
@@ -338,9 +337,6 @@ class FirestoreHandler {
     fun rejectUser(matchUser: MemeDomUser, context: Context) {
         val memeDomuser = DatabaseManager(context).retrieveSavedUser()
         if (memeDomuser != null && !memeDomuser.rejects.contains(matchUser.uid)) {
-            //var fieldValue: FieldValue = FieldValue.arrayUnion(matchUser.uid)
-            //updateDatabaseObject(USERS_PATH, memeDomuser.uid, hashMapOf("rejects" to fieldValue))
-
             memeDomuser.rejects += matchUser.uid
             DatabaseManager(context).convertUserObject(memeDomuser, "MainUser")
             updateLikedDatabase(memeDomuser.uid!!, matchUser.uid!!, 1)
@@ -466,8 +462,65 @@ class FirestoreHandler {
             }
     }
 
-    // Extras
+    // Chat
+    fun sendUserChat(chatID: String, mainUserID: String, content: String, type: Long, user: MemeDomUser) {
+        val userIDs = mainUserID + user.uid
+        val chatUniqeID = userIDs.toCharArray().sorted().joinToString("")
+        val today = System.currentTimeMillis()
 
+        val chatPayload = hashMapOf<String, Any>(
+            "chatID" to chatID,
+            "chatUserID" to user.uid,
+            "chatType" to type,
+            "chatDate" to today,
+            "chatContent" to content
+        )
+
+        val chatData = hashMapOf<String, Any>(
+            chatID to chatPayload
+        )
+
+        firestoreDB
+            .collection(CHAT_PATH)
+            .document(chatUniqeID)
+            .set(chatData, SetOptions.merge())
+    }
+
+    fun retrieveChats(mainUserID: String, chatUserID: String, contents: (Chat) -> Unit) {
+
+        val userIDs = mainUserID + chatUserID
+        val chatUniqeID = userIDs.toCharArray().sorted().joinToString("")
+
+        firestoreDB
+            .collection(CHAT_PATH)
+            .document(chatUniqeID)
+            .addSnapshotListener { snapshot, e ->
+                if (e != null) {
+                    Log.w("Firestore-matching", "listen failed $e")
+                    return@addSnapshotListener
+                }
+
+                if (snapshot != null && snapshot.exists()) {
+                    val snapshotData = snapshot.data
+                    if (snapshotData != null) {
+                        for (data in snapshotData) {
+                            Log.d("CurrentChat", "Chat Data ${data.value}")
+                            val dataValue = data.value as HashMap<String, Any>
+                            val chat = Chat()
+                            chat.chatContent = dataValue.get("chatContent") as String
+                            chat.chatDate = dataValue.get("chatDate") as Long
+                            chat.chatType = dataValue.get("chatType") as Long
+                            chat.chatID = dataValue.get("chatID") as String
+                            chat.chatUserID = dataValue.get("chatUserID") as String
+
+                            contents(chat)
+                        }
+                    }
+                }
+            }
+    }
+
+    // Extras
     fun convertLongToTime(time: Long): String {
         val date = Date(time)
         val format = SimpleDateFormat("yyyy.MM.dd HH:mm")
@@ -481,83 +534,3 @@ class FirestoreHandler {
     }
 
 }
-
-/*
-
-
-//    fun checkForPopularMemes(context: Context, popularPoints: Long, completed: (List<Memes>) -> Unit) {
-//        firestoreDB
-//            .collection(MEMES_PATH)
-//            .whereGreaterThanOrEqualTo("postPoints", popularPoints)
-//            .get()
-//            .addOnSuccessListener { documents ->
-//
-//                val memes = ArrayList<Memes>()
-//
-//                for (document in documents) {
-//                    val newMeme: Memes = document.toObject(Memes::class.java)
-//                    memes += newMeme
-//                }
-//
-//                val shuffledMemes = memes.shuffled()
-//                completed(shuffledMemes)
-//            }
-//    }
-
-fun getAllMemeObjects(completed: (List<Memes>) -> Unit) {
-
-    var memes: List<Memes> = listOf<Memes>()
-
-    firestoreDB
-        .collection(MEMES_PATH)
-        .get()
-        .addOnSuccessListener { documents ->
-            for (document in documents) {
-                Log.d("Firestore", "${document.id} => ${document.data}")
-                val newMeme: Memes = document.toObject(Memes::class.java)
-                memes += newMeme
-            }
-            Log.d("Firestore", "Getting all memes ${memes.size}")
-            completed(memes)
-        }
-        .addOnFailureListener { exception ->
-            Log.w("Firestore", "Error getting documents: ", exception)
-            completed(memes)
-        }
-}
-*/
-
-
-/*
-
-    fun checkForMemeChanges(dayLimit: Long, uid: String, completed: (Memes) -> Unit) {
-        Log.d("DayLimit", "Current day limit $dayLimit")
-
-        val todayCalendar: Calendar = GregorianCalendar()
-        todayCalendar[Calendar.HOUR_OF_DAY] = 0
-        todayCalendar[Calendar.MINUTE] = 0
-        todayCalendar[Calendar.SECOND] = 0
-        todayCalendar[Calendar.MILLISECOND] = 0
-        val today = todayCalendar.timeInMillis
-
-        val tomorrowCalendar: Calendar = GregorianCalendar()
-        tomorrowCalendar[Calendar.HOUR_OF_DAY] = 0
-        tomorrowCalendar[Calendar.MINUTE] = 0
-        tomorrowCalendar[Calendar.SECOND] = 0
-        tomorrowCalendar[Calendar.MILLISECOND] = 0
-        tomorrowCalendar.add(Calendar.DAY_OF_YEAR, dayLimit.toInt() * -1)
-        val tomorrow = tomorrowCalendar.timeInMillis
-
-        Log.d(
-            "DayLimit",
-            "Today ${convertLongToTime(today)} Days after ${convertLongToTime(tomorrow)}"
-        )
-
-        firestoreDB
-            .collection(MEMES_PATH)
-            .whereArrayContains("postLikers", uid)
-            .addSnapshotListener { value, e ->
-                Log.d("Firestore", "Got Updated Posts ${value?.count()}")
-            }
-    }
- */
