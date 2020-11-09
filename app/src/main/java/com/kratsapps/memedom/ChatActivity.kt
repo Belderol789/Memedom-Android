@@ -34,6 +34,9 @@ import kotlinx.android.synthetic.main.matches_item.*
 import kotlinx.android.synthetic.main.my_message_item.*
 
 class ChatActivity : AppCompatActivity() {
+    companion object {
+        const val START_MEMEDOM_REQUEST_CODE = 0
+    }
 
     var chatAdapter: ChatAdapter? = null
     lateinit var currentChat: MemeDomUser
@@ -53,6 +56,8 @@ class ChatActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_chat)
+
+        Log.d("Created Chat", "Chat is created again")
 
         currentChat = intent.extras?.get("ChatUser") as MemeDomUser
         mainUser = DatabaseManager(this).retrieveSavedUser()
@@ -126,7 +131,7 @@ class ChatActivity : AppCompatActivity() {
         }
 
         memedomBtn.setOnClickListener {
-
+            openMemedom()
         }
 
         galleryBtn.setOnClickListener {
@@ -136,6 +141,11 @@ class ChatActivity : AppCompatActivity() {
         optionBtn.setOnClickListener {
 
         }
+    }
+
+    private fun openMemedom() {
+        val intent: Intent = Intent(this, MemedomActivity::class.java)
+        startActivityForResult(intent, START_MEMEDOM_REQUEST_CODE)
     }
 
     private fun prepOpenImageGallery() {
@@ -175,17 +185,27 @@ class ChatActivity : AppCompatActivity() {
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
         //called when image was captured from camera intent
-        if (resultCode == Activity.RESULT_OK){
+        if (resultCode == Activity.RESULT_OK) {
             //set image captured to image view
             val chatID = generateRandomString()
             val userID = DatabaseManager(this).getMainUserID()
 
-            if (requestCode == IMAGE_GALLERY_REQUEST_CODE && data != null && data.data != null && userID != null) {
-                val imageData = data.data
-                FireStorageHandler().uploadChatMeme(chatID, chatUniqueID, imageData!!, 0L, userID, this)
-            } else if (userID != null) {
-                val imageData = image_uri
-                FireStorageHandler().uploadChatMeme(chatID, chatUniqueID, imageData!!, 0L, userID, this)
+            Log.d("MemedomImage", "Got image back with requestCode $requestCode")
+
+            if (userID != null) {
+                if (requestCode == IMAGE_GALLERY_REQUEST_CODE && data != null && data.data != null) {
+                    val imageData = data.data
+                    FireStorageHandler().uploadChatMeme(chatID, chatUniqueID, imageData!!, 0L, userID, this)
+                } else if (requestCode == START_MEMEDOM_REQUEST_CODE && data != null) {
+                    Log.d("MemedomImage", "Got Image $data")
+                    val chatImageURL = data?.getStringExtra("SelectedImage")
+                    if (chatImageURL != null) {
+                        FirestoreHandler().sendUserChat(chatID, chatUniqueID, chatImageURL, "", 0L, userID)
+                    }
+                } else {
+                    val imageData = image_uri
+                    FireStorageHandler().uploadChatMeme(chatID, chatUniqueID, imageData!!, 0L, userID, this)
+                }
             }
         }
     }

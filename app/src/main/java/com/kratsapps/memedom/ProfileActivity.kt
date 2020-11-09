@@ -131,6 +131,7 @@ class ProfileActivity : AppCompatActivity() {
         val galleryManager: GridLayoutManager = GridLayoutManager(this, 3, GridLayoutManager.VERTICAL, false)
         galleryItems = images.toMutableList()
         val galleryAdapter = ImageAdapter(galleryItems, this, null)
+
         galleryRecycler.addItemDecoration(DefaultItemDecorator(resources.getDimensionPixelSize(R.dimen.vertical_recyclerView)))
         galleryRecycler.adapter = galleryAdapter
         galleryRecycler.layoutManager = galleryManager

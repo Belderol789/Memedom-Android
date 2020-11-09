@@ -18,8 +18,8 @@ class DatabaseManager(context: Context) {
         editor.apply()
     }
 
-    fun retrievePrefsInt(key: String): Int {
-        val savedInt = dbContext.getSharedPreferences(key, Context.MODE_PRIVATE).getInt(key, 0)
+    fun retrievePrefsInt(key: String, defValue: Int): Int {
+        val savedInt = dbContext.getSharedPreferences(key, Context.MODE_PRIVATE).getInt(key, defValue)
         return savedInt
     }
 

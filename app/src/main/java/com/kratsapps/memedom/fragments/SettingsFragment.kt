@@ -108,8 +108,8 @@ class SettingsFragment : Fragment() {
         val minText = rootView.findViewById<TextView>(R.id.minText)
         val maxText = rootView.findViewById<TextView>(R.id.maxText)
 
-        val min = DatabaseManager(settingContext).retrievePrefsInt("minAge")
-        val max = DatabaseManager(settingContext).retrievePrefsInt("maxAge")
+        val min = DatabaseManager(settingContext).retrievePrefsInt("minAge", 18)
+        val max = DatabaseManager(settingContext).retrievePrefsInt("maxAge", 65)
 
         ageSeekbar.setMinThumbValue(min)
         ageSeekbar.setMaxThumbValue(max)

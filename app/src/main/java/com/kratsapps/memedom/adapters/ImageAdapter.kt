@@ -8,8 +8,10 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
+import com.kratsapps.memedom.MemedomActivity
 import com.kratsapps.memedom.R
 import com.kratsapps.memedom.fragments.ProfileFragment
+import com.kratsapps.memedom.models.MemeDomUser
 import kotlinx.android.synthetic.main.image_cell.view.*
 
 
@@ -41,6 +43,14 @@ class ImageAdapter(private val imageList: MutableList<String>, private val activ
             removeAt(position)
             fragment?.showSave()
         }
+
+        if (activity is MemedomActivity) {
+            holder.deleteBtn.visibility = View.GONE
+            holder.imageCell.setOnClickListener {
+                (activity as MemedomActivity).didSelectCurrentImage(position)
+            }
+        }
+
     }
 
     override fun getItemCount() = imageList.size

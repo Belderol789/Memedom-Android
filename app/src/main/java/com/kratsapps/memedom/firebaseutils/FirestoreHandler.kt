@@ -159,8 +159,6 @@ class FirestoreHandler {
     //Getting
     fun checkForFreshMemes(context: Context, mainUser: MemeDomUser?, dayLimit: Long, completed: (MutableList<Memes>) -> Unit) {
 
-        Log.d("DayLimit", "Current day limit $dayLimit")
-
         val todayCalendar: Calendar = GregorianCalendar()
         todayCalendar[Calendar.HOUR_OF_DAY] = 0
         todayCalendar[Calendar.MINUTE] = 0
@@ -178,11 +176,11 @@ class FirestoreHandler {
 
         Log.d(
             "DayLimit",
-            "Today ${convertLongToTime(today)} Days after ${convertLongToTime(tomorrow)}"
+            "Today ${convertLongToTime(today)} Days after ${convertLongToTime(tomorrow)} with day limit $dayLimit"
         )
 
-        val minValue = DatabaseManager(context).retrievePrefsInt("minAge")
-        val maxValue = DatabaseManager(context).retrievePrefsInt("maxAge")
+        val minValue = DatabaseManager(context).retrievePrefsInt("minAge", 18)
+        val maxValue = DatabaseManager(context).retrievePrefsInt("maxAge", 65)
 
         var findGender: String = "Female"
         if(mainUser?.gender.equals("Other")) {
@@ -190,7 +188,6 @@ class FirestoreHandler {
         } else if (mainUser?.gender.equals("Female")) {
             findGender = "Male"
         }
-
 
         firestoreDB
             .collection(MEMES_PATH)
@@ -212,15 +209,17 @@ class FirestoreHandler {
                         if (!mainUser.rejects.contains(newMeme.postUserUID)
                             && !mainUser.rejectedMemes.contains(newMeme.postID)
                             && newMeme.userAge.toInt() > minValue && newMeme.userAge.toInt() < maxValue) {
+                            Log.d("Memes", "User is not null")
                             memes.add(newMeme)
                         }
                     } else {
+                        Log.d("Memes", "User is null")
                         memes.add(newMeme)
                     }
 
                 }
 
-                Log.d("Memes", "Completed getting memes")
+                Log.d("Memes", "Completed getting memes $memes")
                 completed(memes)
             }
     }
@@ -380,12 +379,12 @@ class FirestoreHandler {
                 "matchText" to ""
             )
 
-            firestoreDB
-                .collection(MATCHES)
-                .document(matchUserUID)
-                .collection(MATCHES)
-                .document(mainUser.uid)
-                .set(data)
+//            firestoreDB
+//                .collection(MATCHES)
+//                .document(matchUserUID)
+//                .collection(MATCHES)
+//                .document(mainUser.uid)
+//                .set(data)
         }
         // Send to matching firebase
         matchWithUser(matchUserUID, context)

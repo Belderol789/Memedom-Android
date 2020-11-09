@@ -46,25 +46,24 @@ class HomeFragment : Fragment() {
         val mainUser = DatabaseManager(this.context!!).retrieveSavedUser()
         FirestoreHandler().getAppSettings() { points, dayLimit ->
             FirestoreHandler().checkForFreshMemes(homeContext, mainUser, dayLimit) {
-                if(mainUser != null) {
-                    it.forEach {
+                it.forEach {
+                    if(mainUser != null) {
                         if(mainUser.matches.contains(it.postUserUID) && !matchedMemes.contains(it)) {
                             matchedMemes.add(it)
                         }
-
-                        if(!filteredMemems.contains(it)) {
-                            filteredMemems.add(it)
-                        }
-
-                        if(!allMemes.contains(it)) {
-                            allMemes.add(it)
-                        }
                     }
 
-                    homeSwipe.isRefreshing = false
-                    setupFeedView()
+                    if(!filteredMemems.contains(it)) {
+                        filteredMemems.add(it)
+                    }
 
+                    if(!allMemes.contains(it)) {
+                        allMemes.add(it)
+                    }
                 }
+
+                homeSwipe.isRefreshing = false
+                setupFeedView()
             }
         }
     }
