@@ -9,6 +9,7 @@ class Chat: Serializable {
     var chatType: Long = 0
     var chatDate: Long = 0
     var chatContent: String = ""
+    var chatImageURL: String = ""
 
     fun commentDateString(): String {
 

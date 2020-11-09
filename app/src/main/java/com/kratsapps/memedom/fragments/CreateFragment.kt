@@ -1,6 +1,7 @@
 package com.kratsapps.memedom.fragments
 
 import android.app.Activity.RESULT_OK
+import android.content.Context
 import android.content.Intent
 import android.os.Build
 import android.os.Bundle
@@ -29,15 +30,21 @@ class CreateFragment : Fragment() {
 
     private val IMAGE_GALLERY_REQUEST_CODE: Int = 2001
     lateinit var rootView: View
+    lateinit var createContext: Context
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        val homeContext = container?.context
         rootView = inflater.inflate(R.layout.fragment_create, container, false)
         setupUI()
         return rootView
+    }
+
+    override fun onAttach(context: Context) {
+        super.onAttach(context)
+        createContext = context
+        Log.d("OnCreateView", "Called Attached")
     }
 
     override fun onDestroy() {
@@ -68,7 +75,7 @@ class CreateFragment : Fragment() {
         }
 
         buttonPost.setOnClickListener {
-            val savedUser = DatabaseManager(this.context!!).retrieveSavedUser()
+            val savedUser = DatabaseManager(createContext).retrieveSavedUser()
             if (imageViewMeme.drawable != null && savedUser != null) {
                 Log.d("Create", "Has Image from gallery")
                 it.visibility = View.INVISIBLE
@@ -89,7 +96,7 @@ class CreateFragment : Fragment() {
 
         AndroidUtils().animateView(progressOverlay, View.VISIBLE, 0.4f, 200)
 
-        FireStorageHandler().uploadPhotoWith(postID, imageViewMeme.drawable, {
+        FireStorageHandler().uploadMemePhotoWith(postID, imageViewMeme.drawable, createContext, {
             val memeImageURL = it
             if (memeImageURL != null && savedUser != null) {
 
@@ -181,12 +188,12 @@ class CreateFragment : Fragment() {
     }
 
     private fun setupAlertDialog(message: String?) {
-        val builder = AlertDialog.Builder(this.context!!)
+        val builder = AlertDialog.Builder(createContext)
         builder.setTitle("Post Error")
         builder.setMessage(message)
 
         builder.setPositiveButton(android.R.string.yes) { dialog, which ->
-            Toast.makeText(this.context, R.string.alert_ok, Toast.LENGTH_SHORT).show()
+            Toast.makeText(createContext, R.string.alert_ok, Toast.LENGTH_SHORT).show()
         }
         builder.show()
     }

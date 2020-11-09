@@ -16,6 +16,7 @@ class MemeDomUser: Serializable {
     var email: String = ""
     var bio: String = ""
     var gallery: List<String> = listOf()
+    var memes: List<String> = listOf()
 
     var rejects: List<String> = listOf()
     var matches: List<String> = listOf()

@@ -11,17 +11,28 @@
     android:layout_height="wrap_content">
 
     <LinearLayout
-        android:layout_width="match_parent"
+        android:layout_width="wrap_content"
         android:layout_height="match_parent"
+        android:layout_marginStart="8dp"
+        android:divider="@drawable/divider_vertical"
         android:orientation="vertical"
+        android:showDividers="middle"
         app:layout_constraintStart_toEndOf="@+id/friend_avatar"
         app:layout_constraintTop_toTopOf="parent">
+
+        <ImageView
+            android:id="@+id/chatImage"
+            android:layout_width="250dp"
+            android:layout_height="250dp"
+            android:background="@drawable/cornered_card"
+            tools:srcCompat="@tools:sample/backgrounds/scenic"
+            tools:visibility="gone" />
 
         <TextView
             android:id="@+id/messageText"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginStart="12dp"
+            android:layout_marginStart="0sp"
             android:background="@drawable/match_bubble_shape"
             android:padding="16dp"
             android:text="World"
@@ -33,15 +44,15 @@
             android:id="@+id/chatDateText"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:textAlignment="center"
+            android:textAlignment="viewStart"
             android:textColor="@color/whiteColor"
             android:textSize="12sp" />
     </LinearLayout>
 
     <ImageView
         android:id="@+id/friend_avatar"
-        android:layout_width="48dp"
-        android:layout_height="48dp"
+        android:layout_width="30dp"
+        android:layout_height="30dp"
         android:cropToPadding="true"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"

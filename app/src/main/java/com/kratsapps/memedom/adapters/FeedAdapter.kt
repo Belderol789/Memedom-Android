@@ -54,7 +54,7 @@ class FeedAdapter(private var feedList: MutableList<Memes>, private val activity
         Glide.with(feedAdapterContext)
             .load(currentItem.postImageURL)
             .thumbnail(0.25f)
-            .centerCrop()
+            .fitCenter()
             .into(holder.feedImage)
         holder.postUserName.text = currentItem.postUsername
         holder.likeImageView.alpha = 0f

@@ -32,12 +32,7 @@ class FirestoreHandler {
     private val ASCENDING = Query.Direction.ASCENDING
 
     //Adding
-    fun addDataToFirestore(
-        path: String,
-        document: String,
-        hashMap: HashMap<String, Any>,
-        success: (String?) -> Unit
-    ) {
+    fun addDataToFirestore(path: String, document: String, hashMap: HashMap<String, Any>, success: (String?) -> Unit) {
         firestoreDB
             .collection(path)
             .document(document)
@@ -51,12 +46,7 @@ class FirestoreHandler {
             }
     }
 
-    fun sendUserCommentToFirestore(
-        postID: String,
-        commentID: String,
-        newCount: Int,
-        hashMap: HashMap<String, Any>
-    ) {
+    fun sendUserCommentToFirestore(postID: String, commentID: String, newCount: Int, hashMap: HashMap<String, Any>) {
         firestoreDB
             .collection(COMMENTS_PATH)
             .document(postID)
@@ -73,12 +63,7 @@ class FirestoreHandler {
             .update("postComments", newCount)
     }
 
-    fun sendUserReplyToFirestore(
-        comment: Comments,
-        replyID: String,
-        replyCount: Int,
-        hashMap: HashMap<String, Any>
-    ) {
+    fun sendUserReplyToFirestore(comment: Comments, replyID: String, replyCount: Int, hashMap: HashMap<String, Any>) {
 
         firestoreDB
             .collection(REPLIES_PATH)
@@ -463,17 +448,16 @@ class FirestoreHandler {
     }
 
     // Chat
-    fun sendUserChat(chatID: String, mainUserID: String, content: String, type: Long, user: MemeDomUser) {
-        val userIDs = mainUserID + user.uid
-        val chatUniqeID = userIDs.toCharArray().sorted().joinToString("")
+    fun sendUserChat(chatID: String, chatUniqueID: String, chatImageURL: String, content: String, type: Long, userID: String) {
         val today = System.currentTimeMillis()
 
         val chatPayload = hashMapOf<String, Any>(
             "chatID" to chatID,
-            "chatUserID" to user.uid,
+            "chatUserID" to userID,
             "chatType" to type,
             "chatDate" to today,
-            "chatContent" to content
+            "chatContent" to content,
+            "chatImageURL" to chatImageURL
         )
 
         val chatData = hashMapOf<String, Any>(
@@ -482,18 +466,14 @@ class FirestoreHandler {
 
         firestoreDB
             .collection(CHAT_PATH)
-            .document(chatUniqeID)
+            .document(chatUniqueID)
             .set(chatData, SetOptions.merge())
     }
 
-    fun retrieveChats(mainUserID: String, chatUserID: String, contents: (Chat) -> Unit) {
-
-        val userIDs = mainUserID + chatUserID
-        val chatUniqeID = userIDs.toCharArray().sorted().joinToString("")
-
+    fun retrieveChats(chatUniqueID: String, contents: (Chat) -> Unit) {
         firestoreDB
             .collection(CHAT_PATH)
-            .document(chatUniqeID)
+            .document(chatUniqueID)
             .addSnapshotListener { snapshot, e ->
                 if (e != null) {
                     Log.w("Firestore-matching", "listen failed $e")
@@ -512,7 +492,7 @@ class FirestoreHandler {
                             chat.chatType = dataValue.get("chatType") as Long
                             chat.chatID = dataValue.get("chatID") as String
                             chat.chatUserID = dataValue.get("chatUserID") as String
-
+                            chat.chatImageURL = dataValue.get("chatImageURL") as String
                             contents(chat)
                         }
                     }

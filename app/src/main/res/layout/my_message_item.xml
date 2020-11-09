@@ -23,6 +23,14 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toTopOf="parent">
 
+        <ImageView
+            android:id="@+id/chatImage"
+            android:layout_width="250dp"
+            android:layout_height="250dp"
+            android:background="@drawable/cornered_card"
+            tools:srcCompat="@tools:sample/backgrounds/scenic"
+            tools:visibility="gone" />
+
         <TextView
             android:id="@+id/chatContent"
             android:layout_width="wrap_content"
@@ -38,7 +46,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:text="Hello"
-            android:textAlignment="center"
+            android:textAlignment="textEnd"
             android:textColor="@color/whiteColor"
             android:textSize="12sp" />
 

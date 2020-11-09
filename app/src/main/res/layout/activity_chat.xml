@@ -32,13 +32,22 @@
                 app:layout_constraintTop_toTopOf="parent"
                 app:srcCompat="@drawable/ic_action_back" />
 
+            <ImageView
+                android:id="@+id/userPhotoImage"
+                android:layout_width="40dp"
+                android:layout_height="40dp"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintStart_toEndOf="@+id/imageButton"
+                app:layout_constraintTop_toTopOf="parent"
+                tools:srcCompat="@tools:sample/avatars" />
+
             <LinearLayout
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:layout_marginStart="24dp"
+                android:layout_marginStart="16dp"
                 android:orientation="vertical"
                 app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintStart_toEndOf="@+id/imageButton"
+                app:layout_constraintStart_toEndOf="@+id/userPhotoImage"
                 app:layout_constraintTop_toTopOf="parent">
 
                 <TextView
@@ -120,8 +129,8 @@
                 android:clickable="true"
                 android:gravity="center"
                 android:src="@drawable/ic_action_send"
-                android:tint="@color/appFGColor"
-                android:textSize="14dp" />
+                android:textSize="14dp"
+                android:tint="@color/appFGColor" />
 
         </LinearLayout>
 
@@ -167,6 +176,11 @@
                 android:tint="@color/appFGColor"
                 app:srcCompat="@drawable/ic_action_report" />
         </LinearLayout>
+
+        <View
+            android:id="@+id/view3"
+            android:layout_width="match_parent"
+            android:layout_height="16dp" />
 
     </LinearLayout>
 
