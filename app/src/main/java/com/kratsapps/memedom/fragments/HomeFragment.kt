@@ -41,25 +41,23 @@ class HomeFragment : Fragment() {
     var firebaseAuth: FirebaseAuth? = null
     var mAuthListener: FirebaseAuth.AuthStateListener? = null
 
-
     private fun getAllMemes() {
         val mainUser = DatabaseManager(this.context!!).retrieveSavedUser()
         FirestoreHandler().getAppSettings() { points, dayLimit ->
             FirestoreHandler().checkForFreshMemes(homeContext, mainUser, dayLimit) {
+
+                filteredMemems.clear()
+                allMemes.clear()
+                matchedMemes.clear()
+
                 it.forEach {
                     if(mainUser != null) {
-                        if(mainUser.matches.contains(it.postUserUID) && !matchedMemes.contains(it)) {
+                        if(mainUser.matches.contains(it.postUserUID)) {
                             matchedMemes.add(it)
                         }
                     }
-
-                    if(!filteredMemems.contains(it)) {
-                        filteredMemems.add(it)
-                    }
-
-                    if(!allMemes.contains(it)) {
-                        allMemes.add(it)
-                    }
+                    filteredMemems.add(it)
+                    allMemes.add(it)
                 }
 
                 homeSwipe.isRefreshing = false
@@ -157,7 +155,7 @@ class HomeFragment : Fragment() {
         val context = this.context
         val activity = this.activity
         if (context != null && activity != null) {
-            feedAdapter = FeedAdapter(filteredMemems, activity)
+            feedAdapter = FeedAdapter(filteredMemems, activity, false)
 
             feedRecyclerView = rootView.findViewById(R.id.recyclerViewHome) as RecyclerView
             feedRecyclerView.addItemDecoration(

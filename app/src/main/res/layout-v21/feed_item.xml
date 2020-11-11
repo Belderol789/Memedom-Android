@@ -117,12 +117,10 @@
             android:id="@+id/feedActionLayout"
             android:layout_width="wrap_content"
             android:layout_height="35dp"
-            android:layout_marginBottom="4dp"
             android:divider="@drawable/divider_horizontal"
             android:gravity="center|fill_horizontal"
             android:orientation="horizontal"
             android:visibility="visible"
-            app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/feedImage">
@@ -247,6 +245,20 @@
                 android:textColor="@color/whiteColor" />
 
         </LinearLayout>
+
+        <com.google.android.gms.ads.AdView
+            android:id="@+id/adView"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentBottom="true"
+            android:layout_centerHorizontal="true"
+            android:layout_marginTop="8dp"
+            app:adSize="BANNER"
+            app:adUnitId="ca-app-pub-3940256099942544/6300978111"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/feedActionLayout">
+        </com.google.android.gms.ads.AdView>
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 

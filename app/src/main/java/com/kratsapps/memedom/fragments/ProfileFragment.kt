@@ -37,6 +37,7 @@ class ProfileFragment : Fragment() {
     lateinit var profileContext: Context
     lateinit var profileView: CardView
     lateinit var profileRecyclerView: RecyclerView
+    lateinit var progressOverlay: View
 
     lateinit var rootView: View
     lateinit var galleryAdapter: ImageAdapter
@@ -72,10 +73,25 @@ class ProfileFragment : Fragment() {
     }
 
     private fun getAllUserMemes() {
-        val mainUserID = DatabaseManager(profileContext).getMainUserID()
+        val mainUser = DatabaseManager(profileContext).retrieveSavedUser()
+        val mainUserID = mainUser?.uid
+
+        val crownCount = rootView.findViewById<TextView>(R.id.crownsCount)
+        val postCount = rootView.findViewById<TextView>(R.id.postCount)
+        val matchCount = rootView.findViewById<TextView>(R.id.matchCount)
+
         if(mainUserID != null && this.activity != null) {
             FirestoreHandler().getAllMemesOfMainUser(mainUserID) {
-                val feedAdapter =  FeedAdapter(it, this.activity!!)
+
+                matchCount.setText("${mainUser.matches.count()}")
+                postCount.setText("${it.count()}")
+                var crowns = 0
+                for (meme in it) {
+                    crowns += meme.getPostLikeCount()
+                }
+                crownCount.setText("$crowns")
+
+                val feedAdapter =  FeedAdapter(it, this.activity!!, true)
                 profileRecyclerView.addItemDecoration(DefaultItemDecorator(resources.getDimensionPixelSize(R.dimen.vertical_recyclerView)))
                 profileRecyclerView.adapter = feedAdapter
                 profileRecyclerView.layoutManager = LinearLayoutManager(activity)
@@ -88,6 +104,7 @@ class ProfileFragment : Fragment() {
     private fun setupUI() {
 
         profileView = rootView.findViewById<CardView>(R.id.profile_cardView)
+        progressOverlay = rootView.findViewById(R.id.progress_overlay)
         val username = rootView.findViewById<TextView>(R.id.username)
         val photoBtn = rootView.findViewById<ImageButton>(R.id.photoBtn)
         val gender = rootView.findViewById<TextView>(R.id.gender)
@@ -109,6 +126,9 @@ class ProfileFragment : Fragment() {
             } else {
                 bioText.setHint("Write About Yourself")
             }
+
+            Log.d("ProfileURL", "ProfilePhotoItem ${mainUser.profilePhoto}")
+
             Glide.with(this.activity!!)
                 .load(mainUser.profilePhoto)
                 .error(ContextCompat.getDrawable(this.context!!, R.drawable.ic_action_name))
@@ -117,11 +137,10 @@ class ProfileFragment : Fragment() {
         }
 
         var height: Int = 0
-        var width: Int = 0
 
         activity?.displayMetrics()?.run {
             height = heightPixels
-            width = widthPixels
+            val width = widthPixels
 
             val params = profileView.layoutParams as ConstraintLayout.LayoutParams
             params.height = height
@@ -190,14 +209,15 @@ class ProfileFragment : Fragment() {
         })
 
         if (mainUserID != null && mainUser != null) {
-            Log.d("Saving", "Saving $mainUserID")
             saveBtn.setOnClickListener {
                 //ProfilePhoto
                 val profileImage = profilePhoto.drawable
                 val userBio = bioText.text.toString()
 
-
                 if(profileImage != null) {
+                    Log.d("Saving", "Saving $mainUserID progress $progressOverlay")
+                    AndroidUtils().animateView(progressOverlay, View.VISIBLE, 0.4f, 200)
+
                     FireStorageHandler().uploadPhotoWith(mainUserID, profileImage, {
                         val updatedProfile: HashMap<String, Any> = hashMapOf(
                             "bio" to userBio,
@@ -214,6 +234,8 @@ class ProfileFragment : Fragment() {
                         mainUser.gallery = galleryItems
 
                         DatabaseManager(this.context!!).convertUserObject(mainUser, "MainUser")
+                        saveBtn.visibility = View.INVISIBLE
+                        progressOverlay.visibility = View.GONE
                     })
                 }
             }
@@ -264,6 +286,7 @@ class ProfileFragment : Fragment() {
 
         if (resultCode == Activity.RESULT_OK) {
             if (requestCode == IMAGE_GALLERY_REQUEST_CODE && data != null && data.data != null) {
+                AndroidUtils().animateView(progressOverlay, View.VISIBLE, 0.4f, 200)
                 val imageData = data.data
                 if (profilePhotoSelected) {
                     Glide.with(this)
@@ -272,6 +295,7 @@ class ProfileFragment : Fragment() {
                         .into(profilePhoto)
                 } else if (userID != null && imageData != null) {
                     FireStorageHandler().uploadGallery(userID, imageData, this.context!!, {
+                        progressOverlay.visibility = View.GONE
                         galleryItems.add(it)
                         galleryRecyclerView.adapter?.notifyDataSetChanged()
                         Log.d("Gallery Items", "$galleryItems")

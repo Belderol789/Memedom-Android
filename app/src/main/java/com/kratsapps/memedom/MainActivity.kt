@@ -45,6 +45,7 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
         MobileAds.initialize(this)
+        checkLoginStatus()
         activateFacebook()
         setupBottomNavigation()
         checkMatchingStatus()
@@ -64,7 +65,7 @@ class MainActivity : AppCompatActivity() {
         makeCurrentFragment(homeFragment)
     }
 
-    private fun makeCurrentFragment(fragment: Fragment) =
+    fun makeCurrentFragment(fragment: Fragment) =
         supportFragmentManager.beginTransaction().apply {
             replace(R.id.wrapperFL, fragment)
             commit()
@@ -74,13 +75,11 @@ class MainActivity : AppCompatActivity() {
         FacebookSdk.fullyInitialize()
     }
 
-
-
     private fun checkMatchingStatus() {
         val user = FirebaseAuth.getInstance().getCurrentUser()
-        val mainUID = DatabaseManager(this).getMainUserID()
 
         if(user != null) {
+            navigationBottom.visibility = View.VISIBLE
             FirestoreHandler().checkMatchingStatus(this.applicationContext, user.uid, {
                 currentMatchUser = it
                 matchView.visibility = View.VISIBLE
@@ -100,18 +99,8 @@ class MainActivity : AppCompatActivity() {
                 fadeOutAndHideImage(matchView.memeImageView)
                 Log.d("Firestore-matching", "Got User ${it.uid}")
             })
-        } else if (mainUID != null) {
-            FirestoreHandler().checkMatchingStatus(this.applicationContext, mainUID, {
-                currentMatchUser = it
-                matchView.visibility = View.VISIBLE
-                matchView.infoTextView.text = "You've liked ${it.name} \nmemes 10 times!"
-                Glide.with(this)
-                    .load(it.profilePhoto)
-                    .circleCrop()
-                    .into(matchView.profilePhoto)
-                fadeOutAndHideImage(matchView.memeImageView)
-                Log.d("Firestore-matching", "Got User ${it.uid}")
-            })
+        }  else {
+            navigationBottom.visibility = View.GONE
         }
 
         matchView.profileBtn.setOnClickListener {
@@ -187,14 +176,15 @@ class MainActivity : AppCompatActivity() {
         val mAuthListener = FirebaseAuth.AuthStateListener() {
             fun onAuthStateChanged(@NonNull firebaseAuth: FirebaseAuth) {
                 val user = FirebaseAuth.getInstance().getCurrentUser()
-                if (user != null) {
-                    setUIForUser(user)
-                }
+                setUIForUser(user)
             }
         }
     }
 
     private fun setUIForUser(user: FirebaseUser?) {
+
+        Log.d("UserCredential", "Current user $user")
+
         if (user != null) {
             navigationBottom.visibility = View.VISIBLE
             makeCurrentFragment(homeFragment)

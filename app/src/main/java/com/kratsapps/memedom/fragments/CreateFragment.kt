@@ -68,6 +68,7 @@ class CreateFragment : Fragment() {
             Log.d("Create", "ImageView has meme $hasMeme")
             if (hasMeme) {
                 imageViewMeme.setImageDrawable(null)
+                buttonPost.isEnabled = false
                 addImageButton.setImageResource(R.drawable.ic_action_create)
             } else {
                 prepOpenImageGallery()
@@ -95,6 +96,8 @@ class CreateFragment : Fragment() {
         val today = System.currentTimeMillis()
 
         AndroidUtils().animateView(progressOverlay, View.VISIBLE, 0.4f, 200)
+
+        Log.d("ProfilePhoto", "ProfilePhotoItem Create ${savedUser.profilePhoto}")
 
         FireStorageHandler().uploadMemePhotoWith(postID, imageViewMeme.drawable, createContext, {
             val memeImageURL = it
@@ -192,9 +195,7 @@ class CreateFragment : Fragment() {
         builder.setTitle("Post Error")
         builder.setMessage(message)
 
-        builder.setPositiveButton(android.R.string.yes) { dialog, which ->
-            Toast.makeText(createContext, R.string.alert_ok, Toast.LENGTH_SHORT).show()
-        }
+        builder.setPositiveButton(android.R.string.yes) { dialog, which ->}
         builder.show()
     }
 

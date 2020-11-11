@@ -104,7 +104,7 @@ class SignupActivity : AppCompatActivity() {
             textEditBirthday.setText(memeDomuser.birthday)
             Glide.with(this)
                 .load(memeDomuser.profilePhoto)
-                .centerCrop()
+                .circleCrop()
                 .into(imageButtonProfile)
             requestPermissionToPhotos()
             Timer().schedule(1000) {
@@ -122,7 +122,6 @@ class SignupActivity : AppCompatActivity() {
                 checkIfFieldsHaveValues()
             }
         }
-
         // Username
         buttonNextUsername.setOnClickListener{
             val username = textEditUsername.text.toString()
@@ -135,7 +134,6 @@ class SignupActivity : AppCompatActivity() {
         imageButtonProfile.setOnClickListener{
             prepOpenImageGallery()
         }
-
         // Gender
         buttonNextGender.setOnClickListener {
             if(!memeDomuser.gender.isEmpty()) {
@@ -184,7 +182,9 @@ class SignupActivity : AppCompatActivity() {
         }
 
         buttonNextBirthday.setOnClickListener{
-            signupUser()
+            if (memeDomuser.getUserAge() >= 18) {
+                signupUser()
+            }
         }
     }
 
@@ -301,15 +301,9 @@ class SignupActivity : AppCompatActivity() {
     }
 
     private fun signupUser() {
-        val birthday = textEditBirthday.text.toString()
-
-        Log.d("Birthday", "$birthday")
-
-        if (!birthday.isEmpty()) {
+        if (!memeDomuser.birthday.isEmpty()) {
 
             AndroidUtils().animateView(progressOverlay, View.VISIBLE, 0.4f, 200)
-            memeDomuser.birthday = birthday
-
             val profileImage = imageButtonProfile.drawable
             if (profileImage != null) {
 
@@ -382,7 +376,11 @@ class SignupActivity : AppCompatActivity() {
 
             @RequiresApi(Build.VERSION_CODES.LOLLIPOP)
             override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
-                buttonNextBirthday.setBackgroundResource(R.drawable.soft_button)
+                val birthday = textEditBirthday.text.toString()
+                memeDomuser.birthday = birthday
+                if (memeDomuser.getUserAge() >= 18) {
+                    buttonNextBirthday.setBackgroundResource(R.drawable.soft_button)
+                }
             }
 
             override fun afterTextChanged(s: Editable?) {}

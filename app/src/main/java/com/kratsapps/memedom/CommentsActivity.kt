@@ -17,6 +17,7 @@ import android.view.inputmethod.InputMethodManager
 import android.widget.EditText
 import androidx.annotation.RequiresApi
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.bumptech.glide.Glide
 import com.facebook.internal.Utility.generateRandomString
@@ -69,17 +70,24 @@ class CommentsActivity : AppCompatActivity() {
             val commentsCount = if(postMeme.postComments >= 10) "${postMeme.postComments}"  else ""
             commentsCommentsBtn.text = commentsCount
 
-            val mainUserID = DatabaseManager(this).getMainUserID()
+            val mainUser = DatabaseManager(this).retrieveSavedUser()
+            val mainUserID = mainUser?.uid
+
             if (mainUserID != null && postMeme.postLikers.contains(mainUserID)) {
                 commentsPointsLayout.visibility = View.VISIBLE
                 commentsUserInfo.visibility = View.VISIBLE
                 if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.M) {
-                    val appFGColor = Color.parseColor("#8FD6EF")
-                    commentsCommentsBtn.setTextColor(appFGColor)
-                    commentsShareBtn.setTextColor(appFGColor)
-                    commentsCommentsBtn.setCompoundDrawableTintList(ColorStateList.valueOf(appFGColor))
-                    commentsShareBtn.setCompoundDrawableTintList(ColorStateList.valueOf(appFGColor))
+                    var itemColor = Color.parseColor("#8FD6EF")
+                    if(mainUser.matches.contains(postMeme.postUserUID)) {
+                        itemColor = Color.parseColor("#FACE0D")
+                    }
+                    commentsCommentsBtn.setTextColor(itemColor)
+                    commentsShareBtn.setTextColor(itemColor)
+                    commentsCommentsBtn.setCompoundDrawableTintList(ColorStateList.valueOf(itemColor))
+                    commentsShareBtn.setCompoundDrawableTintList(ColorStateList.valueOf(itemColor))
 
+                    commentsPointsTextView.setTextColor(itemColor)
+                    commentsPointsIcon.setColorFilter(itemColor)
                 }
             } else {
                 commentsPointsLayout.visibility = View.GONE

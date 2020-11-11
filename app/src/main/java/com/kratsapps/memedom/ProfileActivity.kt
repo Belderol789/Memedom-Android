@@ -74,7 +74,6 @@ class ProfileActivity : AppCompatActivity() {
         params.topMargin = height + 800
         profile_cardView.requestLayout()
 
-
         expandBtn.setOnClickListener {
             if (!profileIsExpanded) {
                 profile_cardView
@@ -140,7 +139,7 @@ class ProfileActivity : AppCompatActivity() {
 
     private fun getAllUserMemes(mainUserID: String) {
         FirestoreHandler().getAllMemesOfMainUser(mainUserID) {
-            val feedAdapter =  FeedAdapter(it, this)
+            val feedAdapter =  FeedAdapter(it, this, true)
             profileRecycler.addItemDecoration(DefaultItemDecorator(resources.getDimensionPixelSize(R.dimen.vertical_recyclerView)))
             profileRecycler.adapter = feedAdapter
             profileRecycler.layoutManager = LinearLayoutManager(this)

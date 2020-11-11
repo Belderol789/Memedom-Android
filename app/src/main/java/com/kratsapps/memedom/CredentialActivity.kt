@@ -89,7 +89,9 @@ class CredentialActivity : AppCompatActivity() {
                 val picture = `object`.getJSONObject("picture")
                 val data = picture.getJSONObject("data")
                 val url = data.getString("url")
-                memeDomUser.profilePhoto = url
+                memeDomUser.profilePhoto = url.replace("\\/", "", false)
+
+                Log.d("Facebook", "Facebook profile photo ${memeDomUser.profilePhoto}")
 
                 val email: String
                 if (`object`.has("email")) {

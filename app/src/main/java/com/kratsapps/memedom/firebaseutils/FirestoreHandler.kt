@@ -191,6 +191,7 @@ class FirestoreHandler {
 
         firestoreDB
             .collection(MEMES_PATH)
+            .whereEqualTo("userGender", findGender)
             .whereGreaterThanOrEqualTo("postDate", tomorrow)
             .orderBy("postDate", DESCENDING)
             .limit(100)
@@ -201,6 +202,7 @@ class FirestoreHandler {
 
                 var memes: MutableList<Memes> = arrayListOf()
                 for (document in documents) {
+
                     val newMeme: Memes = document.toObject(Memes::class.java)
 
                     Log.d("Filtering-Memes", "MemeAge ${newMeme.userAge} min $minValue max $maxValue")
@@ -208,7 +210,7 @@ class FirestoreHandler {
                     if (mainUser != null) {
                         if (!mainUser.rejects.contains(newMeme.postUserUID)
                             && !mainUser.rejectedMemes.contains(newMeme.postID)
-                            && newMeme.userAge.toInt() > minValue && newMeme.userAge.toInt() < maxValue) {
+                            && newMeme.userAge.toInt() >= minValue && newMeme.userAge.toInt() <= maxValue) {
                             Log.d("Memes", "User is not null")
                             memes.add(newMeme)
                         }
@@ -379,12 +381,12 @@ class FirestoreHandler {
                 "matchText" to ""
             )
 
-//            firestoreDB
-//                .collection(MATCHES)
-//                .document(matchUserUID)
-//                .collection(MATCHES)
-//                .document(mainUser.uid)
-//                .set(data)
+            firestoreDB
+                .collection(MATCHES)
+                .document(matchUserUID)
+                .collection(MATCHES)
+                .document(mainUser.uid)
+                .set(data)
         }
         // Send to matching firebase
         matchWithUser(matchUserUID, context)
@@ -398,8 +400,8 @@ class FirestoreHandler {
 
             memeDomuser.matches += matchUserUID
 
-            //DatabaseManager(context).convertUserObject(memeDomuser, "MainUser")
-            //updateLikedDatabase(memeDomuser.uid!!, matchUserUID, 1)
+            DatabaseManager(context).convertUserObject(memeDomuser, "MainUser")
+            updateLikedDatabase(memeDomuser.uid!!, matchUserUID, 1)
         }
     }
 
@@ -429,6 +431,8 @@ class FirestoreHandler {
         firestoreDB
             .collection(MEMES_PATH)
             .whereEqualTo("postUserUID", uid)
+            .orderBy("postPoints", DESCENDING)
+            .limit(50)
             .get()
             .addOnSuccessListener { snapshot ->
                 var userMemes: MutableList<Memes> = mutableListOf()

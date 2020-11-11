@@ -12,13 +12,16 @@ import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.widget.AppCompatRadioButton
 import androidx.fragment.app.Fragment
+import com.facebook.login.LoginManager
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.ktx.Firebase
 import com.innovattic.rangeseekbar.RangeSeekBar
 import com.innovattic.rangeseekbar.RangeSeekBar.SeekBarChangeListener
+import com.kratsapps.memedom.MainActivity
 import com.kratsapps.memedom.R
 import com.kratsapps.memedom.models.MemeDomUser
 import com.kratsapps.memedom.utils.DatabaseManager
+import kotlinx.android.synthetic.main.activity_main.*
 
 
 class SettingsFragment : Fragment() {
@@ -66,15 +69,19 @@ class SettingsFragment : Fragment() {
             user.delete()
                 .addOnCompleteListener { task ->
                     if (task.isSuccessful) {
+                        LoginManager.getInstance().logOut()
                         Toast.makeText(settingContext, "Sad to see you go", Toast.LENGTH_SHORT).show()
                         Log.d("Delete", "User account deleted.")
+                        returnToLoggedOutState()
                     }
                 }
         }
 
         signoutBtn.setOnClickListener {
             Toast.makeText(settingContext, "Successfully Signed Out", Toast.LENGTH_SHORT).show()
+            LoginManager.getInstance().logOut()
             FirebaseAuth.getInstance().signOut()
+            returnToLoggedOutState()
         }
 
         if(mainUser?.gender.equals("Female")) {
@@ -102,6 +109,13 @@ class SettingsFragment : Fragment() {
         setupSeekBar()
     }
 
+    private fun returnToLoggedOutState() {
+        val parentActivity = this.activity as MainActivity
+        parentActivity.navigationBottom.visibility = View.GONE
+        val homeFragment = HomeFragment()
+        parentActivity.makeCurrentFragment(homeFragment)
+    }
+
     private fun setupSeekBar() {
 
         val ageSeekbar = rootView.findViewById<RangeSeekBar>(R.id.seekBar)
@@ -111,6 +125,9 @@ class SettingsFragment : Fragment() {
         val min = DatabaseManager(settingContext).retrievePrefsInt("minAge", 18)
         val max = DatabaseManager(settingContext).retrievePrefsInt("maxAge", 65)
 
+        minText.setText("$min")
+        maxText.setText("$max")
+
         ageSeekbar.setMinThumbValue(min)
         ageSeekbar.setMaxThumbValue(max)
 
@@ -119,7 +136,6 @@ class SettingsFragment : Fragment() {
             override fun onStoppedSeeking() {
 
                 val minValue = ageSeekbar.getMinThumbValue()
-                val maxValue = ageSeekbar.getMaxThumbValue()
 
                 Log.d("Filtering", "min ${ageSeekbar.getMinThumbValue()}, max ${ageSeekbar.getMaxThumbValue()}")
 
@@ -129,12 +145,12 @@ class SettingsFragment : Fragment() {
                 DatabaseManager(settingContext).saveToPrefsInt("maxAge", ageSeekbar.getMaxThumbValue())
             }
 
-            override fun onValueChanged(i: Int, i1: Int) {
+            override fun onValueChanged(minThumbValue: Int, maxThumbValue: Int) {
 
-                val minValue = i
-                val maxValue = i1
+                val minValue = minThumbValue
+                val maxValue = maxThumbValue
 
-                if (i >= 18) {
+                if (minThumbValue >= 18) {
                     minText.setText(minValue.toString())
                 }
                 maxText.setText(maxValue.toString())

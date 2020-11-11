@@ -15,6 +15,7 @@ import androidx.annotation.RequiresApi
 import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
+import com.google.android.gms.ads.AdRequest
 import com.google.firebase.firestore.FieldValue
 import com.kratsapps.memedom.Assets
 import com.kratsapps.memedom.CommentsActivity
@@ -27,7 +28,7 @@ import com.kratsapps.memedom.firebaseutils.FirestoreHandler
 import kotlinx.android.synthetic.main.feed_item.view.*
 
 
-class FeedAdapter(private var feedList: MutableList<Memes>, private val activity: Activity): RecyclerView.Adapter<FeedAdapter.FeedViewHolder>() {
+class FeedAdapter(private var feedList: MutableList<Memes>, private val activity: Activity, val isProfile: Boolean): RecyclerView.Adapter<FeedAdapter.FeedViewHolder>() {
 
     lateinit var feedAdapterContext: Context
     var filteredFeedList = feedList
@@ -45,7 +46,6 @@ class FeedAdapter(private var feedList: MutableList<Memes>, private val activity
     override fun onBindViewHolder(holder: FeedViewHolder, position: Int) {
         val currentItem = filteredFeedList[position]
         val postUID: String = currentItem.postID
-        val postUserID: String = currentItem.postUserUID
 
         var currentPostLikes = currentItem.getPostLikeCount()
 
@@ -56,18 +56,24 @@ class FeedAdapter(private var feedList: MutableList<Memes>, private val activity
             .thumbnail(0.25f)
             .fitCenter()
             .into(holder.feedImage)
-        holder.postUserName.text = currentItem.postUsername
-        holder.likeImageView.alpha = 0f
-        val shareCount = if(currentItem.postShares >= 10) "${currentItem.postShares}" else ""
-        holder.shareBtn.text = shareCount
-        val commentsCount = if(currentItem.postComments >= 10) "${currentItem.postComments}"  else ""
-        holder.commentsBtn.text = commentsCount
-        holder.feedTitle.text = currentItem.postTitle
+
+        Log.d("ProfileURL", "ProfilePhotoItem ${currentItem.postProfileURL}")
+
         Glide.with(feedAdapterContext)
             .load(currentItem.postProfileURL)
             .circleCrop()
             .error(ContextCompat.getDrawable(activity.applicationContext, R.drawable.ic_action_name))
             .into(holder.postProfilePic)
+
+        holder.postUserName.text = currentItem.postUsername
+        holder.likeImageView.alpha = 0f
+
+        val shareCount = if(currentItem.postShares >= 10) "${currentItem.postShares}" else ""
+        val commentsCount = if(currentItem.postComments >= 10) "${currentItem.postComments}"  else ""
+        holder.shareBtn.text = shareCount
+        holder.commentsBtn.text = commentsCount
+        holder.feedTitle.text = currentItem.postTitle
+
         holder.feedDate.text = currentItem.postDateString()
 
         val mainUser = DatabaseManager(feedAdapterContext).retrieveSavedUser()
@@ -150,6 +156,17 @@ class FeedAdapter(private var feedList: MutableList<Memes>, private val activity
             }
         } else {
             deactivatePoints(holder)
+        }
+
+        if (isProfile) {
+            holder.mAdView.visibility = View.GONE
+        } else {
+            if (position % 3 == 0) {
+                val adRequest = AdRequest.Builder().build()
+                holder.mAdView.loadAd(adRequest)
+            } else {
+                holder.mAdView.visibility = View.GONE
+            }
         }
     }
 
@@ -243,6 +260,7 @@ class FeedAdapter(private var feedList: MutableList<Memes>, private val activity
         val cancelBtn = itemView.cancelBtn
 
         val card_view = itemView.card_view
+        val mAdView = itemView.adView
     }
 
     private fun navigateToComments(meme: Memes) {
