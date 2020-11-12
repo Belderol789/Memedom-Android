@@ -61,10 +61,8 @@
                         android:layout_height="wrap_content"
                         android:layout_marginStart="16dp"
                         android:layout_marginTop="8dp"
-                        android:layout_marginEnd="16dp"
                         android:divider="@drawable/divider_vertical"
                         android:orientation="vertical"
-                        app:layout_constraintEnd_toStartOf="@+id/commentsReportButton"
                         app:layout_constraintStart_toStartOf="parent"
                         app:layout_constraintTop_toTopOf="parent">
 
@@ -160,21 +158,6 @@
                             tools:targetApi="m" />
 
                     </LinearLayout>
-
-                    <ImageButton
-                        android:id="@+id/commentsReportButton"
-                        android:layout_width="30dp"
-                        android:layout_height="25dp"
-                        android:layout_marginTop="8dp"
-                        android:layout_marginEnd="16dp"
-                        android:background="@color/transparent"
-                        android:contentDescription="@string/reporting_resource"
-                        android:src="@drawable/ic_action_report"
-                        android:tint="@color/whiteColor"
-                        android:visibility="visible"
-                        app:layout_constraintBottom_toTopOf="@+id/commentsImage"
-                        app:layout_constraintEnd_toEndOf="parent"
-                        app:layout_constraintTop_toTopOf="parent" />
 
                     <ImageView
                         android:id="@+id/commentsImage"

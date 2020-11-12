@@ -8,7 +8,6 @@
     android:background="@color/appBGColor"
     tools:context=".fragments.SettingsFragment">
 
-
     <TextView
         android:id="@+id/textView8"
         android:layout_width="wrap_content"
@@ -156,15 +155,15 @@
         app:layout_constraintTop_toBottomOf="@+id/linearRadios" />
 
     <Button
-        android:id="@+id/deleteBtn"
+        android:id="@+id/contactBtn"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginStart="16dp"
         android:layout_marginTop="20dp"
         android:layout_marginEnd="16dp"
         android:background="@color/transparent"
-        android:textColor="@color/errorColor"
-        android:text="Delete Account"
+        android:text="Contact Us"
+        android:textColor="@color/appFGColor"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/signoutBtn" />

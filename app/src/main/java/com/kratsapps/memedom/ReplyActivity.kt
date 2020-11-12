@@ -38,10 +38,6 @@ class ReplyActivity : AppCompatActivity() {
         commentReply = intent.extras?.get("CommentReply") as Comments
         setupUI()
         setupAction()
-        FirestoreHandler().getAllReplies(commentReply) {
-            replies = it
-            setupRecyclerView()
-        }
     }
 
     override fun finish() {
@@ -50,6 +46,32 @@ class ReplyActivity : AppCompatActivity() {
     }
 
     private fun setupUI() {
+
+        for (reply in commentReply.replies) {
+            if(reply is HashMap<*,*>) {
+
+                Log.d("CheckReplies", "Reply Data $reply")
+
+                val newReply = Comments()
+                newReply.replies = listOf()
+                newReply.userPhotoURL = reply.get("userPhotoURL") as String
+                newReply.commentText = reply.get("commentText") as String
+                newReply.commentDate = reply.get("commentDate") as Long
+                newReply.commentID = reply.get("commentID") as String
+                newReply.postID = reply.get("postID") as String
+                newReply.userName = reply.get("userName") as String
+                newReply.showActions = reply.get("showActions") as Boolean
+                newReply.commentLikers = reply.get("commentLikers") as List<String>
+
+                replies += newReply
+            } else {
+                Log.d("CheckReplies", "Wrong replies")
+            }
+        }
+
+
+        Log.d("CheckReplies", "Current replies $replies")
+
         sendReplyButton.isEnabled = false
         replyUsername.text = commentReply.userName
         Glide.with(this)
@@ -58,7 +80,7 @@ class ReplyActivity : AppCompatActivity() {
             .into(profileButton)
         replyDate.text = commentReply.commentDateString()
         replysTextView.text = commentReply.commentText
-        repliesBtn.setText("${commentReply.commentRepliesCount} Replies")
+        repliesBtn.setText("${commentReply.replies.count()} Replies")
         upvoteBtn.setText("   ${commentReply.getCommentLikeCount()}")
 
         replyBackButton.setOnClickListener {
@@ -70,6 +92,8 @@ class ReplyActivity : AppCompatActivity() {
             upvoteBtn.setTextColor(Color.parseColor("#FACE0D"))
             upvoteBtn.setCompoundDrawableTintList(ColorStateList.valueOf(Color.parseColor("#FACE0D")))
         }
+
+        setupRecyclerView()
 
     }
 
@@ -113,7 +137,6 @@ class ReplyActivity : AppCompatActivity() {
                     "userPhotoURL" to commentReply.userPhotoURL,
                     "commentDate" to today,
                     "commentLikers" to arrayListOf<String>(mainUserUID),
-                    "commentRepliesCount" to 0,
                     "showActions" to false
                 )
 
@@ -125,7 +148,7 @@ class ReplyActivity : AppCompatActivity() {
                 newComment.userPhotoURL = commentReply.userPhotoURL
                 newComment.commentDate = today
                 newComment.commentLikers = arrayListOf<String>(mainUserUID)
-                newComment.commentRepliesCount = 0
+                newComment.replies = listOf()
                 newComment.showActions = false
 
                 Log.d("Comments", "Sorted Comments ${replies.count()}")
@@ -161,12 +184,12 @@ class ReplyActivity : AppCompatActivity() {
     }
 
     private fun setupRecyclerView() {
-        Log.d("Memes", "recyclerview setup")
         val context = applicationContext
         val activity = this
         if (activity != null) {
-            val commentsAdapter =
-                CommentsAdapter(replies, activity)
+            Log.d("Memes", "recyclerview setup with $replies")
+
+            val commentsAdapter = CommentsAdapter(replies, activity)
 
             replyRecyclerView.addItemDecoration(DefaultItemDecorator(resources.getDimensionPixelSize(R.dimen.vertical_recyclerView)))
             replyRecyclerView.adapter = commentsAdapter

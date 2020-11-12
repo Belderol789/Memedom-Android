@@ -65,22 +65,17 @@ class FirestoreHandler {
 
     fun sendUserReplyToFirestore(comment: Comments, replyID: String, replyCount: Int, hashMap: HashMap<String, Any>) {
 
-        firestoreDB
-            .collection(REPLIES_PATH)
-            .document(comment.commentID)
-            .collection(REPLIES_PATH)
-            .document(replyID)
-            .set(hashMap)
-            .addOnFailureListener {
-                Log.d("Comment", "Comment Error $it")
-            }
+        var fieldValue: FieldValue = FieldValue.arrayUnion(hashMap)
 
         firestoreDB
             .collection(COMMENTS_PATH)
             .document(comment.postID)
             .collection(COMMENTS_PATH)
             .document(comment.commentID)
-            .update("commentsRepliesCount", replyCount)
+            .update("replies", fieldValue)
+            .addOnFailureListener {
+                Log.d("Comment", "Comment Error $it")
+            }
     }
 
     //Editing

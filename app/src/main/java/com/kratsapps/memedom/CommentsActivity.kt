@@ -168,8 +168,8 @@ class CommentsActivity : AppCompatActivity() {
                 newComment.userName = postMeme.postUsername
                 newComment.userPhotoURL = postMeme.postProfileURL
                 newComment.commentDate = today
+                newComment.replies = listOf()
                 newComment.commentLikers = arrayListOf<String>(mainUserUID)
-                newComment.commentRepliesCount = 0
                 newComment.showActions = true
 
                 Log.d("Comments", "Sorted Comments ${comments.count()}")

@@ -2,6 +2,7 @@ package com.kratsapps.memedom.models
 
 import java.io.Serializable
 import java.util.*
+import kotlin.collections.HashMap
 
 class Comments : Serializable {
     var commentID: String = ""
@@ -11,8 +12,9 @@ class Comments : Serializable {
     var userName: String = ""
     var commentDate: Long = 0
     var commentLikers: List<String> = listOf()
-    var commentRepliesCount: Long = 0
     var showActions: Boolean = true
+
+    var replies: List<Any> = listOf()
 
     fun getCommentLikeCount(): Int {
         return commentLikers.size

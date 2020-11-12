@@ -5,7 +5,10 @@ import android.content.Context
 import android.content.Intent
 import android.content.res.ColorStateList
 import android.graphics.Color
+import android.graphics.drawable.BitmapDrawable
+import android.net.Uri
 import android.os.Build
+import android.provider.MediaStore
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
@@ -70,6 +73,7 @@ class FeedAdapter(private var feedList: MutableList<Memes>, private val activity
 
         val shareCount = if(currentItem.postShares >= 10) "${currentItem.postShares}" else ""
         val commentsCount = if(currentItem.postComments >= 10) "${currentItem.postComments}"  else ""
+
         holder.shareBtn.text = shareCount
         holder.commentsBtn.text = commentsCount
         holder.feedTitle.text = currentItem.postTitle
@@ -154,6 +158,17 @@ class FeedAdapter(private var feedList: MutableList<Memes>, private val activity
             } else {
                 deactivatePoints(holder)
             }
+
+            holder.shareBtn.setOnClickListener {
+                val memeImage = (holder.feedImage.drawable as BitmapDrawable).bitmap
+                val shareIntent = Intent(Intent.ACTION_SEND)
+                val path = MediaStore.Images.Media.insertImage(activity.contentResolver, memeImage, "Memedom", null)
+                val uri = Uri.parse(path)
+                shareIntent.putExtra(Intent.EXTRA_STREAM, uri)
+                shareIntent.type = "image/*"
+                activity.startActivity(Intent.createChooser(shareIntent, "Spread my Memedom"))
+            }
+
         } else {
             deactivatePoints(holder)
         }
@@ -161,17 +176,13 @@ class FeedAdapter(private var feedList: MutableList<Memes>, private val activity
         if (isProfile) {
             holder.mAdView.visibility = View.GONE
         } else {
-            if (position % 3 == 0) {
+            if (position % 2 == 0) {
                 val adRequest = AdRequest.Builder().build()
                 holder.mAdView.loadAd(adRequest)
             } else {
                 holder.mAdView.visibility = View.GONE
             }
         }
-    }
-
-    private fun specializePost(holder: FeedViewHolder) {
-
     }
 
     private fun animateLikeImageView(holder: FeedViewHolder, mainUser: MemeDomUser, meme: Memes) {

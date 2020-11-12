@@ -42,6 +42,7 @@ class CommentsAdapter(private val commentList: List<Comments>, private val activ
     override fun onBindViewHolder(holder: CommentViewHolder, position: Int) {
         val currentComment = commentList[position]
         // User info
+        Log.d("Current Comment", "Current Comment $currentComment with count ${commentList.count()}")
         Glide.with(commentAdapterContext)
             .load(currentComment.userPhotoURL)
             .circleCrop()
@@ -59,8 +60,11 @@ class CommentsAdapter(private val commentList: List<Comments>, private val activ
             holder.commentActionLayout.visibility = View.GONE
         }
 
-        if (currentComment.commentRepliesCount > 0) {
-            holder.repliesBtn.setText("View ${currentComment.commentRepliesCount} Replies")
+        val currentReplyCount = currentComment.replies.count()
+
+        if (currentReplyCount > 0) {
+            val replyText = if (currentReplyCount == 1) "Reply" else "Replies"
+            holder.repliesBtn.setText("View ${currentComment.replies.count()} $replyText")
         } else {
             holder.repliesBtn.setText("Reply")
         }

@@ -1,7 +1,9 @@
 package com.kratsapps.memedom.fragments
 
 import android.content.Context
+import android.content.Intent
 import android.graphics.Color
+import android.net.Uri
 import android.os.Bundle
 import android.util.Log
 import android.view.LayoutInflater
@@ -22,6 +24,7 @@ import com.kratsapps.memedom.R
 import com.kratsapps.memedom.models.MemeDomUser
 import com.kratsapps.memedom.utils.DatabaseManager
 import kotlinx.android.synthetic.main.activity_main.*
+import java.lang.Exception
 
 
 class SettingsFragment : Fragment() {
@@ -60,21 +63,27 @@ class SettingsFragment : Fragment() {
         femaleFilter = rootView.findViewById<AppCompatRadioButton>(R.id.femaleFilter)
         otherFilter = rootView.findViewById<AppCompatRadioButton>(R.id.otherFilter)
 
-        val deleteBtn = rootView.findViewById<Button>(R.id.deleteBtn)
         val signoutBtn = rootView.findViewById<Button>(R.id.signoutBtn)
+        val contactBtn = rootView.findViewById<Button>(R.id.contactBtn)
 
-        deleteBtn.setOnClickListener {
-            val user = FirebaseAuth.getInstance().currentUser!!
+//        deleteBtn.setOnClickListener {
+//            val user = FirebaseAuth.getInstance().currentUser!!
+//
+//            user.delete()
+//                .addOnCompleteListener { task ->
+//                    if (task.isSuccessful) {
+//                        LoginManager.getInstance().logOut()
+//                        Toast.makeText(settingContext, "Sad to see you go", Toast.LENGTH_SHORT).show()
+//                        Log.d("Delete", "User account deleted.")
+//                        returnToLoggedOutState()
+//                    } else {
+//                        Log.d("Error", "User was not deleted")
+//                    }
+//                }
+//        }
 
-            user.delete()
-                .addOnCompleteListener { task ->
-                    if (task.isSuccessful) {
-                        LoginManager.getInstance().logOut()
-                        Toast.makeText(settingContext, "Sad to see you go", Toast.LENGTH_SHORT).show()
-                        Log.d("Delete", "User account deleted.")
-                        returnToLoggedOutState()
-                    }
-                }
+        contactBtn.setOnClickListener {
+            sendEmail()
         }
 
         signoutBtn.setOnClickListener {
@@ -107,6 +116,24 @@ class SettingsFragment : Fragment() {
         }
 
         setupSeekBar()
+    }
+
+    private fun sendEmail() {
+        val receipient: String = "krats.apps@gmail.com"
+        val subject: String = "Memedom Contact"
+        val message: String = ""
+
+        val mIntent = Intent(Intent.ACTION_SEND)
+        mIntent.data = Uri.parse("mailto:")
+        mIntent.type = "text/plain"
+        mIntent.putExtra(Intent.EXTRA_EMAIL, arrayOf(receipient))
+        mIntent.putExtra(Intent.EXTRA_SUBJECT, subject)
+
+        try {
+            startActivity(Intent.createChooser(mIntent, "Select Email Client"))
+        } catch (e: Exception) {
+            Toast.makeText(this.settingContext, e.message, Toast.LENGTH_LONG).show()
+        }
     }
 
     private fun returnToLoggedOutState() {
