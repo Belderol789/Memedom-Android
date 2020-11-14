@@ -16,6 +16,7 @@ import androidx.appcompat.app.AlertDialog
 import androidx.fragment.app.Fragment
 import com.bumptech.glide.Glide
 import com.kratsapps.memedom.CommentsActivity
+import com.kratsapps.memedom.MainActivity
 import com.kratsapps.memedom.R
 import com.kratsapps.memedom.models.MemeDomUser
 import com.kratsapps.memedom.models.Memes
@@ -30,6 +31,9 @@ class CreateFragment : Fragment() {
 
     private val IMAGE_GALLERY_REQUEST_CODE: Int = 2001
     lateinit var rootView: View
+    lateinit var imageViewMeme: ImageView
+    lateinit var buttonPost: Button
+    lateinit var addImageButton: ImageButton
     lateinit var createContext: Context
 
     override fun onCreateView(
@@ -54,9 +58,9 @@ class CreateFragment : Fragment() {
     }
 
     private fun setupUI() {
-        val imageViewMeme = rootView.findViewById(R.id.imageViewMeme) as ImageView
-        val buttonPost = rootView.findViewById(R.id.buttonPost) as Button
-        val addImageButton = rootView.findViewById(R.id.addImageButton) as ImageButton
+        imageViewMeme = rootView.findViewById(R.id.imageViewMeme) as ImageView
+        buttonPost = rootView.findViewById(R.id.buttonPost) as Button
+        addImageButton = rootView.findViewById(R.id.addImageButton) as ImageButton
 
         resetValues()
 
@@ -90,16 +94,19 @@ class CreateFragment : Fragment() {
     private fun sendPostToFirestore(savedUser: MemeDomUser) {
 
         var progressOverlay: View = rootView.findViewById(R.id.progress_overlay)
+        val mainActivity = activity as MainActivity
 
         val title = editTextTitle.text.toString()
         val postID = generateRandomString()
         val today = System.currentTimeMillis()
 
         AndroidUtils().animateView(progressOverlay, View.VISIBLE, 0.4f, 200)
+        mainActivity.activateNavBottom(false)
 
         Log.d("ProfilePhoto", "ProfilePhotoItem Create ${savedUser.profilePhoto}")
 
         FireStorageHandler().uploadMemePhotoWith(postID, imageViewMeme.drawable, createContext, {
+            mainActivity.activateNavBottom(true)
             val memeImageURL = it
             if (memeImageURL != null && savedUser != null) {
 
@@ -185,6 +192,7 @@ class CreateFragment : Fragment() {
         val buttonPost = rootView.findViewById(R.id.buttonPost) as Button
         val postTitle = rootView.findViewById(R.id.editTextTitle) as EditText
 
+        addImageButton.setImageResource(R.drawable.ic_action_create)
         buttonPost.alpha = 0.25f
         imageViewMeme.setImageDrawable(null)
         postTitle.setText(null)

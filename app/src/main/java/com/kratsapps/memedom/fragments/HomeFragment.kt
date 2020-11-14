@@ -24,6 +24,7 @@ import com.kratsapps.memedom.models.Memes
 import com.kratsapps.memedom.utils.DatabaseManager
 import com.kratsapps.memedom.adapters.FeedAdapter
 import com.kratsapps.memedom.firebaseutils.FirestoreHandler
+import com.kratsapps.memedom.utils.AndroidUtils
 
 class HomeFragment : Fragment() {
 
@@ -42,6 +43,8 @@ class HomeFragment : Fragment() {
     var mAuthListener: FirebaseAuth.AuthStateListener? = null
 
     private fun getAllMemes() {
+        var progressOverlay: View = rootView.findViewById(R.id.progress_overlay)
+        AndroidUtils().animateView(progressOverlay, View.VISIBLE, 0.4f, 200)
         val mainUser = DatabaseManager(this.context!!).retrieveSavedUser()
         FirestoreHandler().getAppSettings() { points, dayLimit ->
             FirestoreHandler().checkForFreshMemes(homeContext, mainUser, dayLimit) {
@@ -61,6 +64,7 @@ class HomeFragment : Fragment() {
                 }
 
                 homeSwipe.isRefreshing = false
+                progressOverlay.visibility = View.GONE
                 setupFeedView()
             }
         }

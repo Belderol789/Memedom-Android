@@ -51,6 +51,10 @@ class MainActivity : AppCompatActivity() {
         checkMatchingStatus()
     }
 
+    fun activateNavBottom(active: Boolean) {
+        navigationBottom.isEnabled = active
+    }
+
     private fun setupBottomNavigation() {
         navigationBottom.setOnNavigationItemSelectedListener {
             when (it.itemId){

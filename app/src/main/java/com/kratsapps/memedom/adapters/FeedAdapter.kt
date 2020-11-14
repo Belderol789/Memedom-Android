@@ -50,9 +50,16 @@ class FeedAdapter(private var feedList: MutableList<Memes>, private val activity
         val currentItem = filteredFeedList[position]
         val postUID: String = currentItem.postID
 
+        val mainUser = DatabaseManager(feedAdapterContext).retrieveSavedUser()
+        val mainUserID = mainUser?.uid
+        val postLikers = currentItem.postLikers
+
+        val shareCount = if(currentItem.postShares >= 10) "${currentItem.postShares}" else ""
+        val commentsCount = if(currentItem.postComments >= 10) "${currentItem.postComments}"  else ""
+
         var currentPostLikes = currentItem.getPostLikeCount()
 
-        Log.d("Scrolling", "Scrolled through meme ${currentItem.postTitle}")
+        Log.d("Scrolling", "Scrolled through meme ${currentItem.postID}")
 
         Glide.with(feedAdapterContext)
             .load(currentItem.postImageURL)
@@ -71,18 +78,11 @@ class FeedAdapter(private var feedList: MutableList<Memes>, private val activity
         holder.postUserName.text = currentItem.postUsername
         holder.likeImageView.alpha = 0f
 
-        val shareCount = if(currentItem.postShares >= 10) "${currentItem.postShares}" else ""
-        val commentsCount = if(currentItem.postComments >= 10) "${currentItem.postComments}"  else ""
-
         holder.shareBtn.text = shareCount
         holder.commentsBtn.text = commentsCount
         holder.feedTitle.text = currentItem.postTitle
 
         holder.feedDate.text = currentItem.postDateString()
-
-        val mainUser = DatabaseManager(feedAdapterContext).retrieveSavedUser()
-        val mainUserID = mainUser?.uid
-        val postLikers = currentItem.postLikers
 
         holder.reportButton.setOnClickListener {
             if(mainUser != null) { holder.linearReport.visibility = View.VISIBLE }
@@ -175,6 +175,7 @@ class FeedAdapter(private var feedList: MutableList<Memes>, private val activity
 
         if (isProfile) {
             holder.mAdView.visibility = View.GONE
+            holder.reportButton.visibility = View.INVISIBLE
         } else {
             if (position % 2 == 0) {
                 val adRequest = AdRequest.Builder().build()

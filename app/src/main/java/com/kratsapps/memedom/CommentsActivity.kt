@@ -96,7 +96,7 @@ class CommentsActivity : AppCompatActivity() {
 
             Glide.with(this)
                 .load(postMeme.postImageURL)
-                .centerCrop()
+                .fitCenter()
                 .into(commentsImage)
             Glide.with(this)
                 .load(postMeme.postProfileURL)

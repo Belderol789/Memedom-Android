@@ -3,6 +3,7 @@ package com.kratsapps.memedom.firebaseutils
 import android.content.Context
 import android.graphics.Color.convert
 import android.util.Log
+import androidx.room.Database
 import com.google.firebase.firestore.FieldValue
 import com.google.firebase.firestore.Query
 import com.google.firebase.firestore.SetOptions
@@ -202,18 +203,24 @@ class FirestoreHandler {
 
                     Log.d("Filtering-Memes", "MemeAge ${newMeme.userAge} min $minValue max $maxValue")
 
-                    if (mainUser != null) {
-                        if (!mainUser.rejects.contains(newMeme.postUserUID)
-                            && !mainUser.rejectedMemes.contains(newMeme.postID)
-                            && newMeme.userAge.toInt() >= minValue && newMeme.userAge.toInt() <= maxValue) {
-                            Log.d("Memes", "User is not null")
+                    val savedPostIDs = DatabaseManager(context).retrieveSavedPostIDs()
+
+                    if (!savedPostIDs.contains(newMeme.postID)) {
+
+                        DatabaseManager(context).savePostID(newMeme.postID)
+
+                        if (mainUser != null) {
+                            if (!mainUser.rejects.contains(newMeme.postUserUID)
+                                && !mainUser.rejectedMemes.contains(newMeme.postID)
+                                && newMeme.userAge.toInt() >= minValue && newMeme.userAge.toInt() <= maxValue) {
+                                Log.d("Memes", "User is not null")
+                                memes.add(newMeme)
+                            }
+                        } else {
+                            Log.d("Memes", "User is null")
                             memes.add(newMeme)
                         }
-                    } else {
-                        Log.d("Memes", "User is null")
-                        memes.add(newMeme)
                     }
-
                 }
 
                 Log.d("Memes", "Completed getting memes $memes")
