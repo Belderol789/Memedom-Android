@@ -22,9 +22,7 @@ import kotlinx.android.synthetic.main.activity_login.*
 
 class LoginActivity : AppCompatActivity() {
 
-    var isEmail: Boolean = true
     private lateinit var auth: FirebaseAuth
-    lateinit var memeDomuser: MemeDomUser
     lateinit var progressOverlay: View
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -46,6 +44,7 @@ class LoginActivity : AppCompatActivity() {
 
             DatabaseManager(this).saveToPrefsInt("minAge", 18)
             DatabaseManager(this).saveToPrefsInt("maxAge", 65)
+            DatabaseManager(this).clearPostIDs()
             AndroidUtils().animateView(progressOverlay, View.VISIBLE, 0.4f, 200)
 
             auth.signInWithEmailAndPassword(email, password)

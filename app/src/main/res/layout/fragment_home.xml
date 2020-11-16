@@ -78,7 +78,7 @@
         android:orientation="horizontal"
         android:paddingTop="20dp"
         app:layout_constraintBottom_toBottomOf="@+id/homeSwipe"
-        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintEnd_toEndOf= "parent"
         app:layout_constraintStart_toStartOf="parent">
 
         <LinearLayout
@@ -96,7 +96,10 @@
                 android:backgroundTint="@color/appFGColor"
                 android:elevation="20dp"
                 android:text="@string/home_signup"
-                android:textColor="@color/whiteColor" />
+                android:textAllCaps="false"
+                android:textColor="@color/whiteColor"
+                android:textSize="16sp"
+                android:textStyle="bold" />
         </LinearLayout>
 
         <LinearLayout
@@ -116,7 +119,10 @@
                 android:backgroundTint="@color/whiteColor"
                 android:elevation="10dp"
                 android:text="@string/home_login"
-                android:textColor="@color/appFGColor" />
+                android:textAllCaps="false"
+                android:textColor="@color/appFGColor"
+                android:textSize="16sp"
+                android:textStyle="bold" />
         </LinearLayout>
     </LinearLayout>
 

@@ -23,6 +23,8 @@ import androidx.appcompat.widget.SearchView
 import android.widget.SearchView.OnQueryTextListener
 import androidx.appcompat.widget.AppCompatRadioButton
 import com.facebook.internal.Mutable
+import com.kratsapps.memedom.MainActivity
+import com.kratsapps.memedom.utils.AndroidUtils
 
 
 class MessagesFragment : Fragment() {
@@ -62,26 +64,34 @@ class MessagesFragment : Fragment() {
 
         if(msgContext != null) {
 
+            var progressOverlay: View = rootView.findViewById(R.id.progress_overlay)
+            //AndroidUtils().animateView(progressOverlay, View.VISIBLE, 0.4f, 200)
+
             val mainUser = DatabaseManager(msgContext).retrieveSavedUser()
 
-            FirestoreHandler().checkNewMatches(msgContext, {
+            FirestoreHandler().checkNewMatch(msgContext, {
 
-                filteredMatches.clear()
-                matches.clear()
-                pending.clear()
+                progressOverlay.visibility = View.GONE
 
-                for(match in it) {
-                    if(!mainUser!!.matches.contains(match.uid)) {
-                        pending.add(match)
-                    } else {
-                        matches.add(match)
+                if (it != null && mainUser != null) {
+                    filteredMatches.clear()
+                    matches.clear()
+                    pending.clear()
+
+                    for(match in it) {
+                        if (match.matchStatus.equals(true)) {
+                            matches.add(match)
+                        } else if (match.offered.equals(mainUser.uid)) {
+                            pending.add(match)
+                        }
                     }
+
+                    filteredMatches.addAll(matches)
+                    matchAdapter.notifyDataSetChanged()
+
+                } else {
+                    // Show Empty State
                 }
-                filteredMatches.addAll(matches)
-
-                Log.d("Matching-Fragment", "Got matches ${filteredMatches.count()}")
-
-                matchAdapter.notifyDataSetChanged()
             })
         }
     }
@@ -131,7 +141,7 @@ class MessagesFragment : Fragment() {
     }
 
     private fun setupMatchRecycler() {
-        val activity = this.activity
+        val activity = this.activity as MainActivity
         if(msgContext != null && activity != null) {
 
             Log.d("Matching-Fragment", "Setting up recyclerView with $filteredMatches")

@@ -22,7 +22,6 @@ class FireStorageHandler {
     val chatPhotoRef = storageRef.child("ChatPhotos")
 
     fun uploadMemePhotoWith(id: String, image: Drawable?, context: Context, success: (String) -> Unit) {
-        val mainUser = DatabaseManager(context).retrieveSavedUser()
         val bitmap = (image as BitmapDrawable).bitmap
         val baos = ByteArrayOutputStream()
         bitmap.compress(Bitmap.CompressFormat.JPEG, 100, baos)
@@ -39,11 +38,6 @@ class FireStorageHandler {
                 Log.d("Storage", "Image saved ${it.toString()}")
                 if (it != null) {
                     success(it.toString())
-
-                    if (mainUser != null) {
-                        mainUser.memes += it.toString()
-                        DatabaseManager(context).convertUserObject(mainUser, "MainUser")
-                    }
                 }
             }
         }
@@ -94,7 +88,7 @@ class FireStorageHandler {
             photoRef.downloadUrl.addOnSuccessListener {
                 val downloadURI = it.toString()
                 Log.d("Storage", "Chat Image saved ${it.toString()}")
-                FirestoreHandler().sendUserChat(chatID, chatUniqueID, downloadURI, "", type, userID)
+                FirestoreHandler().sendUserChats(chatID, chatUniqueID, downloadURI, "", type, userID)
             }
         }
     }

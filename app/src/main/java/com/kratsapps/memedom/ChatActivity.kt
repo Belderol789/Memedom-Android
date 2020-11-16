@@ -26,6 +26,7 @@ import com.kratsapps.memedom.models.Chat
 import com.kratsapps.memedom.models.MemeDomUser
 import com.kratsapps.memedom.models.MessageItem
 import com.kratsapps.memedom.utils.DatabaseManager
+import com.kratsapps.memedom.utils.hideKeyboard
 import kotlinx.android.synthetic.main.activity_chat.*
 import kotlinx.android.synthetic.main.activity_chat.usernameText
 import kotlinx.android.synthetic.main.activity_comments.*
@@ -40,8 +41,6 @@ class ChatActivity : AppCompatActivity() {
 
     var chatAdapter: ChatAdapter? = null
     lateinit var currentChat: MemeDomUser
-    var contentText: String = ""
-    var contentType: Long = 0
     var chatUniqueID: String = ""
     var allChats = mutableListOf<Chat>()
     var allMessageItems = mutableListOf<MessageItem>()
@@ -71,11 +70,16 @@ class ChatActivity : AppCompatActivity() {
         Log.d("ChatUser", "Chat UniqueID $chatUniqueID")
 
         FirestoreHandler().retrieveChats(chatUniqueID, {
-            if(!allChatsID.contains(it.chatID)) {
+
+            Log.d("CurrentChat", "Chat ID is ${it.chatID} chatIDs are $allChatsID")
+
+            if(!allChatsID.contains(it.chatID) && !allChats.contains(it)) {
                 allChatsID.add(it.chatID)
                 allChats.add(it)
                 val sortedChats = allChats.sortedBy { it -> it.chatDate }
                 val mainUser = DatabaseManager(this).getMainUserID()
+
+                allMessageItems.clear()
 
                 for (chat in sortedChats) {
                     var chatType: Long = if (mainUser.equals(chat.chatUserID)) 0 else 1
@@ -99,6 +103,11 @@ class ChatActivity : AppCompatActivity() {
     }
 
     private fun setupUI() {
+
+        backBtn.setOnClickListener {
+            onBackPressed()
+        }
+
         usernameText.setText(currentChat.name)
         Glide
             .with(this)
@@ -200,7 +209,7 @@ class ChatActivity : AppCompatActivity() {
                     Log.d("MemedomImage", "Got Image $data")
                     val chatImageURL = data?.getStringExtra("SelectedImage")
                     if (chatImageURL != null) {
-                        FirestoreHandler().sendUserChat(chatID, chatUniqueID, chatImageURL, "", 0L, userID)
+                        FirestoreHandler().sendUserChats(chatID, chatUniqueID, chatImageURL, "", 0L, userID)
                     }
                 } else {
                     val imageData = image_uri
@@ -228,7 +237,9 @@ class ChatActivity : AppCompatActivity() {
 
     private fun sendChat(content: String, type: Long) {
         val chatID = generateRandomString()
-        FirestoreHandler().sendUserChat(chatID, chatUniqueID, "", content, type, mainUser!!.uid)
+        FirestoreHandler().sendUserChats(chatID, chatUniqueID, "", content, type, mainUser!!.uid)
+        edittext_chatbox.setText(null)
+        hideKeyboard()
     }
 
     private fun generateRandomString(): String {

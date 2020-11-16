@@ -46,8 +46,11 @@ class HomeFragment : Fragment() {
         var progressOverlay: View = rootView.findViewById(R.id.progress_overlay)
         AndroidUtils().animateView(progressOverlay, View.VISIBLE, 0.4f, 200)
         val mainUser = DatabaseManager(this.context!!).retrieveSavedUser()
-        FirestoreHandler().getAppSettings() { points, dayLimit ->
-            FirestoreHandler().checkForFreshMemes(homeContext, mainUser, dayLimit) {
+        FirestoreHandler().getAppSettings() { points, dayLimit, memeLimit, matchLimit ->
+
+            DatabaseManager(homeContext).saveToPrefsInt("matchLimit", matchLimit.toInt())
+
+            FirestoreHandler().checkForFreshMemes(homeContext, mainUser, dayLimit, memeLimit) {
 
                 filteredMemems.clear()
                 allMemes.clear()
@@ -143,7 +146,6 @@ class HomeFragment : Fragment() {
             Log.d("Segment", "Popular segment tapped ${allMemes.count()}")
             updateSegments("Memedom")
         }
-
 
         homeSwipe = rootView.findViewById<SwipeRefreshLayout>(R.id.homeSwipe)
         homeSwipe.setOnRefreshListener(OnRefreshListener {

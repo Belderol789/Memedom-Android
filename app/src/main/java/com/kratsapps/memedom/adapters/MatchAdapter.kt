@@ -4,18 +4,18 @@ import android.app.Activity
 import android.content.Context
 import android.content.Intent
 import android.os.Build
+import android.service.autofill.FieldClassification
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.webkit.URLUtil
 import android.widget.Filter
 import android.widget.Filterable
 import androidx.annotation.RequiresApi
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
-import com.kratsapps.memedom.CommentsActivity
-import com.kratsapps.memedom.ProfileActivity
-import com.kratsapps.memedom.R
+import com.kratsapps.memedom.*
 import com.kratsapps.memedom.firebaseutils.FirestoreHandler
 import com.kratsapps.memedom.models.Matches
 import com.kratsapps.memedom.models.MemeDomUser
@@ -24,7 +24,11 @@ import kotlinx.android.synthetic.main.matches_item.view.*
 import java.util.*
 
 
-class MatchAdapter(private val matchList: MutableList<Matches>, private val activity: Activity, private val mainUser: MemeDomUser): RecyclerView.Adapter<MatchAdapter.MatchViewHolder>(),
+class MatchAdapter(
+    private val matchList: MutableList<Matches>,
+    private val activity: MainActivity,
+    private val mainUser: MemeDomUser
+) : RecyclerView.Adapter<MatchAdapter.MatchViewHolder>(),
     Filterable {
 
     lateinit var matchAdapterContext: Context
@@ -47,42 +51,77 @@ class MatchAdapter(private val matchList: MutableList<Matches>, private val acti
         Log.d("Matching-Fragment", "Current match ${currentMatch.uid} FilterList $matchFilterList")
 
         holder.usernameText.setText(currentMatch.name)
-        holder.matchTextView.setText(currentMatch.matchText)
+
+        var matchText = ""
+        if (URLUtil.isValidUrl(currentMatch.matchText)) {
+            matchText = "Sent an Image"
+        } else if (currentMatch.matchText.isEmpty()) {
+            matchText = "Send your first message!"
+        } else {
+            matchText = currentMatch.matchText
+        }
+        holder.matchTextView.setText(matchText)
+        holder.matchDate.setText(currentMatch.postDateString())
+
         Glide.with(activity)
             .load(currentMatch.profilePhoto)
             .circleCrop()
             .into(holder.userImage)
 
-        if(!mainUser.matches.contains(currentMatch.uid)) {
+        if (!mainUser.matches.contains(currentMatch.uid)) {
             holder.actionLayout.visibility = View.VISIBLE
             holder.matchTextView.visibility = View.GONE
+            holder.chatBtn.visibility = View.GONE
         } else {
             holder.matchTextView.visibility = View.VISIBLE
+            holder.matchBtn.visibility = View.VISIBLE
             holder.actionLayout.visibility = View.GONE
         }
 
         holder.profileBtn.setOnClickListener {
             val intent: Intent = Intent(matchAdapterContext, ProfileActivity::class.java)
-            intent.putExtra("MatchedUser", currentMatch.uid)
-            matchAdapterContext.startActivity(intent)
+            intent.putExtra("MatchUser", currentMatch)
+            activity.startActivityForResult(intent, 999)
+        }
+
+        holder.chatBtn.setOnClickListener {
+            goToChat(currentMatch)
         }
 
         holder.matchBtn.setOnClickListener {
-            FirestoreHandler().sendMatchToUser(currentMatch.uid, matchAdapterContext)
+            FirestoreHandler().updateUserLiked(currentMatch.uid, matchAdapterContext)
+            FirestoreHandler().updateMatch(currentMatch.uid, matchAdapterContext)
+            goToChat(currentMatch)
             // Go to Chat
         }
 
     }
 
+    private fun goToChat(currentMatch: Matches) {
+        val intent: Intent = Intent(activity, ChatActivity::class.java)
+        val chatUser = MemeDomUser()
+        chatUser.name = currentMatch.name
+        chatUser.profilePhoto = currentMatch.profilePhoto
+        chatUser.uid = currentMatch.uid
+        intent.putExtra("ChatUser", chatUser)
+        activity.startActivity(intent)
+        activity.overridePendingTransition(
+            R.anim.enter_activity,
+            R.anim.enter_activity
+        )
+    }
+
     override fun getItemCount() = matchFilterList.size
 
-    class MatchViewHolder(itemView: View): RecyclerView.ViewHolder(itemView) {
+    class MatchViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
         val usernameText = itemView.usernameText
+        val matchDate = itemView.matchDate
         val userImage = itemView.userImage
 
         val actionLayout = itemView.actionLayout
         val profileBtn = itemView.profileBtn
         val matchBtn = itemView.matchBtn
+        val chatBtn = itemView.chatBtn
 
         val matchTextView = itemView.matchTextView
     }
@@ -126,7 +165,6 @@ class MatchAdapter(private val matchList: MutableList<Matches>, private val acti
         matchFilterList = matches
         notifyDataSetChanged()
     }
-
 }
 
 

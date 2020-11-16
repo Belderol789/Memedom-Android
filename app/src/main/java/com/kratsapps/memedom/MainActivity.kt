@@ -1,5 +1,6 @@
 package com.kratsapps.memedom
 
+import android.app.Activity
 import android.content.Context
 import android.content.Intent
 import android.graphics.Rect
@@ -14,6 +15,7 @@ import android.view.animation.Animation
 import android.view.inputmethod.InputMethodManager
 import android.widget.EditText
 import android.widget.ImageView
+import android.widget.Toast
 import androidx.annotation.NonNull
 import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
@@ -26,6 +28,7 @@ import com.kratsapps.memedom.fragments.*
 import com.kratsapps.memedom.models.MemeDomUser
 import com.kratsapps.memedom.utils.DatabaseManager
 import com.kratsapps.memedom.firebaseutils.FirestoreHandler
+import com.kratsapps.memedom.models.Matches
 import kotlinx.android.synthetic.main.activity_main.*
 import kotlinx.android.synthetic.main.activity_main.view.*
 import java.io.Serializable
@@ -57,7 +60,7 @@ class MainActivity : AppCompatActivity() {
 
     private fun setupBottomNavigation() {
         navigationBottom.setOnNavigationItemSelectedListener {
-            when (it.itemId){
+            when (it.itemId) {
                 R.id.ic_home -> makeCurrentFragment(homeFragment)
                 R.id.ic_profile -> makeCurrentFragment(profileFragment)
                 R.id.ic_create -> makeCurrentFragment(createFragment)
@@ -82,7 +85,7 @@ class MainActivity : AppCompatActivity() {
     private fun checkMatchingStatus() {
         val user = FirebaseAuth.getInstance().getCurrentUser()
 
-        if(user != null) {
+        if (user != null) {
             navigationBottom.visibility = View.VISIBLE
             FirestoreHandler().checkMatchingStatus(this.applicationContext, user.uid, {
                 currentMatchUser = it
@@ -93,7 +96,8 @@ class MainActivity : AppCompatActivity() {
                     .circleCrop()
                     .into(matchView.profilePhoto)
 
-                val randomGif = listOf(R.raw.gif1, R.raw.gif2, R.raw.gif3, R.raw.gif4, R.raw.gif5).random()
+                val randomGif =
+                    listOf(R.raw.gif1, R.raw.gif2, R.raw.gif3, R.raw.gif4, R.raw.gif5).random()
 
                 Glide.with(this)
                     .asGif()
@@ -103,12 +107,12 @@ class MainActivity : AppCompatActivity() {
                 fadeOutAndHideImage(matchView.memeImageView)
                 Log.d("Firestore-matching", "Got User ${it.uid}")
             })
-        }  else {
+        } else {
             navigationBottom.visibility = View.GONE
         }
 
         matchView.profileBtn.setOnClickListener {
-            if(currentMatchUser != null) {
+            if (currentMatchUser != null) {
                 proceedToProfile()
                 restartMatchView()
             }
@@ -123,17 +127,8 @@ class MainActivity : AppCompatActivity() {
 
         matchView.matchBtn.setOnClickListener {
             if (currentMatchUser != null) {
-                FirestoreHandler().sendMatchToUser(currentMatchUser!!.uid, this.applicationContext)
-
-                val intent: Intent = Intent(this, ChatActivity::class.java)
-                intent.putExtra("ChatUser", currentMatchUser)
-
-                this.startActivity(intent)
-                this.overridePendingTransition(
-                    R.anim.enter_activity,
-                    R.anim.enter_activity
-                )
-                Log.d("ChatUser", "Sending Chat User $currentMatchUser")
+                FirestoreHandler().sendToMatchUser(currentMatchUser!!, this.applicationContext)
+                Toast.makeText(baseContext, "Match Request Sent!", Toast.LENGTH_SHORT).show()
                 restartMatchView()
             }
         }
@@ -141,24 +136,25 @@ class MainActivity : AppCompatActivity() {
 
     private fun proceedToProfile() {
         val intent: Intent = Intent(this@MainActivity, ProfileActivity::class.java)
-        intent.putExtra("MatchedUser", currentMatchUser!!.uid)
+        intent.putExtra("MatchID", currentMatchUser!!.uid)
         startActivity(intent)
     }
 
     private fun fadeOutAndHideImage(img: ImageView) {
-        val timer = object: CountDownTimer(2000, 1000) {
+        val timer = object : CountDownTimer(2000, 1000) {
             override fun onTick(millisUntilFinished: Long) {}
             override fun onFinish() {
                 val fadeOut = AlphaAnimation(1F, 0F)
                 fadeOut.setInterpolator(AccelerateInterpolator())
                 fadeOut.setDuration(2000)
 
-                fadeOut.setAnimationListener(object: Animation.AnimationListener {
-                    override fun onAnimationEnd(animation:Animation) {
+                fadeOut.setAnimationListener(object : Animation.AnimationListener {
+                    override fun onAnimationEnd(animation: Animation) {
                         img.setVisibility(View.GONE)
                     }
-                    override fun onAnimationRepeat(animation:Animation) {}
-                    override  fun onAnimationStart(animation:Animation) {}
+
+                    override fun onAnimationRepeat(animation: Animation) {}
+                    override fun onAnimationStart(animation: Animation) {}
                 })
                 img.startAnimation(fadeOut)
             }
@@ -197,6 +193,38 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        super.onActivityResult(requestCode, resultCode, data)
+
+
+        Log.d("ChatUser", "Request code $requestCode")
+
+        if (requestCode == 999 && data != null) {
+
+            Log.d("ChatUser", "Request data $data")
+
+            val chatUserData = data.getSerializableExtra("ChatMatch") as Matches
+
+            Log.d("ChatUser", "Request dataSerial $chatUserData")
+
+            goToChat(chatUserData)
+        }
+    }
+
+    private fun goToChat(currentMatch: Matches) {
+        val intent: Intent = Intent(this, ChatActivity::class.java)
+        val chatUser = MemeDomUser()
+        chatUser.name = currentMatch.name
+        chatUser.profilePhoto = currentMatch.profilePhoto
+        chatUser.uid = currentMatch.uid
+        intent.putExtra("ChatUser", chatUser)
+        this.startActivity(intent)
+        this.overridePendingTransition(
+            R.anim.enter_activity,
+            R.anim.enter_activity
+        )
+    }
+
     override fun dispatchTouchEvent(event: MotionEvent): Boolean {
         if (event.action == MotionEvent.ACTION_DOWN) {
             val v = currentFocus
@@ -205,7 +233,8 @@ class MainActivity : AppCompatActivity() {
                 v.getGlobalVisibleRect(outRect)
                 if (!outRect.contains(event.rawX.toInt(), event.rawY.toInt())) {
                     v.clearFocus()
-                    val imm: InputMethodManager = getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
+                    val imm: InputMethodManager =
+                        getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
                     imm.hideSoftInputFromWindow(v.getWindowToken(), 0)
                 }
             }

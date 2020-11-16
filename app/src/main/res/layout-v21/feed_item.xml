@@ -20,6 +20,8 @@
             android:id="@+id/feedImage"
             android:layout_width="0dp"
             android:layout_height="300dp"
+            android:layout_marginTop="8dp"
+            android:background="@color/appBGColor"
             android:contentDescription="Feed ImageView"
             android:src="@drawable/ic_action_home"
             app:layout_constraintBottom_toTopOf="@+id/feedActionLayout"
@@ -116,7 +118,8 @@
         <LinearLayout
             android:id="@+id/feedActionLayout"
             android:layout_width="wrap_content"
-            android:layout_height="35dp"
+            android:layout_height="30dp"
+            android:layout_marginTop="8dp"
             android:divider="@drawable/divider_horizontal"
             android:gravity="center|fill_horizontal"
             android:orientation="horizontal"
@@ -127,7 +130,7 @@
 
             <ImageButton
                 android:id="@+id/postLikeBtn"
-                android:layout_width="100dp"
+                android:layout_width="70dp"
                 android:layout_height="match_parent"
                 android:layout_weight="1"
                 android:backgroundTint="@color/transparent"
@@ -140,7 +143,7 @@
             <Button
                 android:id="@+id/postShareBtn"
                 style="@style/Widget.AppCompat.Button.Borderless.Colored"
-                android:layout_width="wrap_content"
+                android:layout_width="70dp"
                 android:layout_height="match_parent"
                 android:layout_weight="1"
                 android:backgroundTint="@color/transparent"
@@ -148,13 +151,13 @@
                 android:drawableTint="@color/whiteColor"
                 android:text="10"
                 android:textColor="@color/whiteColor"
-                android:textSize="12dip"
+                android:textSize="10dip"
                 tools:targetApi="m" />
 
             <Button
                 android:id="@+id/postCommentsBtn"
                 style="@style/Widget.AppCompat.Button.Borderless.Colored"
-                android:layout_width="wrap_content"
+                android:layout_width="70dp"
                 android:layout_height="match_parent"
                 android:layout_weight="1"
                 android:drawableStart="@drawable/ic_action_chat"
@@ -162,7 +165,7 @@
                 android:text="10"
                 android:textAlignment="center"
                 android:textColor="@color/whiteColor"
-                android:textSize="12dip"
+                android:textSize="10dip"
                 tools:targetApi="m" />
 
         </LinearLayout>

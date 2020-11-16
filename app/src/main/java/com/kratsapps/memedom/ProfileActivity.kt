@@ -1,10 +1,12 @@
 package com.kratsapps.memedom
 
 import DefaultItemDecorator
+import android.app.Activity
 import android.content.Intent
 import android.graphics.Point
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import android.util.Log
 import android.view.View
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.recyclerview.widget.GridLayoutManager
@@ -14,50 +16,62 @@ import com.kratsapps.memedom.models.MemeDomUser
 import com.kratsapps.memedom.adapters.FeedAdapter
 import com.kratsapps.memedom.firebaseutils.FirestoreHandler
 import com.kratsapps.memedom.adapters.ImageAdapter
+import com.kratsapps.memedom.models.Matches
 import kotlinx.android.synthetic.main.activity_profile.*
 
 class ProfileActivity : AppCompatActivity() {
 
     var galleryItems: MutableList<String> = mutableListOf()
     var profileIsExpanded: Boolean = false
-    var matchedUser: MemeDomUser? = null
+
+    var matchUser: Matches? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_profile)
 
         congratsView.visibility = View.GONE
+        matchUser = intent.extras?.get("MatchUser") as? Matches
 
-        val matchedUserUID = intent.extras?.get("MatchedUser") as? String
+        var matchUserID = ""
+        if (matchUser?.uid != null) {
+            matchUserID = matchUser!!.uid
+        } else {
+            matchUserID = intent.extras?.getString("MatchID") as String
+        }
 
-        if (matchedUserUID != null) {
-            getAllUserMemes(matchedUserUID)
+        if (!matchUserID.isEmpty()) {
+            getAllUserMemes(matchUserID)
 
-            FirestoreHandler().getUserDataWith(matchedUserUID, {
+            FirestoreHandler().getUserDataWith(matchUserID, {
 
-                matchedUser = it
-
-                setupUserData(matchedUser!!)
+                val memeDomUser = it
+                setupUserData(it)
 
                 rejectBtn.setOnClickListener {
-                    FirestoreHandler().rejectUser(matchedUser!!, this)
+                    FirestoreHandler().rejectUser(memeDomUser, this)
                     onBackPressed()
                 }
 
                 matchBtn.setOnClickListener {
-                    congratsView.visibility = View.VISIBLE
+                    if (matchUser != null) {
+                        FirestoreHandler().updateUserLiked(matchUserID, this)
+                        FirestoreHandler().updateMatch(matchUserID, this)
+
+                        val intent = Intent().apply {
+                            putExtra("ChatMatch", matchUser)
+                        }
+                        setResult(Activity.RESULT_OK, intent)
+                        onBackPressed()
+                    } else {
+                        congratsView.visibility = View.VISIBLE
+                    }
+
                 }
 
                 okBtn.setOnClickListener {
-                    FirestoreHandler().sendMatchToUser(matchedUser!!.uid, this)
-
-                    val intent: Intent = Intent(this, ChatActivity::class.java)
-                    intent.putExtra("ChatUser", matchedUser)
-                    this.startActivity(intent)
-                    this.overridePendingTransition(
-                        R.anim.enter_activity,
-                        R.anim.enter_activity
-                    )
+                    FirestoreHandler().sendToMatchUser(memeDomUser, this)
+                    onBackPressed()
                 }
             })
         }
@@ -68,10 +82,12 @@ class ProfileActivity : AppCompatActivity() {
         var width = size.x
         var height = size.y
 
+        Log.d("heightIs", "$height")
+
         val params = profile_cardView.layoutParams as ConstraintLayout.LayoutParams
         params.height = height
         params.width = width
-        params.topMargin = height + 800
+        params.topMargin = height
         profile_cardView.requestLayout()
 
         expandBtn.setOnClickListener {
@@ -79,7 +95,7 @@ class ProfileActivity : AppCompatActivity() {
                 profile_cardView
                     .animate()
                     .setDuration(500)
-                    .translationY((800 - height).toFloat())
+                    .translationY(((height / 1.8) - height).toFloat())
                     .withEndAction {
                         profileIsExpanded = !profileIsExpanded
                     }

@@ -145,7 +145,7 @@ class ProfileFragment : Fragment() {
             val params = profileView.layoutParams as ConstraintLayout.LayoutParams
             params.height = height
             params.width = width
-            params.topMargin = height + 800
+            params.topMargin = height
             profileView.requestLayout()
         }
 
@@ -155,7 +155,7 @@ class ProfileFragment : Fragment() {
                 profileView
                     .animate()
                     .setDuration(500)
-                    .translationY((800 - height).toFloat())
+                    .translationY(((height / 1.8) - height).toFloat())
                     .withEndAction {
                         profileIsExpanded = !profileIsExpanded
                     }

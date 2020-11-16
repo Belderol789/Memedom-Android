@@ -21,8 +21,8 @@
             android:layout_height="match_parent">
 
             <ImageButton
-                android:id="@+id/imageButton"
-                android:layout_width="30dp"
+                android:id="@+id/backBtn"
+                android:layout_width="45dp"
                 android:layout_height="0dp"
                 android:layout_weight="1"
                 android:background="@color/transparent"
@@ -37,7 +37,7 @@
                 android:layout_width="40dp"
                 android:layout_height="40dp"
                 app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintStart_toEndOf="@+id/imageButton"
+                app:layout_constraintStart_toEndOf="@+id/backBtn"
                 app:layout_constraintTop_toTopOf="parent"
                 tools:srcCompat="@tools:sample/avatars" />
 

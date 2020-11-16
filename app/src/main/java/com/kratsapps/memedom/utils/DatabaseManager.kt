@@ -28,6 +28,19 @@ class DatabaseManager(context: Context) {
         editor.apply()
     }
 
+    fun clearPostIDs() {
+        var savedPostIDs = listOf<String>()
+        var jsonString = gson.toJson(savedPostIDs)
+
+        Log.d("Database", "Saved Json $jsonString")
+
+        val sharedPreference = dbContext.getSharedPreferences(POST_IDS, Context.MODE_PRIVATE)
+        var editor = sharedPreference.edit()
+        editor.putString(POST_IDS, jsonString)
+        editor.apply()
+    }
+
+
     fun retrieveSavedPostIDs(): MutableList<String> {
         val savedJson = dbContext.getSharedPreferences(POST_IDS, Context.MODE_PRIVATE).getString(
             POST_IDS,
@@ -76,9 +89,6 @@ class DatabaseManager(context: Context) {
             MAIN_USER,
             null
         )
-
-        Log.d("Database", "Loaded Json $savedJson")
-
         if (savedJson != null) {
             var memeDomUser = gson.fromJson(savedJson, MemeDomUser::class.java)
             return memeDomUser

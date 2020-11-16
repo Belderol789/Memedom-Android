@@ -61,6 +61,8 @@ class FeedAdapter(private var feedList: MutableList<Memes>, private val activity
 
         Log.d("Scrolling", "Scrolled through meme ${currentItem.postID}")
 
+        //DatabaseManager(feedAdapterContext).savePostID(currentItem.postID)
+
         Glide.with(feedAdapterContext)
             .load(currentItem.postImageURL)
             .thumbnail(0.25f)

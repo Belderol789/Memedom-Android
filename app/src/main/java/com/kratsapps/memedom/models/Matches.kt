@@ -1,5 +1,6 @@
 package com.kratsapps.memedom.models
 
+import android.util.Log
 import java.io.Serializable
 import java.util.*
 
@@ -8,7 +9,10 @@ class Matches: Serializable {
     var uid: String = ""
     var profilePhoto: String = ""
     var matchText: String = ""
+    var matchStatus: Boolean = false
     var matchDate: Long = 0
+    var offered: String = ""
+
 
     fun postDateString(): String {
 
@@ -22,7 +26,7 @@ class Matches: Serializable {
         val months = weeks / 4
         val years = months / 12
 
-        //Log.d("Date", "System ${System.currentTimeMillis()} / PostDate $postDate / Seconds $seconds / Minutes $minutes / Hours $hours / Days $days / Weeks $weeks / Months $months / Years $years")
+        Log.d("MatchDate", "MatchDate $matchDate NOW $postDateFromNow")
 
         if (months > 12) {
             return "${years}y ago"

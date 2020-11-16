@@ -307,6 +307,7 @@ class SignupActivity : AppCompatActivity() {
             val profileImage = imageButtonProfile.drawable
             if (profileImage != null) {
 
+                DatabaseManager(this).clearPostIDs()
                 DatabaseManager(this).saveToPrefsInt("minAge", 18)
                 DatabaseManager(this).saveToPrefsInt("maxAge", 65)
 
