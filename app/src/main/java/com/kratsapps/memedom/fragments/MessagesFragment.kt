@@ -87,7 +87,7 @@ class MessagesFragment : Fragment() {
                     }
 
                     filteredMatches.addAll(matches)
-                    matchAdapter.notifyDataSetChanged()
+                    setupMatchRecycler()
 
                 } else {
                     // Show Empty State

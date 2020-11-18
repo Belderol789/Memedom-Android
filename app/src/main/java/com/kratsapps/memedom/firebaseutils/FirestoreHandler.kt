@@ -371,6 +371,13 @@ class FirestoreHandler {
             }
     }
 
+    fun unmatchUser(matchID: String) {
+        firestoreDB
+            .collection(MATCHED)
+            .document(matchID)
+            .delete()
+    }
+
     fun rejectUser(matchUser: MemeDomUser,
                    context: Context) {
         val memeDomuser = DatabaseManager(context).retrieveSavedUser()
@@ -474,11 +481,13 @@ class FirestoreHandler {
                 .set(data)
         }
         // Send to matching firebase
-        updateUserLiked(matchUser.uid, context)
+        updateUserLiked(matchUser.uid, context, {})
     }
 
     fun updateUserLiked(matchUserUID: String,
-                        context: Context) {
+                        context: Context,
+                        completed: () -> Unit) {
+
         val mainUser = DatabaseManager(context).retrieveSavedUser()
         if (mainUser != null && !mainUser.matches.contains(matchUserUID)) {
             var fieldValue: FieldValue = FieldValue.arrayUnion(matchUserUID)
@@ -488,24 +497,24 @@ class FirestoreHandler {
 
             DatabaseManager(context).convertUserObject(mainUser, "MainUser")
             updateLikedDatabase(mainUser.uid!!, matchUserUID, 1)
+
+            completed()
         }
     }
 
-    fun updateMatch(matchUseID: String, context: Context) {
+    fun updateMatch(matchUseID: String, data: HashMap<String, Any>, context: Context, completed: () -> Unit) {
         val mainUser = DatabaseManager(context).retrieveSavedUser()
         val userIDs = matchUseID + mainUser!!.uid
         val messageUniqueID = userIDs.toCharArray().sorted().joinToString("")
-        val today = System.currentTimeMillis()
 
         if (mainUser != null) {
-            val data = hashMapOf<String, Any>(
-                "matchStatus" to true,
-                "matchDate" to today
-            )
             firestoreDB
                 .collection(MATCHED)
                 .document(messageUniqueID)
                 .set(data, SetOptions.merge())
+                .addOnSuccessListener {
+                    completed()
+                }
         }
     }
 

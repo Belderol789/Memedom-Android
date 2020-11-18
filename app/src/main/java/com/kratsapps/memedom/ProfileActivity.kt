@@ -55,14 +55,20 @@ class ProfileActivity : AppCompatActivity() {
 
                 matchBtn.setOnClickListener {
                     if (matchUser != null) {
-                        FirestoreHandler().updateUserLiked(matchUserID, this)
-                        FirestoreHandler().updateMatch(matchUserID, this)
 
-                        val intent = Intent().apply {
-                            putExtra("ChatMatch", matchUser)
-                        }
-                        setResult(Activity.RESULT_OK, intent)
-                        onBackPressed()
+                        val data = hashMapOf<String, Any>(
+                            "matchStatus" to true,
+                            "matchDate" to System.currentTimeMillis()
+                        )
+                        FirestoreHandler().updateMatch(matchUserID, data, this, {})
+                        FirestoreHandler().updateUserLiked(matchUserID, this, {
+                            val intent = Intent().apply {
+                                putExtra("ChatMatch", matchUser)
+                            }
+                            setResult(Activity.RESULT_OK, intent)
+                            onBackPressed()
+                        })
+
                     } else {
                         congratsView.visibility = View.VISIBLE
                     }

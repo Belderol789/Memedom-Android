@@ -64,4 +64,7 @@ dependencies {
     implementation 'com.github.Innovattic:range-seek-bar:v1.0.6'
     //admob
     implementation 'com.google.android.gms:play-services-ads:19.5.0'
+    //alert
+    implementation 'com.irozon.alertview:alertview:1.0.1'
+    implementation 'com.android.support:design:27.1.0'
 }

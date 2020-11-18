@@ -13,10 +13,15 @@ import android.os.Bundle
 import android.os.Message
 import android.provider.MediaStore
 import android.util.Log
+import android.webkit.URLUtil
 import android.widget.Button
 import android.widget.Toast
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.bumptech.glide.Glide
+import com.irozon.alertview.AlertActionStyle
+import com.irozon.alertview.AlertStyle
+import com.irozon.alertview.AlertView
+import com.irozon.alertview.objects.AlertAction
 import com.kratsapps.memedom.adapters.ChatAdapter
 import com.kratsapps.memedom.adapters.CommentsAdapter
 import com.kratsapps.memedom.adapters.MatchAdapter
@@ -105,7 +110,7 @@ class ChatActivity : AppCompatActivity() {
     private fun setupUI() {
 
         backBtn.setOnClickListener {
-            onBackPressed()
+            updateLastMessage()
         }
 
         usernameText.setText(currentChat.name)
@@ -148,9 +153,43 @@ class ChatActivity : AppCompatActivity() {
         }
 
         optionBtn.setOnClickListener {
+            val alert = AlertView("Select an Option", "", AlertStyle.IOS)
+            alert.addAction(AlertAction("Unmatch", AlertActionStyle.DEFAULT, {
+                FirestoreHandler().unmatchUser(chatUniqueID)
+                updateLastMessage()
+            }))
+            alert.addAction(AlertAction("Report", AlertActionStyle.NEGATIVE, {
+                FirestoreHandler().unmatchUser(chatUniqueID)
+                FirestoreHandler().rejectUser(currentChat, this)
+                updateLastMessage()
+            }))
+
+            alert.show(this)
 
         }
     }
+
+    private fun updateLastMessage() {
+
+        val lastItem = allMessageItems.last()
+        var lastText = "Sent a message!"
+
+        if (URLUtil.isValidUrl(lastItem.chatContent)) {
+            lastText = "Sent  an image!"
+        } else if (!lastItem.chatContent.isEmpty()) {
+            lastText = lastItem.chatContent
+        }
+
+        val data = hashMapOf<String, Any>(
+            "matchText" to lastText,
+            "matchDate" to System.currentTimeMillis()
+        )
+
+        FirestoreHandler().updateMatch(currentChat.uid, data, this, {
+            onBackPressed()
+        })
+    }
+
 
     private fun openMemedom() {
         val intent: Intent = Intent(this, MemedomActivity::class.java)

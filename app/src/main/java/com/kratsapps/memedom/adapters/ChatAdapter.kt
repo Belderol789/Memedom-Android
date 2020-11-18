@@ -57,7 +57,6 @@ class ChatAdapter(var data: MutableList<MessageItem>) : RecyclerView.Adapter<Mes
         override fun bind(item: MessageItem) {
             if (!item.chatImageURL.isEmpty()) {
                 messageContent.visibility = View.GONE
-                messageDate.text = item.chatDateString
                 chatImage.visibility = View.VISIBLE
                 Glide
                     .with(context)
@@ -70,6 +69,7 @@ class ChatAdapter(var data: MutableList<MessageItem>) : RecyclerView.Adapter<Mes
                 messageContent.text = item.chatContent
                 messageContent.setTextColor(Color.WHITE)
             }
+            messageDate.text = item.chatDateString
         }
     }
     class FriendMessageViewHolder(val view: View, context: Context) : MessageViewHolder<MessageItem>(view) {

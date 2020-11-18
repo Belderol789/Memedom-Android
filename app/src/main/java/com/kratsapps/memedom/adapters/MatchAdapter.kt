@@ -73,9 +73,9 @@ class MatchAdapter(
             holder.matchTextView.visibility = View.GONE
             holder.chatBtn.visibility = View.GONE
         } else {
-            holder.matchTextView.visibility = View.VISIBLE
-            holder.matchBtn.visibility = View.VISIBLE
             holder.actionLayout.visibility = View.GONE
+            holder.matchTextView.visibility = View.VISIBLE
+            holder.chatBtn.visibility = View.VISIBLE
         }
 
         holder.profileBtn.setOnClickListener {
@@ -89,9 +89,16 @@ class MatchAdapter(
         }
 
         holder.matchBtn.setOnClickListener {
-            FirestoreHandler().updateUserLiked(currentMatch.uid, matchAdapterContext)
-            FirestoreHandler().updateMatch(currentMatch.uid, matchAdapterContext)
-            goToChat(currentMatch)
+
+            val data = hashMapOf<String, Any>(
+                "matchStatus" to true,
+                "matchDate" to System.currentTimeMillis()
+            )
+
+            FirestoreHandler().updateMatch(currentMatch.uid, data, matchAdapterContext, {})
+            FirestoreHandler().updateUserLiked(currentMatch.uid, matchAdapterContext, {
+                goToChat(currentMatch)
+            })
             // Go to Chat
         }
 
