@@ -7,6 +7,7 @@ import android.graphics.Point
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.util.Log
+import android.view.Display
 import android.view.View
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.recyclerview.widget.GridLayoutManager
@@ -82,9 +83,15 @@ class ProfileActivity : AppCompatActivity() {
             })
         }
 
-        val display = windowManager.defaultDisplay
+        var display: Display?
+
+        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.R) {
+            display = this.display
+        } else {
+            display = windowManager.defaultDisplay
+        }
         val size = Point()
-        display.getRealSize(size)
+        display?.getRealSize(size)
         var width = size.x
         var height = size.y
 

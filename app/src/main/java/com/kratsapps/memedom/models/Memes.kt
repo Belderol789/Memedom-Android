@@ -24,6 +24,8 @@ class Memes : Serializable {
     var postShares: Long = 0
     var postReports: Long = 0
 
+    var postHeight: Long = 800
+
     fun getPostLikeCount(): Int {
         return postLikers.size
     }

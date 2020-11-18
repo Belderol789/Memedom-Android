@@ -62,6 +62,7 @@ class CommentsActivity : AppCompatActivity() {
         if (postMeme != null) {
             commentsTitle.text = postMeme.postTitle
             commentsDate.text = postMeme.postDateString()
+            commentsUsername.text = postMeme.postUsername
             commentsPointsTextView.text = "${postMeme.getPostLikeCount()}"
 
             val shareCount = if(postMeme.postShares >= 10) "${postMeme.postShares}" else ""

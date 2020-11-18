@@ -44,6 +44,8 @@ class MainActivity : AppCompatActivity() {
 
     var currentMatchUser: MemeDomUser? = null
 
+    var profileIsLoaded: Boolean = false
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)

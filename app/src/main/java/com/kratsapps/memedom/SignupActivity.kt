@@ -113,6 +113,7 @@ class SignupActivity : AppCompatActivity() {
         } else {
             memeDomuser = MemeDomUser()
         }
+        memeDomuser.gender = "Male"
     }
 
     private fun setupActionButtons() {
@@ -182,7 +183,7 @@ class SignupActivity : AppCompatActivity() {
         }
 
         buttonNextBirthday.setOnClickListener{
-            if (memeDomuser.getUserAge() >= 18) {
+            if (memeDomuser.getUserAge() >= 16) {
                 signupUser()
             }
         }
@@ -308,7 +309,7 @@ class SignupActivity : AppCompatActivity() {
             if (profileImage != null) {
 
                 DatabaseManager(this).clearPostIDs()
-                DatabaseManager(this).saveToPrefsInt("minAge", 18)
+                DatabaseManager(this).saveToPrefsInt("minAge", 16)
                 DatabaseManager(this).saveToPrefsInt("maxAge", 65)
 
                 FireStorageHandler().uploadPhotoWith(memeDomuser.uid, profileImage, {
@@ -379,7 +380,7 @@ class SignupActivity : AppCompatActivity() {
             override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
                 val birthday = textEditBirthday.text.toString()
                 memeDomuser.birthday = birthday
-                if (memeDomuser.getUserAge() >= 18) {
+                if (memeDomuser.getUserAge() >= 16) {
                     buttonNextBirthday.setBackgroundResource(R.drawable.soft_button)
                 }
             }

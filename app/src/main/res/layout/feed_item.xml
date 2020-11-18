@@ -19,7 +19,7 @@
         <ImageButton
             android:id="@+id/feedImage"
             android:layout_width="0dp"
-            android:layout_height="300dp"
+            android:layout_height="350dp"
             android:contentDescription="Feed ImageView"
             android:src="@drawable/ic_action_home"
             app:layout_constraintBottom_toTopOf="@+id/feedActionLayout"

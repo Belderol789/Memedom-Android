@@ -211,7 +211,7 @@ class FirestoreHandler {
             "Today ${convertLongToTime(today)} Days after ${convertLongToTime(tomorrow)} with day limit $dayLimit"
         )
 
-        val minValue = DatabaseManager(context).retrievePrefsInt("minAge", 18)
+        val minValue = DatabaseManager(context).retrievePrefsInt("minAge", 16)
         val maxValue = DatabaseManager(context).retrievePrefsInt("maxAge", 65)
 
         var findGender = listOf<String>("Female", "Male", "Other")

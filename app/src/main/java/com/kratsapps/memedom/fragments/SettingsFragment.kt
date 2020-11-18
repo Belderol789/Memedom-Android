@@ -66,22 +66,6 @@ class SettingsFragment : Fragment() {
         val signoutBtn = rootView.findViewById<Button>(R.id.signoutBtn)
         val contactBtn = rootView.findViewById<Button>(R.id.contactBtn)
 
-//        deleteBtn.setOnClickListener {
-//            val user = FirebaseAuth.getInstance().currentUser!!
-//
-//            user.delete()
-//                .addOnCompleteListener { task ->
-//                    if (task.isSuccessful) {
-//                        LoginManager.getInstance().logOut()
-//                        Toast.makeText(settingContext, "Sad to see you go", Toast.LENGTH_SHORT).show()
-//                        Log.d("Delete", "User account deleted.")
-//                        returnToLoggedOutState()
-//                    } else {
-//                        Log.d("Error", "User was not deleted")
-//                    }
-//                }
-//        }
-
         contactBtn.setOnClickListener {
             sendEmail()
         }
@@ -149,7 +133,7 @@ class SettingsFragment : Fragment() {
         val minText = rootView.findViewById<TextView>(R.id.minText)
         val maxText = rootView.findViewById<TextView>(R.id.maxText)
 
-        val min = DatabaseManager(settingContext).retrievePrefsInt("minAge", 18)
+        val min = DatabaseManager(settingContext).retrievePrefsInt("minAge", 16)
         val max = DatabaseManager(settingContext).retrievePrefsInt("maxAge", 65)
 
         minText.setText("$min")
@@ -166,7 +150,7 @@ class SettingsFragment : Fragment() {
 
                 Log.d("Filtering", "min ${ageSeekbar.getMinThumbValue()}, max ${ageSeekbar.getMaxThumbValue()}")
 
-                if(minValue >= 18) {
+                if(minValue >= 16) {
                     DatabaseManager(settingContext).saveToPrefsInt("minAge", ageSeekbar.getMinThumbValue())
                 }
                 DatabaseManager(settingContext).saveToPrefsInt("maxAge", ageSeekbar.getMaxThumbValue())
@@ -177,7 +161,7 @@ class SettingsFragment : Fragment() {
                 val minValue = minThumbValue
                 val maxValue = maxThumbValue
 
-                if (minThumbValue >= 18) {
+                if (minThumbValue >= 16) {
                     minText.setText(minValue.toString())
                 }
                 maxText.setText(maxValue.toString())

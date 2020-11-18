@@ -141,7 +141,9 @@ class MessagesFragment : Fragment() {
     }
 
     private fun setupMatchRecycler() {
-        val activity = this.activity as MainActivity
+
+        val activity = this.activity as? MainActivity
+
         if(msgContext != null && activity != null) {
 
             Log.d("Matching-Fragment", "Setting up recyclerView with $filteredMatches")

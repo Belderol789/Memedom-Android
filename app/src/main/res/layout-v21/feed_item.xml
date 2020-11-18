@@ -19,7 +19,7 @@
         <ImageButton
             android:id="@+id/feedImage"
             android:layout_width="0dp"
-            android:layout_height="300dp"
+            android:layout_height="350dp"
             android:layout_marginTop="8dp"
             android:background="@color/appBGColor"
             android:contentDescription="Feed ImageView"
@@ -38,7 +38,7 @@
             app:layout_constraintEnd_toEndOf="@+id/feedImage"
             app:layout_constraintStart_toStartOf="@+id/feedImage"
             app:layout_constraintTop_toTopOf="@+id/feedImage"
-            app:srcCompat="@drawable/ic_action_like"
+            app:srcCompat="@drawable/ic_action_crown"
             app:tint="@color/appFGColor" />
 
         <LinearLayout
@@ -136,7 +136,7 @@
                 android:backgroundTint="@color/transparent"
                 android:gravity="center"
                 android:scaleType="center"
-                android:src="@drawable/ic_action_like"
+                android:src="@drawable/ic_action_crown"
                 android:tint="@color/whiteColor"
                 tools:targetApi="m" />
 
@@ -203,7 +203,7 @@
                 android:layout_height="25dp"
                 android:layout_weight="1"
                 android:paddingLeft="16dp"
-                app:srcCompat="@drawable/ic_action_like"
+                app:srcCompat="@drawable/ic_action_crown"
                 app:tint="@color/appFGColor" />
 
             <TextView
@@ -212,7 +212,7 @@
                 android:layout_height="match_parent"
                 android:layout_weight="1"
                 android:gravity="center"
-                android:text="2.4k"
+                android:text="2.4k likes"
                 android:textAlignment="textStart"
                 android:textColor="@color/appFGColor"
                 android:textStyle="bold" />

@@ -15,6 +15,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.*
 import androidx.annotation.RequiresApi
+import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
@@ -23,15 +24,19 @@ import com.google.firebase.firestore.FieldValue
 import com.kratsapps.memedom.Assets
 import com.kratsapps.memedom.CommentsActivity
 import com.kratsapps.memedom.R
+import com.kratsapps.memedom.firebaseutils.FirestoreHandler
 import com.kratsapps.memedom.models.MemeDomUser
 import com.kratsapps.memedom.models.Memes
 import com.kratsapps.memedom.utils.DatabaseManager
 import com.kratsapps.memedom.utils.DoubleClickListener
-import com.kratsapps.memedom.firebaseutils.FirestoreHandler
 import kotlinx.android.synthetic.main.feed_item.view.*
 
 
-class FeedAdapter(private var feedList: MutableList<Memes>, private val activity: Activity, val isProfile: Boolean): RecyclerView.Adapter<FeedAdapter.FeedViewHolder>() {
+class FeedAdapter(
+    private var feedList: MutableList<Memes>,
+    private val activity: Activity,
+    val isProfile: Boolean
+): RecyclerView.Adapter<FeedAdapter.FeedViewHolder>() {
 
     lateinit var feedAdapterContext: Context
     var filteredFeedList = feedList
@@ -63,6 +68,10 @@ class FeedAdapter(private var feedList: MutableList<Memes>, private val activity
 
         //DatabaseManager(feedAdapterContext).savePostID(currentItem.postID)
 
+        val lp: ConstraintLayout.LayoutParams = holder.feedImage.getLayoutParams() as ConstraintLayout.LayoutParams
+        lp.height = currentItem.postHeight.toInt()
+        holder.feedImage.setLayoutParams(lp)
+
         Glide.with(feedAdapterContext)
             .load(currentItem.postImageURL)
             .thumbnail(0.25f)
@@ -74,7 +83,12 @@ class FeedAdapter(private var feedList: MutableList<Memes>, private val activity
         Glide.with(feedAdapterContext)
             .load(currentItem.postProfileURL)
             .circleCrop()
-            .error(ContextCompat.getDrawable(activity.applicationContext, R.drawable.ic_action_name))
+            .error(
+                ContextCompat.getDrawable(
+                    activity.applicationContext,
+                    R.drawable.ic_action_name
+                )
+            )
             .into(holder.postProfilePic)
 
         holder.postUserName.text = currentItem.postUsername
@@ -164,7 +178,12 @@ class FeedAdapter(private var feedList: MutableList<Memes>, private val activity
             holder.shareBtn.setOnClickListener {
                 val memeImage = (holder.feedImage.drawable as BitmapDrawable).bitmap
                 val shareIntent = Intent(Intent.ACTION_SEND)
-                val path = MediaStore.Images.Media.insertImage(activity.contentResolver, memeImage, "Memedom", null)
+                val path = MediaStore.Images.Media.insertImage(
+                    activity.contentResolver,
+                    memeImage,
+                    "Memedom",
+                    null
+                )
                 val uri = Uri.parse(path)
                 shareIntent.putExtra(Intent.EXTRA_STREAM, uri)
                 shareIntent.type = "image/*"

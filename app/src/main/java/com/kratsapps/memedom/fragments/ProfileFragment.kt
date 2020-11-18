@@ -24,6 +24,7 @@ import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
+import com.kratsapps.memedom.MainActivity
 import com.kratsapps.memedom.R
 import com.kratsapps.memedom.adapters.FeedAdapter
 import com.kratsapps.memedom.adapters.ImageAdapter
@@ -80,8 +81,12 @@ class ProfileFragment : Fragment() {
         val postCount = rootView.findViewById<TextView>(R.id.postCount)
         val matchCount = rootView.findViewById<TextView>(R.id.matchCount)
 
-        if(mainUserID != null && this.activity != null) {
+        val mainActivity = this.activity as? MainActivity
+
+        if(mainUserID != null && mainActivity != null) {
             FirestoreHandler().getAllMemesOfMainUser(mainUserID) {
+
+                Log.d("Money", "Losing Money on Profile")
 
                 matchCount.setText("${mainUser.matches.count()}")
                 postCount.setText("${it.count()}")
@@ -91,12 +96,14 @@ class ProfileFragment : Fragment() {
                 }
                 crownCount.setText("$crowns")
 
-                val feedAdapter =  FeedAdapter(it, this.activity!!, true)
-                profileRecyclerView.addItemDecoration(DefaultItemDecorator(resources.getDimensionPixelSize(R.dimen.vertical_recyclerView)))
-                profileRecyclerView.adapter = feedAdapter
-                profileRecyclerView.layoutManager = LinearLayoutManager(activity)
-                profileRecyclerView.setHasFixedSize(true)
-                profileRecyclerView.itemAnimator?.removeDuration
+                if (this.activity != null) {
+                    val feedAdapter =  FeedAdapter(it, this.activity!!, true)
+                    profileRecyclerView.addItemDecoration(DefaultItemDecorator(resources.getDimensionPixelSize(R.dimen.vertical_recyclerView)))
+                    profileRecyclerView.adapter = feedAdapter
+                    profileRecyclerView.layoutManager = LinearLayoutManager(activity)
+                    profileRecyclerView.setHasFixedSize(true)
+                    profileRecyclerView.itemAnimator?.removeDuration
+                }
             }
         }
     }
@@ -105,6 +112,7 @@ class ProfileFragment : Fragment() {
 
         profileView = rootView.findViewById<CardView>(R.id.profile_cardView)
         progressOverlay = rootView.findViewById(R.id.progress_overlay)
+
         val username = rootView.findViewById<TextView>(R.id.username)
         val photoBtn = rootView.findViewById<ImageButton>(R.id.photoBtn)
         val gender = rootView.findViewById<TextView>(R.id.gender)
