@@ -62,6 +62,7 @@ class ImageAdapter(private val imageList: MutableList<String>, private val activ
 
     fun removeAt(position: Int) {
         Log.d("ImageList", "Count before ${imageList.count()}")
+        fragment?.imageIsChanged = true
         imageList.removeAt(position)
 
         notifyItemRemoved(position)

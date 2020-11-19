@@ -7,6 +7,16 @@
     android:background="@color/appBGColor"
     tools:context=".fragments.ProfileFragment">
 
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/profileRecycler"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:background="@color/appBGColor"
+        app:layout_constraintBottom_toTopOf="@+id/profile_cardView"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
     <androidx.cardview.widget.CardView
         android:id="@+id/profile_cardView"
         android:layout_width="0dp"
@@ -142,6 +152,7 @@
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="16dp"
+                android:layout_marginTop="8dp"
                 android:layout_marginEnd="16dp"
                 android:orientation="vertical"
                 app:layout_constraintEnd_toEndOf="parent"
@@ -172,7 +183,6 @@
 
             <EditText
                 android:id="@+id/bioText"
-                android:maxLength="300"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="16dp"
@@ -180,6 +190,7 @@
                 android:layout_marginEnd="16dp"
                 android:backgroundTint="@color/appFGColor"
                 android:hint="Write About Yourself"
+                android:maxLength="300"
                 android:textColor="@color/whiteColor"
                 android:textColorHint="@color/appSecondaryColor"
                 android:textSize="12sp"
@@ -199,7 +210,7 @@
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/addGalleryBtn" />
 
-            <ImageView
+            <ImageButton
                 android:id="@+id/profilePhoto"
                 android:layout_width="80dp"
                 android:layout_height="80dp"
@@ -209,20 +220,6 @@
                 android:src="@drawable/ic_action_name"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/linearLayout3" />
-
-            <ImageButton
-                android:id="@+id/photoBtn"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginEnd="-16dp"
-                android:layout_marginBottom="-16dp"
-                android:layout_weight="1"
-                android:alpha="1"
-                android:background="@color/transparent"
-                android:src="@drawable/ic_action_down_camera"
-                android:tint="@color/whiteColor"
-                app:layout_constraintBottom_toBottomOf="@+id/profilePhoto"
-                app:layout_constraintEnd_toEndOf="@+id/profilePhoto" />
 
             <Button
                 android:id="@+id/saveBtn"
@@ -256,22 +253,39 @@
 
     </androidx.cardview.widget.CardView>
 
-    <androidx.recyclerview.widget.RecyclerView
-        android:id="@+id/profileRecycler"
+    <androidx.cardview.widget.CardView
+        android:id="@+id/progressCardView"
         android:layout_width="0dp"
         android:layout_height="0dp"
-        android:background="@color/appBGColor"
-        app:layout_constraintBottom_toTopOf="@+id/profile_cardView"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
-
-    <include
-        android:id="@+id/includeProgressOverlay"
-        layout="@layout/include_progress_overlay"
+        app:cardBackgroundColor="@color/clearBlack"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:layout_constraintTop_toTopOf="parent"
+        tools:visibility="invisible">
+
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:padding="8dp">
+
+            <ImageView
+                android:id="@+id/imageView3"
+                android:layout_width="120dp"
+                android:layout_height="120dp"
+                android:layout_marginStart="8dp"
+                android:layout_marginTop="8dp"
+                android:layout_marginEnd="8dp"
+                android:layout_marginBottom="8dp"
+                android:src="@drawable/ic_action_memedom"
+                app:tint="@color/appFGColor"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
+
+        </androidx.constraintlayout.widget.ConstraintLayout>
+
+    </androidx.cardview.widget.CardView>
 
 </androidx.constraintlayout.widget.ConstraintLayout>

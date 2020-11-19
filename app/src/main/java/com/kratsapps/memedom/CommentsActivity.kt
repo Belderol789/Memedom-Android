@@ -64,13 +64,6 @@ class CommentsActivity : AppCompatActivity() {
             commentsDate.text = postMeme.postDateString()
             commentsUsername.text = postMeme.postUsername
             commentsPointsTextView.text = "${postMeme.getPostLikeCount()}"
-
-            val shareCount = if(postMeme.postShares >= 10) "${postMeme.postShares}" else ""
-            commentsShareBtn.text = shareCount
-
-            val commentsCount = if(postMeme.postComments >= 10) "${postMeme.postComments}"  else ""
-            commentsCommentsBtn.text = commentsCount
-
             val mainUser = DatabaseManager(this).retrieveSavedUser()
             val mainUserID = mainUser?.uid
 
@@ -82,11 +75,6 @@ class CommentsActivity : AppCompatActivity() {
                     if(mainUser.matches.contains(postMeme.postUserUID)) {
                         itemColor = Color.parseColor("#FACE0D")
                     }
-                    commentsCommentsBtn.setTextColor(itemColor)
-                    commentsShareBtn.setTextColor(itemColor)
-                    commentsCommentsBtn.setCompoundDrawableTintList(ColorStateList.valueOf(itemColor))
-                    commentsShareBtn.setCompoundDrawableTintList(ColorStateList.valueOf(itemColor))
-
                     commentsPointsTextView.setTextColor(itemColor)
                     commentsPointsIcon.setColorFilter(itemColor)
                 }

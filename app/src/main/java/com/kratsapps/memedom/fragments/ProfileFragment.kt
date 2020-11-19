@@ -38,7 +38,7 @@ class ProfileFragment : Fragment() {
     lateinit var profileContext: Context
     lateinit var profileView: CardView
     lateinit var profileRecyclerView: RecyclerView
-    lateinit var progressOverlay: View
+    lateinit var progressCardView: CardView
 
     lateinit var rootView: View
     lateinit var galleryAdapter: ImageAdapter
@@ -46,6 +46,8 @@ class ProfileFragment : Fragment() {
     var galleryItems: MutableList<String> = mutableListOf()
     var profileIsExpanded: Boolean = false
     var profilePhotoSelected: Boolean = true
+
+    var imageIsChanged: Boolean = false
 
     private val IMAGE_GALLERY_REQUEST_CODE: Int = 2001
 
@@ -83,7 +85,7 @@ class ProfileFragment : Fragment() {
 
         val mainActivity = this.activity as? MainActivity
 
-        if(mainUserID != null && mainActivity != null) {
+        if (mainUserID != null && mainActivity != null) {
             FirestoreHandler().getAllMemesOfMainUser(mainUserID) {
 
                 Log.d("Money", "Losing Money on Profile")
@@ -97,8 +99,14 @@ class ProfileFragment : Fragment() {
                 crownCount.setText("$crowns")
 
                 if (this.activity != null) {
-                    val feedAdapter =  FeedAdapter(it, this.activity!!, true)
-                    profileRecyclerView.addItemDecoration(DefaultItemDecorator(resources.getDimensionPixelSize(R.dimen.vertical_recyclerView)))
+                    val feedAdapter = FeedAdapter(it, this.activity!!, true)
+                    profileRecyclerView.addItemDecoration(
+                        DefaultItemDecorator(
+                            resources.getDimensionPixelSize(
+                                R.dimen.vertical_recyclerView
+                            )
+                        )
+                    )
                     profileRecyclerView.adapter = feedAdapter
                     profileRecyclerView.layoutManager = LinearLayoutManager(activity)
                     profileRecyclerView.setHasFixedSize(true)
@@ -111,15 +119,15 @@ class ProfileFragment : Fragment() {
     private fun setupUI() {
 
         profileView = rootView.findViewById<CardView>(R.id.profile_cardView)
-        progressOverlay = rootView.findViewById(R.id.progress_overlay)
 
         val username = rootView.findViewById<TextView>(R.id.username)
-        val photoBtn = rootView.findViewById<ImageButton>(R.id.photoBtn)
         val gender = rootView.findViewById<TextView>(R.id.gender)
-        val profilePhoto = rootView.findViewById<ImageView>(R.id.profilePhoto)
+        val profilePhoto = rootView.findViewById<ImageButton>(R.id.profilePhoto)
         val bioText = rootView.findViewById<EditText>(R.id.bioText)
         val addGalleryBtn = rootView.findViewById<Button>(R.id.addGalleryBtn)
         val saveBtn = rootView.findViewById<Button>(R.id.saveBtn)
+        progressCardView = rootView.findViewById<CardView>(R.id.progressCardView)
+        progressCardView.visibility = View.INVISIBLE
 
         val mainUser = DatabaseManager(profileContext).retrieveSavedUser()
         val mainUserID = mainUser?.uid
@@ -129,7 +137,7 @@ class ProfileFragment : Fragment() {
         if (mainUser != null) {
             username.setText(mainUser.name)
             gender.setText(mainUser.gender)
-            if(!mainUser.bio.equals("")) {
+            if (!mainUser.bio.equals("")) {
                 bioText.setText(mainUser.bio)
             } else {
                 bioText.setHint("Write About Yourself")
@@ -191,11 +199,12 @@ class ProfileFragment : Fragment() {
             }
         }
 
-        photoBtn.setOnClickListener {
+        profilePhoto.setOnClickListener {
             profilePhotoSelected = true
             saveBtn.visibility = View.VISIBLE
             prepOpenImageGallery()
         }
+
         addGalleryBtn.setOnClickListener {
             profilePhotoSelected = false
             saveBtn.visibility = View.VISIBLE
@@ -216,15 +225,17 @@ class ProfileFragment : Fragment() {
             override fun afterTextChanged(s: Editable?) {}
         })
 
-        if (mainUserID != null && mainUser != null) {
+        if (mainUserID != null) {
             saveBtn.setOnClickListener {
                 //ProfilePhoto
                 val profileImage = profilePhoto.drawable
                 val userBio = bioText.text.toString()
+                val progressOverlay = rootView.findViewById<View>(R.id.progress_overlay)
+                progressCardView.visibility = View.VISIBLE
+                AndroidUtils().animateView(progressOverlay, View.VISIBLE, 0.4f, 200)
 
-                if(profileImage != null) {
+                if (imageIsChanged) {
                     Log.d("Saving", "Saving $mainUserID progress $progressOverlay")
-                    AndroidUtils().animateView(progressOverlay, View.VISIBLE, 0.4f, 200)
 
                     FireStorageHandler().uploadPhotoWith(mainUserID, profileImage, {
                         val updatedProfile: HashMap<String, Any> = hashMapOf(
@@ -244,7 +255,18 @@ class ProfileFragment : Fragment() {
                         DatabaseManager(this.context!!).convertUserObject(mainUser, "MainUser")
                         saveBtn.visibility = View.INVISIBLE
                         progressOverlay.visibility = View.GONE
+                        progressCardView.visibility = View.INVISIBLE
                     })
+                } else {
+                    val updatedProfile: HashMap<String, Any> = hashMapOf(
+                        "bio" to userBio
+                    )
+                    FirestoreHandler().updateDatabaseObject("User", mainUserID, updatedProfile)
+                    mainUser.bio = userBio
+                    DatabaseManager(this.context!!).convertUserObject(mainUser, "MainUser")
+                    saveBtn.visibility = View.INVISIBLE
+                    progressOverlay.visibility = View.GONE
+                    progressCardView.visibility = View.INVISIBLE
                 }
             }
         }
@@ -267,12 +289,19 @@ class ProfileFragment : Fragment() {
         val activity = this.activity
 
         val images = DatabaseManager(profileContext).retrieveSavedUser()?.gallery
-        val galleryManager: GridLayoutManager = GridLayoutManager(activity, 3, GridLayoutManager.VERTICAL, false)
+        val galleryManager: GridLayoutManager =
+            GridLayoutManager(activity, 3, GridLayoutManager.VERTICAL, false)
 
         if (context != null && activity != null && images != null) {
             galleryItems = images.toMutableList()
             galleryAdapter = ImageAdapter(galleryItems, activity, this)
-            galleryRecyclerView.addItemDecoration(DefaultItemDecorator(resources.getDimensionPixelSize(R.dimen.vertical_recyclerView)))
+            galleryRecyclerView.addItemDecoration(
+                DefaultItemDecorator(
+                    resources.getDimensionPixelSize(
+                        R.dimen.vertical_recyclerView
+                    )
+                )
+            )
             galleryRecyclerView.adapter = galleryAdapter
             galleryRecyclerView.layoutManager = galleryManager
             galleryRecyclerView.itemAnimator?.removeDuration
@@ -294,7 +323,9 @@ class ProfileFragment : Fragment() {
 
         if (resultCode == Activity.RESULT_OK) {
             if (requestCode == IMAGE_GALLERY_REQUEST_CODE && data != null && data.data != null) {
-                AndroidUtils().animateView(progressOverlay, View.VISIBLE, 0.4f, 200)
+
+                imageIsChanged = true
+
                 val imageData = data.data
                 if (profilePhotoSelected) {
                     Glide.with(this)
@@ -302,8 +333,9 @@ class ProfileFragment : Fragment() {
                         .circleCrop()
                         .into(profilePhoto)
                 } else if (userID != null && imageData != null) {
+                    progressCardView.visibility = View.VISIBLE
                     FireStorageHandler().uploadGallery(userID, imageData, this.context!!, {
-                        progressOverlay.visibility = View.GONE
+                        progressCardView.visibility = View.INVISIBLE
                         galleryItems.add(it)
                         galleryRecyclerView.adapter?.notifyDataSetChanged()
                         Log.d("Gallery Items", "$galleryItems")

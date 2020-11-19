@@ -116,56 +116,11 @@
 
                     </LinearLayout>
 
-                    <LinearLayout
-                        android:id="@+id/commentsActionLayout"
-                        android:layout_width="wrap_content"
-                        android:layout_height="35dp"
-                        android:layout_marginBottom="8dp"
-                        android:divider="@drawable/divider_horizontal"
-                        android:gravity="center|fill_horizontal"
-                        android:orientation="horizontal"
-                        android:visibility="visible"
-                        app:layout_constraintBottom_toBottomOf="parent"
-                        app:layout_constraintEnd_toEndOf="parent"
-                        app:layout_constraintStart_toStartOf="parent"
-                        app:layout_constraintTop_toBottomOf="@+id/commentsImage">
-
-                        <Button
-                            android:id="@+id/commentsShareBtn"
-                            style="@style/Widget.AppCompat.Button.Borderless.Colored"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:layout_weight="1"
-                            android:drawableStart="@drawable/ic_action_share"
-                            android:drawableTint="@color/whiteColor"
-                            android:text="0"
-                            android:textSize="12dip"
-                            android:textColor="@color/whiteColor"
-                            tools:targetApi="m" />
-
-                        <Button
-                            android:id="@+id/commentsCommentsBtn"
-                            style="@style/Widget.AppCompat.Button.Borderless.Colored"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:layout_weight="1"
-                            android:drawableStart="@drawable/ic_action_chat"
-                            android:drawableTint="@color/whiteColor"
-                            android:enabled="false"
-                            android:text="0"
-                            android:textSize="12dip"
-                            android:textColor="@color/whiteColor"
-                            tools:targetApi="m" />
-
-                    </LinearLayout>
-
                     <ImageView
                         android:id="@+id/commentsImage"
                         android:layout_width="0dp"
                         android:layout_height="280dp"
                         android:layout_marginTop="8dp"
-                        android:layout_marginBottom="4dp"
-                        app:layout_constraintBottom_toTopOf="@+id/commentsActionLayout"
                         app:layout_constraintEnd_toEndOf="parent"
                         app:layout_constraintStart_toStartOf="parent"
                         app:layout_constraintTop_toBottomOf="@+id/userInfoLinear"
