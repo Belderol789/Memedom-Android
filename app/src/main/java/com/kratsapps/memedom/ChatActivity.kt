@@ -13,6 +13,7 @@ import android.os.Bundle
 import android.os.Message
 import android.provider.MediaStore
 import android.util.Log
+import android.view.View
 import android.webkit.URLUtil
 import android.widget.Button
 import android.widget.Toast
@@ -30,6 +31,7 @@ import com.kratsapps.memedom.firebaseutils.FirestoreHandler
 import com.kratsapps.memedom.models.Chat
 import com.kratsapps.memedom.models.MemeDomUser
 import com.kratsapps.memedom.models.MessageItem
+import com.kratsapps.memedom.utils.AndroidUtils
 import com.kratsapps.memedom.utils.DatabaseManager
 import com.kratsapps.memedom.utils.hideKeyboard
 import kotlinx.android.synthetic.main.activity_chat.*
@@ -43,6 +45,8 @@ class ChatActivity : AppCompatActivity() {
     companion object {
         const val START_MEMEDOM_REQUEST_CODE = 0
     }
+
+    lateinit var progressOverlay: View
 
     var chatAdapter: ChatAdapter? = null
     lateinit var currentChat: MemeDomUser
@@ -108,6 +112,8 @@ class ChatActivity : AppCompatActivity() {
     }
 
     private fun setupUI() {
+
+        progressOverlay = findViewById(R.id.progress_overlay)
 
         backBtn.setOnClickListener {
             updateLastMessage()
@@ -241,9 +247,13 @@ class ChatActivity : AppCompatActivity() {
             Log.d("MemedomImage", "Got image back with requestCode $requestCode")
 
             if (userID != null) {
+
                 if (requestCode == IMAGE_GALLERY_REQUEST_CODE && data != null && data.data != null) {
+                    AndroidUtils().animateView(progressOverlay, View.VISIBLE, 0.4f, 200)
                     val imageData = data.data
-                    FireStorageHandler().uploadChatMeme(chatID, chatUniqueID, imageData!!, 0L, userID, this)
+                    FireStorageHandler().uploadChatMeme(chatID, chatUniqueID, imageData!!, 0L, userID, this, {
+                        progressOverlay.visibility = View.GONE
+                    })
                 } else if (requestCode == START_MEMEDOM_REQUEST_CODE && data != null) {
                     Log.d("MemedomImage", "Got Image $data")
                     val chatImageURL = data?.getStringExtra("SelectedImage")
@@ -251,8 +261,11 @@ class ChatActivity : AppCompatActivity() {
                         FirestoreHandler().sendUserChats(chatID, chatUniqueID, chatImageURL, "", 0L, userID)
                     }
                 } else {
+                    AndroidUtils().animateView(progressOverlay, View.VISIBLE, 0.4f, 200)
                     val imageData = image_uri
-                    FireStorageHandler().uploadChatMeme(chatID, chatUniqueID, imageData!!, 0L, userID, this)
+                    FireStorageHandler().uploadChatMeme(chatID, chatUniqueID, imageData!!, 0L, userID, this, {
+                        progressOverlay.visibility = View.GONE
+                    })
                 }
             }
         }

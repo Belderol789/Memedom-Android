@@ -30,17 +30,6 @@
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/userInfoLinear" />
 
-        <ImageView
-            android:id="@+id/likeImageView"
-            android:layout_width="100dp"
-            android:layout_height="100dp"
-            app:layout_constraintBottom_toBottomOf="@+id/feedImage"
-            app:layout_constraintEnd_toEndOf="@+id/feedImage"
-            app:layout_constraintStart_toStartOf="@+id/feedImage"
-            app:layout_constraintTop_toTopOf="@+id/feedImage"
-            app:srcCompat="@drawable/ic_action_crown"
-            app:tint="@color/appFGColor" />
-
         <LinearLayout
             android:id="@+id/userInfoLinear"
             android:layout_width="0dp"
@@ -136,7 +125,7 @@
                 android:backgroundTint="@color/transparent"
                 android:gravity="center"
                 android:scaleType="center"
-                android:src="@drawable/ic_action_crown"
+                android:src="@drawable/ic_action_like"
                 android:tint="@color/whiteColor"
                 tools:targetApi="m" />
 
@@ -262,6 +251,18 @@
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/feedActionLayout">
         </com.google.android.gms.ads.AdView>
+
+        <ImageView
+            android:id="@+id/likeImageView"
+            android:layout_width="100dp"
+            android:layout_height="100dp"
+            android:alpha="1"
+            app:layout_constraintBottom_toBottomOf="@+id/feedImage"
+            app:layout_constraintEnd_toEndOf="@+id/feedImage"
+            app:layout_constraintStart_toStartOf="@+id/feedImage"
+            app:layout_constraintTop_toTopOf="@+id/feedImage"
+            app:srcCompat="@drawable/ic_action_crown"
+            app:tint="@color/specialColor" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 

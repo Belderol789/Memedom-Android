@@ -16,7 +16,6 @@ import androidx.appcompat.widget.AppCompatRadioButton
 import androidx.fragment.app.Fragment
 import com.facebook.login.LoginManager
 import com.google.firebase.auth.FirebaseAuth
-import com.google.firebase.ktx.Firebase
 import com.innovattic.rangeseekbar.RangeSeekBar
 import com.innovattic.rangeseekbar.RangeSeekBar.SeekBarChangeListener
 import com.kratsapps.memedom.MainActivity
@@ -24,7 +23,6 @@ import com.kratsapps.memedom.R
 import com.kratsapps.memedom.models.MemeDomUser
 import com.kratsapps.memedom.utils.DatabaseManager
 import kotlinx.android.synthetic.main.activity_main.*
-import java.lang.Exception
 
 
 class SettingsFragment : Fragment() {
@@ -67,7 +65,7 @@ class SettingsFragment : Fragment() {
         val contactBtn = rootView.findViewById<Button>(R.id.contactBtn)
 
         contactBtn.setOnClickListener {
-            sendEmail()
+            getOpenFacebookIntent()
         }
 
         signoutBtn.setOnClickListener {
@@ -148,12 +146,21 @@ class SettingsFragment : Fragment() {
 
                 val minValue = ageSeekbar.getMinThumbValue()
 
-                Log.d("Filtering", "min ${ageSeekbar.getMinThumbValue()}, max ${ageSeekbar.getMaxThumbValue()}")
+                Log.d(
+                    "Filtering",
+                    "min ${ageSeekbar.getMinThumbValue()}, max ${ageSeekbar.getMaxThumbValue()}"
+                )
 
                 if(minValue >= 16) {
-                    DatabaseManager(settingContext).saveToPrefsInt("minAge", ageSeekbar.getMinThumbValue())
+                    DatabaseManager(settingContext).saveToPrefsInt(
+                        "minAge",
+                        ageSeekbar.getMinThumbValue()
+                    )
                 }
-                DatabaseManager(settingContext).saveToPrefsInt("maxAge", ageSeekbar.getMaxThumbValue())
+                DatabaseManager(settingContext).saveToPrefsInt(
+                    "maxAge",
+                    ageSeekbar.getMaxThumbValue()
+                )
             }
 
             override fun onValueChanged(minThumbValue: Int, maxThumbValue: Int) {
@@ -205,6 +212,8 @@ class SettingsFragment : Fragment() {
         DatabaseManager(this.context!!).convertUserObject(mainUser!!, "MainUser")
     }
 
-
-
+    fun getOpenFacebookIntent(){
+        val browserIntent = Intent(Intent.ACTION_VIEW, Uri.parse("https://www.facebook.com/MemeDom420"))
+        startActivity(browserIntent)
+    }
 }

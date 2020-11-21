@@ -168,6 +168,9 @@ class ProfileFragment : Fragment() {
         val expandBtn = rootView.findViewById(R.id.expandBtn) as ImageButton
         expandBtn.setOnClickListener {
             if (!profileIsExpanded) {
+
+                Log.d("Expand Profile Card", "Expanded")
+
                 profileView
                     .animate()
                     .setDuration(500)
@@ -213,7 +216,24 @@ class ProfileFragment : Fragment() {
 
         bioText.addTextChangedListener(object : TextWatcher {
 
-            override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
+            override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {
+
+                Log.d("Expanded", "Profile view should increase")
+
+                profileView
+                    .animate()
+                    .setDuration(500)
+                    .translationY(((height / 1.8) - height).toFloat())
+                    .withEndAction {
+                        profileIsExpanded = !profileIsExpanded
+                    }
+
+                expandBtn
+                    .animate()
+                    .setDuration(500)
+                    .rotationBy(180f)
+                    .start()
+            }
 
             @RequiresApi(Build.VERSION_CODES.LOLLIPOP)
             override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {

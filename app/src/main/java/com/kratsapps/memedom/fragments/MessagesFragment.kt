@@ -19,6 +19,7 @@ import com.kratsapps.memedom.utils.DatabaseManager
 import com.kratsapps.memedom.firebaseutils.FirestoreHandler
 import com.kratsapps.memedom.adapters.MatchAdapter
 import android.app.SearchManager
+import android.widget.LinearLayout
 import androidx.appcompat.widget.SearchView
 import android.widget.SearchView.OnQueryTextListener
 import androidx.appcompat.widget.AppCompatRadioButton
@@ -65,13 +66,22 @@ class MessagesFragment : Fragment() {
         if(msgContext != null) {
 
             var progressOverlay: View = rootView.findViewById(R.id.progress_overlay)
-            //AndroidUtils().animateView(progressOverlay, View.VISIBLE, 0.4f, 200)
+            var blankScreen = rootView.findViewById<LinearLayout>(R.id.messagesBlank)
+            blankScreen.visibility = View.GONE
+
+            AndroidUtils().animateView(progressOverlay, View.VISIBLE, 0.4f, 200)
 
             val mainUser = DatabaseManager(msgContext).retrieveSavedUser()
 
             FirestoreHandler().checkNewMatch(msgContext, {
 
                 progressOverlay.visibility = View.GONE
+
+                if (it.isEmpty()) {
+                    blankScreen.visibility = View.VISIBLE
+                } else {
+                    blankScreen.visibility = View.GONE
+                }
 
                 if (it != null && mainUser != null) {
                     filteredMatches.clear()
@@ -88,9 +98,6 @@ class MessagesFragment : Fragment() {
 
                     filteredMatches.addAll(matches)
                     setupMatchRecycler()
-
-                } else {
-                    // Show Empty State
                 }
             })
         }

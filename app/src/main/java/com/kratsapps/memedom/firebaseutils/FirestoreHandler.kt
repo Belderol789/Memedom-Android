@@ -178,7 +178,10 @@ class FirestoreHandler {
                 done(popularPoints, dayLimit, memeLimit, matchLimit)
             }
             .addOnFailureListener {
-                done(100, 1, 100, 5)
+
+                Log.d("AppSettings", "Error ${it.localizedMessage}")
+
+                done(100, 20, 100, 5)
             }
     }
 
@@ -389,7 +392,7 @@ class FirestoreHandler {
     }
 
     fun checkNewMatch(context: Context,
-                      completed: (MutableList<Matches>?) -> Unit) {
+                      completed: (MutableList<Matches>) -> Unit) {
 
         val mainUser = DatabaseManager(context).retrieveSavedUser()
 
@@ -401,7 +404,7 @@ class FirestoreHandler {
                 .addSnapshotListener { value, error ->
                     if (error != null) {
                         Log.w("Firestore-matching", "listen failed $error")
-                        completed(null)
+                        completed(mutableListOf())
                         return@addSnapshotListener
                     }
                     if (value?.documents != null) {

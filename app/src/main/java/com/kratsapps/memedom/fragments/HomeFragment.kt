@@ -43,7 +43,11 @@ class HomeFragment : Fragment() {
     var mAuthListener: FirebaseAuth.AuthStateListener? = null
 
     private fun getAllMemes() {
+
         var progressOverlay: View = rootView.findViewById(R.id.progress_overlay)
+        var blankScreen = rootView.findViewById<LinearLayout>(R.id.blankLayout)
+        blankScreen.visibility = View.GONE
+
         AndroidUtils().animateView(progressOverlay, View.VISIBLE, 0.4f, 200)
         val mainUser = DatabaseManager(this.context!!).retrieveSavedUser()
         FirestoreHandler().getAppSettings() { points, dayLimit, memeLimit, matchLimit ->
@@ -51,6 +55,13 @@ class HomeFragment : Fragment() {
             DatabaseManager(homeContext).saveToPrefsInt("matchLimit", matchLimit.toInt())
 
             FirestoreHandler().checkForFreshMemes(homeContext, mainUser, dayLimit, memeLimit) {
+
+                Log.d("AllMemes", "Current memes ${it.count()}")
+                if (it.isEmpty()) {
+                    blankScreen.visibility = View.VISIBLE
+                } else {
+                    blankScreen.visibility = View.GONE
+                }
 
                 filteredMemems.clear()
                 allMemes.clear()

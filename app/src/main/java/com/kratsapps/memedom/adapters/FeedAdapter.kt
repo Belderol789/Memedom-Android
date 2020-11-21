@@ -69,7 +69,7 @@ class FeedAdapter(
         //DatabaseManager(feedAdapterContext).savePostID(currentItem.postID)
 
         val lp: ConstraintLayout.LayoutParams = holder.feedImage.getLayoutParams() as ConstraintLayout.LayoutParams
-        lp.height = currentItem.postHeight.toInt()
+        lp.height = (currentItem.postHeight * 2).toInt()
         holder.feedImage.setLayoutParams(lp)
 
         Glide.with(feedAdapterContext)

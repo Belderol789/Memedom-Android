@@ -1,6 +1,5 @@
 package com.kratsapps.memedom
 
-import android.app.Activity
 import android.content.Context
 import android.content.Intent
 import android.graphics.Rect
@@ -22,16 +21,21 @@ import androidx.fragment.app.Fragment
 import com.bumptech.glide.Glide
 import com.facebook.FacebookSdk
 import com.google.android.gms.ads.MobileAds
+import com.google.android.gms.common.util.CrashUtils
+import com.google.firebase.FirebaseApp
+import com.google.firebase.analytics.FirebaseAnalytics
+import com.google.firebase.analytics.ktx.analytics
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseUser
+import com.google.firebase.crashlytics.internal.common.CrashlyticsCore
+import com.google.firebase.ktx.Firebase
 import com.kratsapps.memedom.fragments.*
 import com.kratsapps.memedom.models.MemeDomUser
-import com.kratsapps.memedom.utils.DatabaseManager
 import com.kratsapps.memedom.firebaseutils.FirestoreHandler
 import com.kratsapps.memedom.models.Matches
+import com.kratsapps.memedom.utils.DatabaseManager
 import kotlinx.android.synthetic.main.activity_main.*
 import kotlinx.android.synthetic.main.activity_main.view.*
-import java.io.Serializable
 
 
 class MainActivity : AppCompatActivity() {
@@ -42,13 +46,20 @@ class MainActivity : AppCompatActivity() {
     val msgFragment = MessagesFragment()
     val createFragment = CreateFragment()
 
-    var currentMatchUser: MemeDomUser? = null
+    private lateinit var firebaseAnalytics: FirebaseAnalytics
 
+    var currentMatchUser: MemeDomUser? = null
     var profileIsLoaded: Boolean = false
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
+
+        if (FirebaseApp.getApps(applicationContext).isEmpty()) {
+            FirebaseApp.initializeApp(applicationContext);}
+
+        firebaseAnalytics = Firebase.analytics
+
         MobileAds.initialize(this)
         checkLoginStatus()
         activateFacebook()
@@ -66,7 +77,7 @@ class MainActivity : AppCompatActivity() {
                 R.id.ic_home -> makeCurrentFragment(homeFragment)
                 R.id.ic_profile -> makeCurrentFragment(profileFragment)
                 R.id.ic_create -> makeCurrentFragment(createFragment)
-                R.id.ic_notifs -> makeCurrentFragment(notifFragment)
+                R.id.ic_settings -> makeCurrentFragment(notifFragment)
                 R.id.ic_chat -> makeCurrentFragment(msgFragment)
             }
             true
@@ -85,14 +96,16 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun checkMatchingStatus() {
-        val user = FirebaseAuth.getInstance().getCurrentUser()
+        val user = FirebaseAuth.getInstance().currentUser
+
+        val numberOfTimes = DatabaseManager(this).retrievePrefsInt("matchLimit", 5)
 
         if (user != null) {
             navigationBottom.visibility = View.VISIBLE
             FirestoreHandler().checkMatchingStatus(this.applicationContext, user.uid, {
                 currentMatchUser = it
                 matchView.visibility = View.VISIBLE
-                matchView.infoTextView.text = "You've liked ${it.name} \nmemes 10 times!"
+                matchView.infoTextView.text = "You've liked ${it.name} \nmemes $numberOfTimes times!"
                 Glide.with(this)
                     .load(it.profilePhoto)
                     .circleCrop()
@@ -147,12 +160,12 @@ class MainActivity : AppCompatActivity() {
             override fun onTick(millisUntilFinished: Long) {}
             override fun onFinish() {
                 val fadeOut = AlphaAnimation(1F, 0F)
-                fadeOut.setInterpolator(AccelerateInterpolator())
-                fadeOut.setDuration(2000)
+                fadeOut.interpolator = AccelerateInterpolator()
+                fadeOut.duration = 2000
 
                 fadeOut.setAnimationListener(object : Animation.AnimationListener {
                     override fun onAnimationEnd(animation: Animation) {
-                        img.setVisibility(View.GONE)
+                        img.visibility = View.GONE
                     }
 
                     override fun onAnimationRepeat(animation: Animation) {}
@@ -171,13 +184,13 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun checkLoginStatus() {
-        val user = FirebaseAuth.getInstance().getCurrentUser()
+        val user = FirebaseAuth.getInstance().currentUser
         setUIForUser(user)
 
         val firebaseAuth = FirebaseAuth.getInstance()
-        val mAuthListener = FirebaseAuth.AuthStateListener() {
+        val mAuthListener = FirebaseAuth.AuthStateListener {
             fun onAuthStateChanged(@NonNull firebaseAuth: FirebaseAuth) {
-                val user = FirebaseAuth.getInstance().getCurrentUser()
+                val user = FirebaseAuth.getInstance().currentUser
                 setUIForUser(user)
             }
         }

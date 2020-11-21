@@ -66,7 +66,7 @@ class FireStorageHandler {
         }
     }
 
-    fun uploadChatMeme(chatID: String, chatUniqueID: String, imageUri: Uri, type: Long, userID: String, context: Context) {
+    fun uploadChatMeme(chatID: String, chatUniqueID: String, imageUri: Uri, type: Long, userID: String, context: Context, completed: () -> Unit) {
         val bitmap = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
             ImageDecoder.decodeBitmap(ImageDecoder.createSource(context.contentResolver, imageUri))
         } else {
@@ -86,6 +86,7 @@ class FireStorageHandler {
             Log.d("Storage", "Galery not saved", e)
         }.addOnSuccessListener { taskSnapshot ->
             photoRef.downloadUrl.addOnSuccessListener {
+                completed()
                 val downloadURI = it.toString()
                 Log.d("Storage", "Chat Image saved ${it.toString()}")
                 FirestoreHandler().sendUserChats(chatID, chatUniqueID, downloadURI, "", type, userID)
