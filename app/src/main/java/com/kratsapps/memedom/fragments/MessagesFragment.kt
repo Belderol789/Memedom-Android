@@ -65,17 +65,12 @@ class MessagesFragment : Fragment() {
 
         if(msgContext != null) {
 
-            var progressOverlay: View = rootView.findViewById(R.id.progress_overlay)
             var blankScreen = rootView.findViewById<LinearLayout>(R.id.messagesBlank)
             blankScreen.visibility = View.GONE
-
-            AndroidUtils().animateView(progressOverlay, View.VISIBLE, 0.4f, 200)
 
             val mainUser = DatabaseManager(msgContext).retrieveSavedUser()
 
             FirestoreHandler().checkNewMatch(msgContext, {
-
-                progressOverlay.visibility = View.GONE
 
                 if (it.isEmpty()) {
                     blankScreen.visibility = View.VISIBLE

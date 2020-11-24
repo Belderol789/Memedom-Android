@@ -29,8 +29,6 @@ class LoginActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_login)
         auth = FirebaseAuth.getInstance()
-        progressOverlay = findViewById(R.id.progress_overlay)
-
          buttonNextLoginAuth.setOnClickListener {
             checkIfFieldsHaveValues()
         }
@@ -45,8 +43,6 @@ class LoginActivity : AppCompatActivity() {
             DatabaseManager(this).saveToPrefsInt("minAge", 16)
             DatabaseManager(this).saveToPrefsInt("maxAge", 65)
             DatabaseManager(this).clearPostIDs()
-            AndroidUtils().animateView(progressOverlay, View.VISIBLE, 0.4f, 200)
-
             auth.signInWithEmailAndPassword(email, password)
                 .addOnCompleteListener(this) { task ->
                     if (task.isSuccessful) {

@@ -9,14 +9,17 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Button
+import android.widget.ImageView
 import android.widget.LinearLayout
 import androidx.annotation.NonNull
 import androidx.appcompat.widget.AppCompatRadioButton
+import androidx.cardview.widget.CardView
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout.OnRefreshListener
+import com.bumptech.glide.Glide
 import com.google.firebase.auth.FirebaseAuth
 import com.kratsapps.memedom.CredentialActivity
 import com.kratsapps.memedom.R
@@ -35,6 +38,7 @@ class HomeFragment : Fragment() {
     lateinit var feedAdapter: FeedAdapter
     lateinit var feedRecyclerView: RecyclerView
     lateinit var homeSwipe: SwipeRefreshLayout
+    lateinit var loadingView: CardView
 
     private var filteredMemems = mutableListOf<Memes>()
     private var allMemes = mutableListOf<Memes>()
@@ -44,11 +48,11 @@ class HomeFragment : Fragment() {
 
     private fun getAllMemes() {
 
-        var progressOverlay: View = rootView.findViewById(R.id.progress_overlay)
         var blankScreen = rootView.findViewById<LinearLayout>(R.id.blankLayout)
         blankScreen.visibility = View.GONE
 
-        AndroidUtils().animateView(progressOverlay, View.VISIBLE, 0.4f, 200)
+        loadingView.visibility = View.VISIBLE
+
         val mainUser = DatabaseManager(this.context!!).retrieveSavedUser()
         FirestoreHandler().getAppSettings() { points, dayLimit, memeLimit, matchLimit ->
 
@@ -78,7 +82,7 @@ class HomeFragment : Fragment() {
                 }
 
                 homeSwipe.isRefreshing = false
-                progressOverlay.visibility = View.GONE
+                loadingView.visibility = View.INVISIBLE
                 setupFeedView()
             }
         }
@@ -145,6 +149,13 @@ class HomeFragment : Fragment() {
 
         memedomSegment = rootView.findViewById(R.id.memedomSegment)
         matchedSegment = rootView.findViewById(R.id.matchSegment)
+
+        loadingView = rootView.findViewById(R.id.progressCardView)
+        val loadingImageView = rootView.findViewById<ImageView>(R.id.loadingImageView)
+        Glide.with(homeContext)
+            .asGif()
+            .load(R.raw.loader)
+            .into(loadingImageView)
 
         Log.d("HomeContext", "Views initialized $memedomSegment")
 

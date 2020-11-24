@@ -113,8 +113,6 @@ class ChatActivity : AppCompatActivity() {
 
     private fun setupUI() {
 
-        progressOverlay = findViewById(R.id.progress_overlay)
-
         backBtn.setOnClickListener {
             updateLastMessage()
         }

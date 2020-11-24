@@ -85,7 +85,6 @@ class SignupActivity : AppCompatActivity() {
     }
 
     private fun setupUI() {
-        progressOverlay = findViewById(R.id.progress_overlay)
         screenWidth = ScreenSize().getScreenWidth()
 
         Log.d("Screen Size", "ScreenWidth ${screenWidth}")

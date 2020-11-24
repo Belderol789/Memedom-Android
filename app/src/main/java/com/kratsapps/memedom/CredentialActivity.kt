@@ -39,7 +39,6 @@ class CredentialActivity : AppCompatActivity() {
     }
 
     fun setupUI() {
-        progressOverlay = findViewById(R.id.progress_overlay)
         buttonEmail.setOnClickListener{
             if(userSignup) {
                 navigateToSignup(true)

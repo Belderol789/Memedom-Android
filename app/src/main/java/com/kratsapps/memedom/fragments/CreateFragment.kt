@@ -104,14 +104,12 @@ class CreateFragment : Fragment() {
 
     private fun sendPostToFirestore(savedUser: MemeDomUser) {
 
-        var progressOverlay: View = rootView.findViewById(R.id.progress_overlay)
         val mainActivity = activity as MainActivity
 
         val title = editTextTitle.text.toString()
         val postID = generateRandomString()
         val today = System.currentTimeMillis()
 
-        AndroidUtils().animateView(progressOverlay, View.VISIBLE, 0.4f, 200)
         mainActivity.activateNavBottom(false)
 
         Log.d("ProfilePhoto", "ProfilePhotoItem Create ${savedUser.profilePhoto}")
@@ -144,7 +142,6 @@ class CreateFragment : Fragment() {
                 )
 
                 FirestoreHandler().addDataToFirestore("Memes", postID, newPost, {
-                    progressOverlay.visibility = View.GONE
                     buttonPost.visibility = View.VISIBLE
                     if (it != null) {
                         setupAlertDialog(it)

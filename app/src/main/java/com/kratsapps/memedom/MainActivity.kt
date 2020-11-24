@@ -55,6 +55,8 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
+        Log.d("Main Activity", "Main Activity is being created")
+
         if (FirebaseApp.getApps(applicationContext).isEmpty()) {
             FirebaseApp.initializeApp(applicationContext);}
 
@@ -69,6 +71,10 @@ class MainActivity : AppCompatActivity() {
 
     fun activateNavBottom(active: Boolean) {
         navigationBottom.isEnabled = active
+    }
+
+    fun setupHomeFragment() {
+
     }
 
     private fun setupBottomNavigation() {
@@ -256,5 +262,4 @@ class MainActivity : AppCompatActivity() {
         }
         return super.dispatchTouchEvent(event)
     }
-
 }

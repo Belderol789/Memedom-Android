@@ -47,7 +47,8 @@ class ProfileFragment : Fragment() {
     var profileIsExpanded: Boolean = false
     var profilePhotoSelected: Boolean = true
 
-    var imageIsChanged: Boolean = false
+    var galleryIsChanged: Boolean = false
+    var profilePhotoIsChanged: Boolean = false
 
     private val IMAGE_GALLERY_REQUEST_CODE: Int = 2001
 
@@ -250,13 +251,8 @@ class ProfileFragment : Fragment() {
                 //ProfilePhoto
                 val profileImage = profilePhoto.drawable
                 val userBio = bioText.text.toString()
-                val progressOverlay = rootView.findViewById<View>(R.id.progress_overlay)
-                progressCardView.visibility = View.VISIBLE
-                AndroidUtils().animateView(progressOverlay, View.VISIBLE, 0.4f, 200)
 
-                if (imageIsChanged) {
-                    Log.d("Saving", "Saving $mainUserID progress $progressOverlay")
-
+                if (profilePhotoIsChanged) {
                     FireStorageHandler().uploadPhotoWith(mainUserID, profileImage, {
                         val updatedProfile: HashMap<String, Any> = hashMapOf(
                             "bio" to userBio,
@@ -274,7 +270,6 @@ class ProfileFragment : Fragment() {
 
                         DatabaseManager(this.context!!).convertUserObject(mainUser, "MainUser")
                         saveBtn.visibility = View.INVISIBLE
-                        progressOverlay.visibility = View.GONE
                         progressCardView.visibility = View.INVISIBLE
                     })
                 } else {
@@ -285,7 +280,6 @@ class ProfileFragment : Fragment() {
                     mainUser.bio = userBio
                     DatabaseManager(this.context!!).convertUserObject(mainUser, "MainUser")
                     saveBtn.visibility = View.INVISIBLE
-                    progressOverlay.visibility = View.GONE
                     progressCardView.visibility = View.INVISIBLE
                 }
             }
@@ -343,9 +337,6 @@ class ProfileFragment : Fragment() {
 
         if (resultCode == Activity.RESULT_OK) {
             if (requestCode == IMAGE_GALLERY_REQUEST_CODE && data != null && data.data != null) {
-
-                imageIsChanged = true
-
                 val imageData = data.data
                 if (profilePhotoSelected) {
                     Glide.with(this)
