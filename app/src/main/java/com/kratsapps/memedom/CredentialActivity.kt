@@ -26,7 +26,6 @@ class CredentialActivity : AppCompatActivity() {
     var userSignup: Boolean = false
     private lateinit var auth: FirebaseAuth
 
-    lateinit var progressOverlay: View
     lateinit var callbackManager: CallbackManager
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -113,7 +112,6 @@ class CredentialActivity : AppCompatActivity() {
 
     private fun handleFacebookAccessToken(token: AccessToken) {
         Log.d("Authentication", "handleFacebookAccessToken:$token")
-        AndroidUtils().animateView(progressOverlay, View.VISIBLE, 0.4f, 200)
         val credential = FacebookAuthProvider.getCredential(token.token)
         auth.signInWithCredential(credential)
             .addOnCompleteListener(this) { task ->
@@ -139,14 +137,13 @@ class CredentialActivity : AppCompatActivity() {
         if (firebaseUser != null) {
             memeDomUser.uid = firebaseUser.uid
             if(userSignup) {
-                progressOverlay.visibility = View.GONE
                 navigateToSignup(false)
             } else {
                 FirestoreHandler().getUserDataWith(memeDomUser.uid, {
-                    DatabaseManager(this).convertUserObject(it, "MainUser")
-                    progressOverlay.visibility = View.GONE
-                    val intent: Intent = Intent(this, MainActivity::class.java)
-                    startActivity(intent)
+                    DatabaseManager(this).convertUserObject(it, "MainUser", {
+                        val intent: Intent = Intent(this, MainActivity::class.java)
+                        startActivity(intent)
+                    })
                 })
             }
         }

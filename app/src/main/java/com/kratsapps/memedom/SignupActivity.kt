@@ -335,8 +335,9 @@ class SignupActivity : AppCompatActivity() {
                     if (it != null) {
                         setupAlertDialog(it)
                     } else {
-                        DatabaseManager(this).convertUserObject(memeDomuser, "MainUser")
-                        navigateToMain()
+                        DatabaseManager(this).convertUserObject(memeDomuser, "MainUser", {
+                            navigateToMain()
+                        })
                     }
                 })
             })

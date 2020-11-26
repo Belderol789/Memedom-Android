@@ -186,13 +186,64 @@ class FirestoreHandler {
     }
 
     //Getting
-    fun checkForFreshMemes(
+    fun getAllFriendMemes(context: Context,
+                          mainUser: MemeDomUser?,
+                          dayLimit: Long,
+                          memeLimit: Long,
+                          completed: (MutableList<Memes>) -> Unit) {
+
+        val todayCalendar: Calendar = GregorianCalendar()
+        todayCalendar[Calendar.HOUR_OF_DAY] = 0
+        todayCalendar[Calendar.MINUTE] = 0
+        todayCalendar[Calendar.SECOND] = 0
+        todayCalendar[Calendar.MILLISECOND] = 0
+        val today = todayCalendar.timeInMillis
+
+        val tomorrowCalendar: Calendar = GregorianCalendar()
+        tomorrowCalendar[Calendar.HOUR_OF_DAY] = 0
+        tomorrowCalendar[Calendar.MINUTE] = 0
+        tomorrowCalendar[Calendar.SECOND] = 0
+        tomorrowCalendar[Calendar.MILLISECOND] = 0
+        tomorrowCalendar.add(Calendar.DAY_OF_YEAR, dayLimit.toInt() * -1)
+        val tomorrow = tomorrowCalendar.timeInMillis
+
+        firestoreDB
+            .collection(MEMES_PATH)
+            .whereGreaterThanOrEqualTo("postDate", tomorrow)
+            .orderBy("postDate", DESCENDING)
+            .limit(memeLimit)
+            .get()
+            .addOnSuccessListener { documents ->
+
+                var memes: MutableList<Memes> = arrayListOf()
+                for (document in documents) {
+
+                    val newMeme: Memes = document.toObject(Memes::class.java)
+
+                    if (mainUser != null) {
+                        if (!mainUser.rejects.contains(newMeme.postUserUID)
+                            && !mainUser.rejectedMemes.contains(newMeme.postID)
+                        ) {
+                            Log.d("Memes", "User is not null")
+                            memes.add(newMeme)
+                        }
+                    } else {
+                        Log.d("Memes", "User is null")
+                        memes.add(newMeme)
+                    }
+                }
+
+                Log.d("Memes", "Completed getting memes $memes")
+                completed(memes)
+            }
+    }
+
+    fun getAllDatingMemes(
         context: Context,
         mainUser: MemeDomUser?,
         dayLimit: Long,
         memeLimit: Long,
-        completed: (MutableList<Memes>) -> Unit
-    ) {
+        completed: (MutableList<Memes>) -> Unit) {
 
         val todayCalendar: Calendar = GregorianCalendar()
         todayCalendar[Calendar.HOUR_OF_DAY] = 0
@@ -217,25 +268,18 @@ class FirestoreHandler {
         val minValue = DatabaseManager(context).retrievePrefsInt("minAge", 16)
         val maxValue = DatabaseManager(context).retrievePrefsInt("maxAge", 65)
 
-        var findGender = listOf<String>("Female", "Male", "Other")
-        if (mainUser?.gender.equals("Other")) {
-            findGender = listOf("Other")
-        } else if (mainUser?.gender.equals("Female")) {
-            findGender = listOf("Male")
-        } else if (mainUser?.gender.equals("Male")) {
-            findGender = listOf("Female")
-        }
+        val lookingFor = if (mainUser?.lookingFor != null) listOf<String>(mainUser.lookingFor) else listOf("Female", "Male", "Other")
 
         firestoreDB
             .collection(MEMES_PATH)
-            .whereIn("userGender", findGender)
+            .whereIn("userGender", lookingFor)
             .whereGreaterThanOrEqualTo("postDate", tomorrow)
             .orderBy("postDate", DESCENDING)
             .limit(memeLimit)
             .get()
             .addOnSuccessListener { documents ->
 
-                Log.d("Filtering", "Found memes ${documents.count()} for gender $findGender")
+                Log.d("Filtering", "Found memes ${documents.count()} for gender $lookingFor")
 
                 var memes: MutableList<Memes> = arrayListOf()
                 for (document in documents) {
@@ -259,14 +303,6 @@ class FirestoreHandler {
                         Log.d("Memes", "User is null")
                         memes.add(newMeme)
                     }
-
-                    /*
-                    val savedPostIDs = DatabaseManager(context).retrieveSavedPostIDs()
-                    Log.d("Scrolling", "Current SavePostID $savedPostIDs")
-                    if (!savedPostIDs.contains(newMeme.postID)) {
-
-                    }
-                     */
                 }
 
                 Log.d("Memes", "Completed getting memes $memes")
@@ -386,7 +422,7 @@ class FirestoreHandler {
         val memeDomuser = DatabaseManager(context).retrieveSavedUser()
         if (memeDomuser != null && !memeDomuser.rejects.contains(matchUser.uid)) {
             memeDomuser.rejects += matchUser.uid
-            DatabaseManager(context).convertUserObject(memeDomuser, "MainUser")
+            DatabaseManager(context).convertUserObject(memeDomuser, "MainUser", {})
             updateLikedDatabase(memeDomuser.uid!!, matchUser.uid!!, 1)
         }
     }
@@ -498,7 +534,7 @@ class FirestoreHandler {
 
             mainUser.matches += matchUserUID
 
-            DatabaseManager(context).convertUserObject(mainUser, "MainUser")
+            DatabaseManager(context).convertUserObject(mainUser, "MainUser", {})
             updateLikedDatabase(mainUser.uid!!, matchUserUID, 1)
 
             completed()
@@ -550,21 +586,18 @@ class FirestoreHandler {
             .collection(MEMES_PATH)
             .whereEqualTo("postUserUID", uid)
             .orderBy("postPoints", DESCENDING)
-            .limit(50)
-            .get()
-            .addOnSuccessListener { snapshot ->
-                var userMemes: MutableList<Memes> = mutableListOf()
-                for (document in snapshot) {
-                    val userMeme = document.toObject(Memes::class.java)
-                    userMemes.add(userMeme)
+            .addSnapshotListener {snapshot, e ->
+                if (e != null) {
+                    Log.w("Profile-memes", "listen failed $e")
+                    return@addSnapshotListener
                 }
 
-                Log.d("UserMemes", "Got memes $userMemes")
+                if (snapshot != null) {
+                    for (snapshot in snapshot!!.documents) {
+                        val snapshotData = snapshot.data
 
-                memes(userMemes)
-            }
-            .addOnFailureListener {
-                Log.d("UserNames", "Failed to get memes ${it.localizedMessage}")
+                    }
+                }
             }
     }
 

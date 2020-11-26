@@ -185,7 +185,7 @@ class SettingsFragment : Fragment() {
         otherFilter.setTextColor(Color.parseColor("#ff00ddff"))
 
         mainUser?.gender = "Female"
-        DatabaseManager(this.context!!).convertUserObject(mainUser!!, "MainUser")
+        DatabaseManager(this.context!!).convertUserObject(mainUser!!, "MainUser", {})
     }
 
     private fun activateMale() {
@@ -197,7 +197,7 @@ class SettingsFragment : Fragment() {
         otherFilter.setTextColor(Color.parseColor("#ff00ddff"))
 
         mainUser?.gender = "Male"
-        DatabaseManager(this.context!!).convertUserObject(mainUser!!, "MainUser")
+        DatabaseManager(this.context!!).convertUserObject(mainUser!!, "MainUser", {})
     }
 
     private fun activateOther() {
@@ -209,7 +209,7 @@ class SettingsFragment : Fragment() {
         maleFilter.setTextColor(Color.parseColor("#ff00ddff"))
 
         mainUser?.gender = "Other"
-        DatabaseManager(this.context!!).convertUserObject(mainUser!!, "MainUser")
+        DatabaseManager(this.context!!).convertUserObject(mainUser!!, "MainUser", {})
     }
 
     fun getOpenFacebookIntent(){

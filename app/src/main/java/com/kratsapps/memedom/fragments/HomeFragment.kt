@@ -22,6 +22,7 @@ import androidx.swiperefreshlayout.widget.SwipeRefreshLayout.OnRefreshListener
 import com.bumptech.glide.Glide
 import com.google.firebase.auth.FirebaseAuth
 import com.kratsapps.memedom.CredentialActivity
+import com.kratsapps.memedom.MainActivity
 import com.kratsapps.memedom.R
 import com.kratsapps.memedom.models.Memes
 import com.kratsapps.memedom.utils.DatabaseManager
@@ -39,6 +40,7 @@ class HomeFragment : Fragment() {
     lateinit var feedRecyclerView: RecyclerView
     lateinit var homeSwipe: SwipeRefreshLayout
     lateinit var loadingView: CardView
+    lateinit var mainActivity: MainActivity
 
     private var filteredMemems = mutableListOf<Memes>()
     private var allMemes = mutableListOf<Memes>()
@@ -51,45 +53,36 @@ class HomeFragment : Fragment() {
         var blankScreen = rootView.findViewById<LinearLayout>(R.id.blankLayout)
         blankScreen.visibility = View.GONE
 
-        loadingView.visibility = View.VISIBLE
+        if (mainActivity.allMemes.isEmpty()) {
 
-        val mainUser = DatabaseManager(this.context!!).retrieveSavedUser()
-        FirestoreHandler().getAppSettings() { points, dayLimit, memeLimit, matchLimit ->
+            loadingView.visibility = View.VISIBLE
+            Log.d("Main Activity", "Home-Fragment getting memes")
 
-            DatabaseManager(homeContext).saveToPrefsInt("matchLimit", matchLimit.toInt())
-
-            FirestoreHandler().checkForFreshMemes(homeContext, mainUser, dayLimit, memeLimit) {
-
-                Log.d("AllMemes", "Current memes ${it.count()}")
-                if (it.isEmpty()) {
+            mainActivity.setupHomeFragment {
+                if (mainActivity.allMemes.isEmpty()) {
                     blankScreen.visibility = View.VISIBLE
                 } else {
                     blankScreen.visibility = View.GONE
                 }
-
-                filteredMemems.clear()
-                allMemes.clear()
-                matchedMemes.clear()
-
-                it.forEach {
-                    if(mainUser != null) {
-                        if(mainUser.matches.contains(it.postUserUID)) {
-                            matchedMemes.add(it)
-                        }
-                    }
-                    filteredMemems.add(it)
-                    allMemes.add(it)
-                }
+                filteredMemems = mainActivity.filteredMemems
+                allMemes = mainActivity.allMemes
+                matchedMemes = mainActivity.matchedMemes
 
                 homeSwipe.isRefreshing = false
                 loadingView.visibility = View.INVISIBLE
                 setupFeedView()
             }
-        }
-    }
+        } else {
 
-    override fun onDestroy() {
-        super.onDestroy()
+            Log.d("Main Activity", "AllMemes exist")
+
+            filteredMemems = mainActivity.filteredMemems
+            allMemes = mainActivity.allMemes
+            matchedMemes = mainActivity.matchedMemes
+            homeSwipe.isRefreshing = false
+            loadingView.visibility = View.INVISIBLE
+            setupFeedView()
+        }
     }
 
     override fun onAttach(context: Context) {
@@ -102,25 +95,15 @@ class HomeFragment : Fragment() {
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        Log.d("OnCreateView", "Called")
+        mainActivity = this.activity as MainActivity
+
+        Log.d("OnCreateView", "Called with Main Activity $mainActivity")
+
         rootView = inflater.inflate(R.layout.fragment_home, container, false)
         setupUI()
         checkLoginStatus()
-        setupFirestore()
+        getAllMemes()
         return rootView
-    }
-
-    private fun setupFirestore() {
-        Log.d("HomeContext", "${homeContext != null} memes ${allMemes.count()}")
-
-        if(homeContext != null) {
-            if(allMemes.isEmpty()) {
-                getAllMemes()
-            } else {
-                setupFeedView()
-            }
-            DatabaseManager(homeContext).retrieveSavedUser()
-        }
     }
 
     private fun checkLoginStatus() {
@@ -160,44 +143,35 @@ class HomeFragment : Fragment() {
         Log.d("HomeContext", "Views initialized $memedomSegment")
 
         matchedSegment.setOnClickListener{
-            Log.d("Segment", "Link segment tapped ${matchedMemes.count()}")
+            Log.d("Segment-Matched", "Link segment tapped ${matchedMemes.count()}")
             updateSegments("Matched")
-
         }
         memedomSegment.setOnClickListener{
-            Log.d("Segment", "Popular segment tapped ${allMemes.count()}")
+            Log.d("Segment-Memedom", "Popular segment tapped ${allMemes.count()}")
             updateSegments("Memedom")
         }
-
         homeSwipe = rootView.findViewById<SwipeRefreshLayout>(R.id.homeSwipe)
         homeSwipe.setOnRefreshListener(OnRefreshListener {
+            mainActivity.allMemes.clear()
             getAllMemes()
         })
-        homeSwipe.setColorSchemeResources(android.R.color.holo_blue_bright,
-            android.R.color.holo_orange_light)
-
+        homeSwipe.setColorSchemeResources(android.R.color.holo_blue_bright, android.R.color.holo_orange_light)
     }
 
     private fun setupFeedView() {
-        Log.d("Memes", "recyclerview setup")
-        val context = this.context
-        val activity = this.activity
-        if (context != null && activity != null) {
-            feedAdapter = FeedAdapter(filteredMemems, activity, false)
-
-            feedRecyclerView = rootView.findViewById(R.id.recyclerViewHome) as RecyclerView
-            feedRecyclerView.addItemDecoration(
-                DefaultItemDecorator(
-                    resources.getDimensionPixelSize(
-                        R.dimen.vertical_recyclerView
-                    )
+        feedAdapter = FeedAdapter(filteredMemems, mainActivity, false)
+        feedRecyclerView = rootView.findViewById(R.id.recyclerViewHome) as RecyclerView
+        feedRecyclerView.addItemDecoration(
+            DefaultItemDecorator(
+                resources.getDimensionPixelSize(
+                    R.dimen.vertical_recyclerView
                 )
             )
-            feedRecyclerView.adapter = feedAdapter
-            feedRecyclerView.layoutManager = LinearLayoutManager(activity)
-            feedRecyclerView.setHasFixedSize(true)
-            feedRecyclerView.itemAnimator?.removeDuration
-        }
+        )
+        feedRecyclerView.adapter = feedAdapter
+        feedRecyclerView.layoutManager = LinearLayoutManager(mainActivity)
+        feedRecyclerView.setHasFixedSize(true)
+        feedRecyclerView.itemAnimator?.removeDuration
     }
 
     private fun setupCrentialView() {
@@ -222,9 +196,7 @@ class HomeFragment : Fragment() {
     }
 
     private fun updateSegments(type: String) {
-
         feedAdapter.clear()
-
         if(type.equals("Matched")) {
             filteredMemems.addAll(matchedMemes)
             matchedSegment.isChecked = true
@@ -237,6 +209,5 @@ class HomeFragment : Fragment() {
 
         Log.d("Filtering", "Filtered Memes ${filteredMemems.count()}")
         feedAdapter.addItems(filteredMemems)
-
     }
 }

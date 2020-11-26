@@ -69,7 +69,7 @@ class FeedAdapter(
         //DatabaseManager(feedAdapterContext).savePostID(currentItem.postID)
 
         val lp: ConstraintLayout.LayoutParams = holder.feedImage.getLayoutParams() as ConstraintLayout.LayoutParams
-        lp.height = (currentItem.postHeight * 2).toInt()
+        lp.height = (currentItem.postHeight * 1.5).toInt()
         holder.feedImage.setLayoutParams(lp)
 
         Glide.with(feedAdapterContext)
@@ -113,7 +113,7 @@ class FeedAdapter(
                 holder.card_view.setBackgroundResource(R.color.errorColor)
                 holder.linearReport.visibility = View.GONE
                 mainUser.rejectedMemes += postUID
-                DatabaseManager(feedAdapterContext).convertUserObject(mainUser!!, "MainUser")
+                DatabaseManager(feedAdapterContext).convertUserObject(mainUser!!, "MainUser", {})
             }
         }
 
@@ -125,7 +125,7 @@ class FeedAdapter(
                     animateLikeImageView(holder, mainUser, currentItem)
 
                     mainUser.rejectedMemes += postUID
-                    DatabaseManager(feedAdapterContext).convertUserObject(mainUser!!, "MainUser")
+                    DatabaseManager(feedAdapterContext).convertUserObject(mainUser!!, "MainUser", {})
                 }
             }
         }

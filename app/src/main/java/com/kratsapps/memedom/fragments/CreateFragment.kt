@@ -121,7 +121,7 @@ class CreateFragment : Fragment() {
 
                 savedUser.memes += it.toString()
                 Log.d("Saving New Meme", "Saving ${it.toString()}")
-                DatabaseManager(createContext).convertUserObject(savedUser, "MainUser")
+                DatabaseManager(createContext).convertUserObject(savedUser, "MainUser", {})
 
                 val newPost: HashMap<String, Any> = hashMapOf(
                     "userAge" to savedUser.getUserAge().toLong(),

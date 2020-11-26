@@ -21,18 +21,17 @@ import androidx.fragment.app.Fragment
 import com.bumptech.glide.Glide
 import com.facebook.FacebookSdk
 import com.google.android.gms.ads.MobileAds
-import com.google.android.gms.common.util.CrashUtils
 import com.google.firebase.FirebaseApp
 import com.google.firebase.analytics.FirebaseAnalytics
 import com.google.firebase.analytics.ktx.analytics
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseUser
-import com.google.firebase.crashlytics.internal.common.CrashlyticsCore
 import com.google.firebase.ktx.Firebase
 import com.kratsapps.memedom.fragments.*
 import com.kratsapps.memedom.models.MemeDomUser
 import com.kratsapps.memedom.firebaseutils.FirestoreHandler
 import com.kratsapps.memedom.models.Matches
+import com.kratsapps.memedom.models.Memes
 import com.kratsapps.memedom.utils.DatabaseManager
 import kotlinx.android.synthetic.main.activity_main.*
 import kotlinx.android.synthetic.main.activity_main.view.*
@@ -49,7 +48,17 @@ class MainActivity : AppCompatActivity() {
     private lateinit var firebaseAnalytics: FirebaseAnalytics
 
     var currentMatchUser: MemeDomUser? = null
+    var mainUser: MemeDomUser? = null
     var profileIsLoaded: Boolean = false
+
+    //HomeFragment
+    var friendMemes = mutableListOf<Memes>()
+    var datingMemes = mutableListOf<Memes>()
+    var filteredMemems = mutableListOf<Memes>()
+    var allMemes = mutableListOf<Memes>()
+    var matchedMemes = mutableListOf<Memes>()
+    //ProfileFragment
+    var profileMemes = mutableListOf<Memes>()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -61,6 +70,9 @@ class MainActivity : AppCompatActivity() {
             FirebaseApp.initializeApp(applicationContext);}
 
         firebaseAnalytics = Firebase.analytics
+        mainUser = DatabaseManager(this).retrieveSavedUser()
+
+        Log.d("Main Activity", "Main Activity is being created again $mainUser")
 
         MobileAds.initialize(this)
         checkLoginStatus()
@@ -73,8 +85,34 @@ class MainActivity : AppCompatActivity() {
         navigationBottom.isEnabled = active
     }
 
-    fun setupHomeFragment() {
+    fun setupHomeFragment(completed: () -> Unit) {
+        FirestoreHandler().getAppSettings() {points, dayLimit, memeLimit, matchLimit ->
+            DatabaseManager(this).saveToPrefsInt("matchLimit", matchLimit.toInt())
+            FirestoreHandler().getAllFriendMemes(this, mainUser, dayLimit, memeLimit) {
+                filteredMemems.clear()
+                allMemes.clear()
+                matchedMemes.clear()
 
+                it.forEach {
+                    if (mainUser?.matches != null) {
+                        if(mainUser!!.matches.contains(it.postUserUID)) {
+                            matchedMemes.add(it)
+                        }
+                    }
+                    filteredMemems.add(it)
+                    allMemes.add(it)
+                }
+                completed()
+            }
+        }
+    }
+
+    fun setupProfileFragment(completed: (memes: MutableList<Memes>) -> Unit) {
+        if (mainUser?.uid != null) {
+            FirestoreHandler().getAllMemesOfMainUser(mainUser!!.uid) {
+                completed(it)
+            }
+        }
     }
 
     private fun setupBottomNavigation() {

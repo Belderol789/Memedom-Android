@@ -9,7 +9,8 @@ import kotlin.collections.HashMap
 
 class MemeDomUser: Serializable {
     var name: String = ""
-    var gender: String = "Other"
+    var gender: String = "Male"
+    var lookingFor: String = "Female"
     var birthday: String = ""
     var profilePhoto: String = ""
     var uid: String = ""

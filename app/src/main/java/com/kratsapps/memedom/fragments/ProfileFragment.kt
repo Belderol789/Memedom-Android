@@ -30,6 +30,7 @@ import com.kratsapps.memedom.adapters.FeedAdapter
 import com.kratsapps.memedom.adapters.ImageAdapter
 import com.kratsapps.memedom.firebaseutils.FireStorageHandler
 import com.kratsapps.memedom.firebaseutils.FirestoreHandler
+import com.kratsapps.memedom.models.MemeDomUser
 import com.kratsapps.memedom.utils.*
 
 
@@ -43,6 +44,12 @@ class ProfileFragment : Fragment() {
     lateinit var rootView: View
     lateinit var galleryAdapter: ImageAdapter
     lateinit var galleryRecyclerView: RecyclerView
+
+    lateinit var mainActivity: MainActivity
+
+    private var mainUser: MemeDomUser? = null
+    private var mainUserID: String? = null
+
     var galleryItems: MutableList<String> = mutableListOf()
     var profileIsExpanded: Boolean = false
     var profilePhotoSelected: Boolean = true
@@ -67,60 +74,57 @@ class ProfileFragment : Fragment() {
         savedInstanceState: Bundle?
     ): View? {
         // Inflate the layout for this fragment
+        mainActivity = this.activity as MainActivity
+        mainUser = mainActivity.mainUser
+        mainUserID = mainUser?.uid
         rootView = inflater.inflate(R.layout.fragment_profile, container, false)
-        profileRecyclerView = rootView.findViewById(R.id.profileRecycler)
-        galleryRecyclerView = rootView.findViewById(R.id.galleryRecycler) as RecyclerView
-        getAllUserMemes()
         setupUI()
+        getAllUserMemes()
         setupGallery()
         return rootView
     }
 
     private fun getAllUserMemes() {
-        val mainUser = DatabaseManager(profileContext).retrieveSavedUser()
-        val mainUserID = mainUser?.uid
-
         val crownCount = rootView.findViewById<TextView>(R.id.crownsCount)
         val postCount = rootView.findViewById<TextView>(R.id.postCount)
         val matchCount = rootView.findViewById<TextView>(R.id.matchCount)
 
-        val mainActivity = this.activity as? MainActivity
+        mainActivity = this.activity as MainActivity
 
-        if (mainUserID != null && mainActivity != null) {
-            FirestoreHandler().getAllMemesOfMainUser(mainUserID) {
+        if (mainActivity != null && mainUser != null) {
+            mainActivity.setupProfileFragment() { profileMemes ->
 
-                Log.d("Money", "Losing Money on Profile")
-
-                matchCount.setText("${mainUser.matches.count()}")
-                postCount.setText("${it.count()}")
-                var crowns = 0
-                for (meme in it) {
-                    crowns += meme.getPostLikeCount()
+                var crown: Int = 0
+                for (meme in profileMemes) {
+                    crown += meme.getPostLikeCount()
                 }
-                crownCount.setText("$crowns")
 
-                if (this.activity != null) {
-                    val feedAdapter = FeedAdapter(it, this.activity!!, true)
-                    profileRecyclerView.addItemDecoration(
-                        DefaultItemDecorator(
-                            resources.getDimensionPixelSize(
-                                R.dimen.vertical_recyclerView
-                            )
+//                matchCount.setText("$matchesCount")
+//                postCount.setText("$postsCount")
+//                crownCount.setText("$crownsCount")
+
+                val feedAdapter = FeedAdapter(profileMemes, this.activity!!, true)
+                profileRecyclerView.addItemDecoration(
+                    DefaultItemDecorator(
+                        resources.getDimensionPixelSize(
+                            R.dimen.vertical_recyclerView
                         )
                     )
-                    profileRecyclerView.adapter = feedAdapter
-                    profileRecyclerView.layoutManager = LinearLayoutManager(activity)
-                    profileRecyclerView.setHasFixedSize(true)
-                    profileRecyclerView.itemAnimator?.removeDuration
-                }
+                )
+                profileRecyclerView.adapter = feedAdapter
+                profileRecyclerView.layoutManager = LinearLayoutManager(activity)
+                profileRecyclerView.setHasFixedSize(true)
+                profileRecyclerView.itemAnimator?.removeDuration
             }
         }
     }
 
     private fun setupUI() {
 
-        profileView = rootView.findViewById<CardView>(R.id.profile_cardView)
+        profileRecyclerView = rootView.findViewById(R.id.profileRecycler)
+        galleryRecyclerView = rootView.findViewById(R.id.galleryRecycler) as RecyclerView
 
+        profileView = rootView.findViewById<CardView>(R.id.profile_cardView)
         val username = rootView.findViewById<TextView>(R.id.username)
         val gender = rootView.findViewById<TextView>(R.id.gender)
         val profilePhoto = rootView.findViewById<ImageButton>(R.id.profilePhoto)
@@ -130,24 +134,21 @@ class ProfileFragment : Fragment() {
         progressCardView = rootView.findViewById<CardView>(R.id.progressCardView)
         progressCardView.visibility = View.INVISIBLE
 
-        val mainUser = DatabaseManager(profileContext).retrieveSavedUser()
-        val mainUserID = mainUser?.uid
-
         saveBtn.visibility = View.INVISIBLE
 
         if (mainUser != null) {
-            username.setText(mainUser.name)
-            gender.setText(mainUser.gender)
-            if (!mainUser.bio.equals("")) {
-                bioText.setText(mainUser.bio)
+            username.setText(mainUser!!.name)
+            gender.setText(mainUser!!.gender)
+            if (!mainUser!!.bio.equals("")) {
+                bioText.setText(mainUser!!.bio)
             } else {
                 bioText.setHint("Write About Yourself")
             }
 
-            Log.d("ProfileURL", "ProfilePhotoItem ${mainUser.profilePhoto}")
+            Log.d("ProfileURL", "ProfilePhotoItem ${mainUser!!.profilePhoto}")
 
             Glide.with(this.activity!!)
-                .load(mainUser.profilePhoto)
+                .load(mainUser!!.profilePhoto)
                 .error(ContextCompat.getDrawable(this.context!!, R.drawable.ic_action_name))
                 .circleCrop()
                 .into(profilePhoto)
@@ -253,7 +254,7 @@ class ProfileFragment : Fragment() {
                 val userBio = bioText.text.toString()
 
                 if (profilePhotoIsChanged) {
-                    FireStorageHandler().uploadPhotoWith(mainUserID, profileImage, {
+                    FireStorageHandler().uploadPhotoWith(mainUserID!!, profileImage, {
                         val updatedProfile: HashMap<String, Any> = hashMapOf(
                             "bio" to userBio,
                             "profilePhoto" to it,
@@ -262,13 +263,13 @@ class ProfileFragment : Fragment() {
 
                         Log.d("Saving", "Updating user data")
 
-                        FirestoreHandler().updateDatabaseObject("User", mainUserID, updatedProfile)
+                        FirestoreHandler().updateDatabaseObject("User", mainUserID!!, updatedProfile)
 
-                        mainUser.profilePhoto = it
-                        mainUser.bio = userBio
-                        mainUser.gallery = galleryItems
+                        mainUser!!.profilePhoto = it
+                        mainUser!!.bio = userBio
+                        mainUser!!.gallery = galleryItems
 
-                        DatabaseManager(this.context!!).convertUserObject(mainUser, "MainUser")
+                        DatabaseManager(this.context!!).convertUserObject(mainUser!!, "MainUser", {})
                         saveBtn.visibility = View.INVISIBLE
                         progressCardView.visibility = View.INVISIBLE
                     })
@@ -276,11 +277,11 @@ class ProfileFragment : Fragment() {
                     val updatedProfile: HashMap<String, Any> = hashMapOf(
                         "bio" to userBio
                     )
-                    FirestoreHandler().updateDatabaseObject("User", mainUserID, updatedProfile)
-                    mainUser.bio = userBio
-                    DatabaseManager(this.context!!).convertUserObject(mainUser, "MainUser")
-                    saveBtn.visibility = View.INVISIBLE
-                    progressCardView.visibility = View.INVISIBLE
+                    FirestoreHandler().updateDatabaseObject("User", mainUserID!!, updatedProfile)
+                    mainUser!!.bio = userBio
+                    DatabaseManager(this.context!!).convertUserObject(mainUser!!, "MainUser", {
+                        progressCardView.visibility = View.INVISIBLE
+                    })
                 }
             }
         }

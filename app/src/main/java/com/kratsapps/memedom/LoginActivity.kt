@@ -82,8 +82,9 @@ class LoginActivity : AppCompatActivity() {
             Log.d("Firestore Login", "Logged in as $it")
 
             progressOverlay.visibility = View.GONE
-            DatabaseManager(this).convertUserObject(it, "MainUser")
-            navigateToMain()
+            DatabaseManager(this).convertUserObject(it, "MainUser", {
+                //navigateToMain()
+            })
         })
     }
 
