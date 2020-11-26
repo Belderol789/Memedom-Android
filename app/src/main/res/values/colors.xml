@@ -3,7 +3,7 @@
     <color name="colorPrimary">#6200EE</color>
     <color name="colorPrimaryDark">#3700B3</color>
     <color name="colorAccent">#8FD6EF</color>
-    <color name="appFGColor">#85c6da</color>
+    <color name="appFGColor">#58BADC</color>
     <color name="appBGColor">#111111</color>
     <color name="appBGColorLight">#202121</color>
     <color name="appSecondaryColor">#C0C0C0</color>
@@ -13,6 +13,7 @@
     <color name="clearBlack">#80000000</color>
     <color name="errorColor">#FF0000</color>
     <color name="specialColor">#FACE0D</color>
+    //58BADC
     //#add8e6
     //#070707
     //#30444E

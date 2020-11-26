@@ -12,7 +12,8 @@
         android:roundIcon="@mipmap/ic_launcher_memedom"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
-        <activity android:name=".MemedomActivity"/>
+        <activity android:name=".CredentialActivity"/>
+        <activity android:name=".MemedomActivity" />
         <activity android:name=".ChatActivity" />
         <activity android:name=".ProfileActivity" />
         <activity android:name=".ReplyActivity" />
@@ -20,17 +21,17 @@
         <activity android:name=".LoginActivity" />
         <activity android:name=".SignupActivity" />
         <activity android:name=".MainActivity" />
-        <activity android:name=".CredentialActivity">
+        <activity android:name=".InitialActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
+
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
 
         <meta-data
             android:name="com.google.android.gms.ads.APPLICATION_ID"
-            android:value="ca-app-pub-8278458623868241~7563925980"/>
-
+            android:value="ca-app-pub-8278458623868241~7563925980" />
         <meta-data
             android:name="com.facebook.sdk.ApplicationId"
             android:value="@string/facebook_app_id" />
