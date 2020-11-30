@@ -26,7 +26,10 @@ class MemeDomUser: Serializable {
     var rejectedMemes: List<String> = listOf()
 
     fun getUserAge(): Int {
-        val sdf = SimpleDateFormat("dd MMMM yyyy")
+        val sdf = SimpleDateFormat("MM/dd/yyyy")
+        if (birthday.isEmpty()) {
+            return 0
+        }
         val date = sdf.parse(birthday)
         val currentDate = Date()
         val userAge = (currentDate.time - date.time) / 86400000 / 365

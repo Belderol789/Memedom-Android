@@ -31,7 +31,6 @@ class LoginActivity : AppCompatActivity() {
     private lateinit var auth: FirebaseAuth
     lateinit var callbackManager: CallbackManager
 
-
     var memeDomUser: MemeDomUser = MemeDomUser()
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -129,10 +128,12 @@ class LoginActivity : AppCompatActivity() {
 
             override fun onCancel() {
                 Log.d("Authentication", "facebook:onCancel")
+                loginLoadingView.visibility = View.INVISIBLE
             }
 
             override fun onError(error: FacebookException) {
                 Log.d("Authentication", "facebook:onError", error)
+                loginLoadingView.visibility = View.INVISIBLE
                 Toast.makeText(
                     baseContext,
                     "We're sorry, there was an error with your facebook request",
@@ -169,6 +170,7 @@ class LoginActivity : AppCompatActivity() {
                     memeDomUser.email = `object`.getString("email")
                 }
             } catch (e: JSONException) {
+                loginLoadingView.visibility = View.INVISIBLE
                 e.printStackTrace()
             }
         }
