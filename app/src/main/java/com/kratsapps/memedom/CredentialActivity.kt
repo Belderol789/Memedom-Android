@@ -3,7 +3,6 @@ package com.kratsapps.memedom
 import android.content.Intent
 import android.os.Bundle
 import android.util.Log
-import android.view.View
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import com.facebook.*
@@ -12,7 +11,6 @@ import com.google.firebase.auth.FacebookAuthProvider
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseUser
 import com.kratsapps.memedom.models.MemeDomUser
-import com.kratsapps.memedom.utils.AndroidUtils
 import com.kratsapps.memedom.utils.DatabaseManager
 import com.kratsapps.memedom.firebaseutils.FirestoreHandler
 import kotlinx.android.synthetic.main.activity_credential.*
@@ -47,8 +45,8 @@ class CredentialActivity : AppCompatActivity() {
         }
 
         callbackManager = CallbackManager.Factory.create()
-        buttonFacebook.setPermissions("email", "public_profile", "user_birthday")
-        buttonFacebook.registerCallback(callbackManager, object :
+        fbLoginBtn.setPermissions("email", "public_profile", "user_birthday")
+        fbLoginBtn.registerCallback(callbackManager, object :
             FacebookCallback<LoginResult> {
             override fun onSuccess(loginResult: LoginResult) {
                 Log.d("Authentication", "facebook:onSuccess:$loginResult")

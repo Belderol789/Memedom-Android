@@ -24,7 +24,7 @@
         <Button
             android:id="@+id/signupBtn"
             android:layout_width="match_parent"
-            android:layout_height="60dp"
+            android:layout_height="50dp"
             android:background="@drawable/round_button"
             android:backgroundTint="@color/appFGColor"
             android:text="Sign Up"
@@ -34,7 +34,7 @@
         <Button
             android:id="@+id/loginBtn"
             android:layout_width="match_parent"
-            android:layout_height="60dp"
+            android:layout_height="50dp"
             android:background="@drawable/round_button"
             android:backgroundTint="@color/whiteColor"
             android:text="Log In"
@@ -68,6 +68,7 @@
         android:layout_marginStart="20dp"
         android:layout_marginEnd="20dp"
         android:layout_marginBottom="50dp"
+        android:fontFamily="@font/helveticaneu_bold"
         android:text="Share memes, make friends, join the kingdom"
         android:textAlignment="center"
         android:textColor="@color/appSecondaryColor"
@@ -80,6 +81,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginBottom="16dp"
+        android:fontFamily="@font/helveticaneu_bold"
         android:text="Memedom"
         android:textColor="@color/whiteColor"
         android:textSize="36sp"

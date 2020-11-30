@@ -16,7 +16,7 @@ class InitialActivity : AppCompatActivity() {
         }
 
         loginBtn.setOnClickListener {
-            val intent = Intent(this, CredentialActivity::class.java)
+            val intent = Intent(this, LoginActivity::class.java)
             this.startActivity(intent)
         }
 
