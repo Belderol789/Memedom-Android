@@ -4,6 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="@color/appBGColor"
     tools:context=".fragments.CreateFragment">
 
     <EditText
@@ -29,41 +30,134 @@
         android:id="@+id/imageViewMeme"
         android:layout_width="0dp"
         android:layout_height="350dp"
+        android:layout_marginStart="16dp"
         android:layout_marginTop="16dp"
+        android:layout_marginEnd="16dp"
+        android:background="@drawable/cornered_card"
         android:contentDescription="TODO"
-        android:background="@color/appBGColorLight"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/editTextTitle"
         tools:srcCompat="@tools:sample/backgrounds/scenic" />
 
-    <Button
-        android:id="@+id/buttonPost"
-        android:layout_width="0dp"
+    <LinearLayout
+        android:id="@+id/postTypeLayout"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginStart="16dp"
         android:layout_marginTop="16dp"
         android:layout_marginEnd="16dp"
-        android:alpha="0.25"
-        android:background="@drawable/soft_button"
-        android:text="@string/postButton"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/imageViewMeme" />
+        app:layout_constraintTop_toBottomOf="@+id/imageViewMeme">
+
+        <RadioGroup
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
+
+            <androidx.appcompat.widget.AppCompatRadioButton
+                android:id="@+id/friendsFilter"
+                android:layout_width="0dp"
+                android:layout_height="50dp"
+                android:layout_weight="1"
+                android:background="@drawable/radio_button_selector_fill"
+                android:button="@android:color/transparent"
+                android:checked="true"
+                android:gravity="center"
+                android:text="Friends"
+                android:textColor="@android:color/white" />
+
+            <androidx.appcompat.widget.AppCompatRadioButton
+                android:id="@+id/datingFilter"
+                android:layout_width="0dp"
+                android:layout_height="50dp"
+                android:layout_weight="1"
+                android:background="@drawable/radio_button_dating_selector"
+                android:button="@android:color/transparent"
+                android:checked="false"
+                android:gravity="center"
+                android:text="Dating"
+                android:textColor="@android:color/white" />
+
+        </RadioGroup>
+    </LinearLayout>
 
     <ImageButton
         android:id="@+id/addImageButton"
-        android:src="@drawable/ic_action_plus"
-        android:background="@drawable/round_button"
         android:layout_width="45dp"
         android:layout_height="45dp"
-        android:layout_marginEnd="20dp"
-        android:layout_marginBottom="20dp"
-        android:tint="@color/whiteColor"
-        app:layout_constraintBottom_toTopOf="@+id/buttonPost"
-        app:layout_constraintEnd_toEndOf="parent"
+        android:background="@color/transparent"
+        android:src="@drawable/ic_action_plus"
+        android:tint="@color/appFGColor"
+        app:layout_constraintBottom_toTopOf="@+id/postTypeLayout"
+        app:layout_constraintEnd_toEndOf="@+id/imageViewMeme"
         app:layout_constraintStart_toStartOf="@+id/imageViewMeme"
         app:layout_constraintTop_toBottomOf="@+id/editTextTitle" />
-    />
+
+    <ImageButton
+        android:id="@+id/removeImageBtn"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="20dp"
+        android:layout_marginEnd="20dp"
+        android:background="@color/transparent"
+        android:src="@drawable/ic_action_down_cancel"
+        android:tint="#86FF0000"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/editTextTitle" />
+
+    <androidx.cardview.widget.CardView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="16dp"
+        android:layout_marginTop="16dp"
+        android:layout_marginEnd="16dp"
+        android:background="@drawable/cornered_card"
+        app:cardCornerRadius="8dp"
+        app:cardBackgroundColor="@color/transparent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/postTypeLayout">
+
+        <Button
+            android:id="@+id/buttonPost"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:alpha="0.25"
+            android:background="@drawable/soft_button"
+            android:fontFamily="@font/helveticaneu_bold"
+            android:text="@string/postButton"
+            android:textColor="@color/whiteColor" />
+    </androidx.cardview.widget.CardView>
+
+    <androidx.cardview.widget.CardView
+        android:id="@+id/createLoadingView"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:visibility="invisible"
+        app:cardBackgroundColor="@color/clearBlack"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent">
+
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            tools:context=".MainActivity">
+
+            <ImageView
+                android:id="@+id/loadingImageView"
+                android:layout_width="100dp"
+                android:layout_height="100dp"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
+
+        </androidx.constraintlayout.widget.ConstraintLayout>
+
+    </androidx.cardview.widget.CardView>
 
 </androidx.constraintlayout.widget.ConstraintLayout>

@@ -3,6 +3,9 @@ package com.kratsapps.memedom
 import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import android.view.ViewGroup
+import android.widget.LinearLayout
+import com.google.firebase.auth.FirebaseAuth
 import kotlinx.android.synthetic.main.activity_initial.*
 
 class InitialActivity : AppCompatActivity() {
@@ -25,5 +28,10 @@ class InitialActivity : AppCompatActivity() {
             this.startActivity(intent)
         }
 
+        val user = FirebaseAuth.getInstance().getCurrentUser()
+        if (user != null) {
+            val intent: Intent = Intent(this, MainActivity::class.java)
+            startActivity(intent)
+        }
     }
 }

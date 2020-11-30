@@ -120,6 +120,7 @@ class LoginActivity : AppCompatActivity() {
         fbLoginBtn.registerCallback(callbackManager, object :
             FacebookCallback<LoginResult> {
             override fun onSuccess(loginResult: LoginResult) {
+                loginLoadingView.visibility = View.VISIBLE
                 Log.d("Authentication", "facebook:onSuccess:$loginResult")
                 getFbInfo {
                     handleFacebookAccessToken(loginResult.accessToken)
@@ -144,7 +145,6 @@ class LoginActivity : AppCompatActivity() {
         })
 
         facebookBtn.setOnClickListener {
-            loginLoadingView.visibility = View.VISIBLE
             fbLoginBtn.performClick()
         }
     }

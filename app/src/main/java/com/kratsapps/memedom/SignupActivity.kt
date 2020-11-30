@@ -94,6 +94,10 @@ class SignupActivity : AppCompatActivity() {
             checkIfFieldsHaveValues()
         }
 
+        signupBackBtn.setOnClickListener {
+            onBackPressed()
+        }
+
     }
 
     private fun navigateToMain() {
