@@ -252,7 +252,9 @@ class CreateFragment : Fragment() {
         val buttonPost = rootView.findViewById(R.id.buttonPost) as Button
         val postTitle = rootView.findViewById(R.id.editTextTitle) as EditText
 
-        addImageButton.setImageResource(R.drawable.ic_action_create)
+        addImageButton.visibility = View.VISIBLE
+        removeImageBtn.visibility = View.INVISIBLE
+
         buttonPost.alpha = 0.25f
         imageViewMeme.setImageDrawable(null)
         postTitle.setText(null)
