@@ -20,6 +20,7 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
 import com.bumptech.glide.Glide
 import com.facebook.FacebookSdk
+import com.facebook.internal.Mutable
 import com.google.android.gms.ads.MobileAds
 import com.google.firebase.FirebaseApp
 import com.google.firebase.analytics.FirebaseAnalytics
@@ -107,10 +108,12 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
-    fun setupProfileFragment(completed: (memes: MutableList<Memes>) -> Unit) {
+    fun setupProfileFragment(completed: (MutableList<Memes>) -> Unit) {
         if (mainUser?.uid != null) {
             FirestoreHandler().getAllMemesOfMainUser(mainUser!!.uid) {
-                completed(it)
+                profileMemes.add(it)
+                Log.d("UserMemes", "Memes ${profileMemes.count()}")
+                completed(profileMemes)
             }
         }
     }

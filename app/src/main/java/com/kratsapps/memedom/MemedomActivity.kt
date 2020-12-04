@@ -31,7 +31,7 @@ class MemedomActivity : AppCompatActivity() {
         }
 
         val galleryManager: GridLayoutManager = GridLayoutManager(this, 3, GridLayoutManager.VERTICAL, false)
-        val memeAdapter = ImageAdapter(savedUserImages, this, null)
+        val memeAdapter = ImageAdapter(savedUserImages, null,this, null, true)
 
         memedomRecycler.addItemDecoration(DefaultItemDecorator(resources.getDimensionPixelSize(R.dimen.vertical_recyclerView)))
         memedomRecycler.adapter = memeAdapter

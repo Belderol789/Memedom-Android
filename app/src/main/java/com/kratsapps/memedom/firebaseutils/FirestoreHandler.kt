@@ -578,7 +578,7 @@ class FirestoreHandler {
     }
 
     fun getAllMemesOfMainUser(uid: String,
-                              memes: (MutableList<Memes>) -> Unit) {
+                              memes: (Memes) -> Unit) {
 
         Log.d("UserMemes", "Getting Memes of $uid")
 
@@ -594,8 +594,10 @@ class FirestoreHandler {
 
                 if (snapshot != null) {
                     for (snapshot in snapshot!!.documents) {
-                        val snapshotData = snapshot.data
-
+                        val userMeme = snapshot.toObject(Memes::class.java)
+                        if (userMeme != null) {
+                            memes(userMeme)
+                        }
                     }
                 }
             }

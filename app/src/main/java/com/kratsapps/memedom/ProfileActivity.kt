@@ -158,23 +158,21 @@ class ProfileActivity : AppCompatActivity() {
     private fun setupGallery(images: List<String>) {
         val galleryManager: GridLayoutManager = GridLayoutManager(this, 3, GridLayoutManager.VERTICAL, false)
         galleryItems = images.toMutableList()
-        val galleryAdapter = ImageAdapter(galleryItems, this, null)
-
-        galleryRecycler.addItemDecoration(DefaultItemDecorator(resources.getDimensionPixelSize(R.dimen.vertical_recyclerView)))
+        val galleryAdapter = ImageAdapter(galleryItems, null,this, null, false)
         galleryRecycler.adapter = galleryAdapter
         galleryRecycler.layoutManager = galleryManager
         galleryRecycler.itemAnimator?.removeDuration
     }
 
     private fun getAllUserMemes(mainUserID: String) {
-        FirestoreHandler().getAllMemesOfMainUser(mainUserID) {
-            val feedAdapter =  FeedAdapter(it, this, true)
-            profileRecycler.addItemDecoration(DefaultItemDecorator(resources.getDimensionPixelSize(R.dimen.vertical_recyclerView)))
-            profileRecycler.adapter = feedAdapter
-            profileRecycler.layoutManager = LinearLayoutManager(this)
-            profileRecycler.setHasFixedSize(true)
-            profileRecycler.itemAnimator?.removeDuration
-        }
+//        FirestoreHandler().getAllMemesOfMainUser(mainUserID) {
+//            val feedAdapter =  FeedAdapter(it, this, true)
+//            profileRecycler.addItemDecoration(DefaultItemDecorator(resources.getDimensionPixelSize(R.dimen.vertical_recyclerView)))
+//            profileRecycler.adapter = feedAdapter
+//            profileRecycler.layoutManager = LinearLayoutManager(this)
+//            profileRecycler.setHasFixedSize(true)
+//            profileRecycler.itemAnimator?.removeDuration
+//        }
     }
 
 }

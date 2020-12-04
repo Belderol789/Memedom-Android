@@ -7,16 +7,6 @@
     android:background="@color/appBGColor"
     tools:context=".fragments.ProfileFragment">
 
-    <androidx.recyclerview.widget.RecyclerView
-        android:id="@+id/profileRecycler"
-        android:layout_width="0dp"
-        android:layout_height="0dp"
-        android:background="@color/appBGColor"
-        app:layout_constraintBottom_toBottomOf="@+id/profile_cardView"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
-
     <androidx.cardview.widget.CardView
         android:id="@+id/profile_cardView"
         android:layout_width="0dp"
@@ -37,18 +27,6 @@
             android:layout_height="match_parent"
             android:padding="8dp">
 
-
-            <ImageButton
-                android:id="@+id/expandBtn"
-                android:layout_width="match_parent"
-                android:layout_height="30dp"
-                android:background="@color/transparent"
-                android:padding="8dp"
-                android:src="@drawable/ic_action_up_arrow"
-                android:tint="@color/whiteColor"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent" />
 
             <LinearLayout
                 android:id="@+id/statsLayout"
@@ -157,7 +135,7 @@
                 android:orientation="vertical"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/expandBtn">
+                app:layout_constraintTop_toTopOf="parent">
 
                 <TextView
                     android:id="@+id/username"
@@ -167,6 +145,7 @@
                     android:text="Username"
                     android:textAlignment="center"
                     android:textColor="@color/whiteColor"
+                    android:textSize="20sp"
                     android:textStyle="bold" />
 
                 <TextView
@@ -198,56 +177,88 @@
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/profilePhoto" />
 
-            <androidx.recyclerview.widget.RecyclerView
-                android:id="@+id/galleryRecycler"
+            <HorizontalScrollView
+                android:id="@+id/photosScrollView"
                 android:layout_width="0dp"
                 android:layout_height="0dp"
-                android:layout_marginTop="8dp"
-                android:layout_marginBottom="100dp"
-                android:background="@color/appBGColorLight"
+                android:layout_marginTop="16dp"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/addGalleryBtn" />
+                app:layout_constraintTop_toBottomOf="@+id/photosLayout">
+
+                <LinearLayout
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent"
+                    android:orientation="horizontal">
+
+                    <androidx.recyclerview.widget.RecyclerView
+                        android:id="@+id/profileRecycler"
+                        android:layout_width="302dp"
+                        android:layout_height="match_parent"
+                        android:background="@color/transparent" />
+
+                    <androidx.recyclerview.widget.RecyclerView
+                        android:id="@+id/galleryRecycler"
+                        android:layout_width="200dp"
+                        android:layout_height="match_parent"
+                        android:background="@color/transparent" />
+
+                </LinearLayout>
+            </HorizontalScrollView>
 
             <ImageButton
                 android:id="@+id/profilePhoto"
                 android:layout_width="80dp"
                 android:layout_height="80dp"
-                android:layout_marginStart="14dp"
+                android:layout_marginStart="16dp"
                 android:layout_marginTop="8dp"
                 android:background="@drawable/round_imageview"
                 android:src="@drawable/ic_action_name"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/linearLayout3" />
 
-            <Button
-                android:id="@+id/saveBtn"
-                android:layout_width="70dp"
-                android:layout_height="30dp"
+            <LinearLayout
+                android:id="@+id/photosLayout"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="16dp"
+                android:layout_marginTop="16dp"
                 android:layout_marginEnd="16dp"
-                android:background="@drawable/soft_button"
-                android:text="Save"
-                android:textAllCaps="false"
-                android:textColor="@color/whiteColor"
-                android:textSize="12sp"
-                android:visibility="invisible"
                 app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintTop_toTopOf="parent" />
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/bioText">
 
-            <Button
-                android:id="@+id/addGalleryBtn"
-                android:layout_width="130dp"
-                android:layout_height="30dp"
-                android:layout_marginTop="8dp"
-                android:layout_marginEnd="16dp"
-                android:background="@drawable/soft_button"
-                android:text="Add Personal Photos"
-                android:textAllCaps="false"
-                android:textColor="@color/whiteColor"
-                android:textSize="12sp"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/bioText" />
+                <RadioGroup
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal">
+
+                    <androidx.appcompat.widget.AppCompatRadioButton
+                        android:id="@+id/memeSegment"
+                        android:layout_width="0dp"
+                        android:layout_height="50dp"
+                        android:layout_weight="1"
+                        android:background="@drawable/radio_button_selector_fill"
+                        android:button="@android:color/transparent"
+                        android:checked="true"
+                        android:gravity="center"
+                        android:text="Memes"
+                        android:textColor="@android:color/white" />
+
+                    <androidx.appcompat.widget.AppCompatRadioButton
+                        android:id="@+id/gallerySegment"
+                        android:layout_width="0dp"
+                        android:layout_height="50dp"
+                        android:layout_weight="1"
+                        android:background="@drawable/radio_button_selector_fill"
+                        android:button="@android:color/transparent"
+                        android:checked="false"
+                        android:gravity="center"
+                        android:text="Me's"
+                        android:textColor="@color/appFGColor" />
+                </RadioGroup>
+            </LinearLayout>
 
         </androidx.constraintlayout.widget.ConstraintLayout>
 
@@ -257,7 +268,7 @@
         android:id="@+id/progressCardView"
         android:layout_width="0dp"
         android:layout_height="0dp"
-        android:visibility="visible"
+        android:visibility="invisible"
         app:cardBackgroundColor="@color/clearBlack"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
@@ -276,11 +287,11 @@
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent"
-                tools:src="@tools:sample/avatars" />
+                app:layout_constraintTop_toTopOf="parent" />
 
         </androidx.constraintlayout.widget.ConstraintLayout>
 
     </androidx.cardview.widget.CardView>
+
 
 </androidx.constraintlayout.widget.ConstraintLayout>

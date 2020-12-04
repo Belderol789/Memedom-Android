@@ -4,11 +4,10 @@ import DefaultItemDecorator
 import android.app.Activity
 import android.content.Context
 import android.content.Intent
+import android.graphics.Color
 import android.os.Build
 import android.os.Bundle
 import android.provider.MediaStore
-import android.text.Editable
-import android.text.TextWatcher
 import android.util.DisplayMetrics
 import android.util.Log
 import android.view.LayoutInflater
@@ -16,21 +15,22 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.*
 import androidx.annotation.RequiresApi
+import androidx.appcompat.widget.AppCompatRadioButton
 import androidx.cardview.widget.CardView
-import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
+import com.facebook.internal.Mutable
 import com.kratsapps.memedom.MainActivity
 import com.kratsapps.memedom.R
 import com.kratsapps.memedom.adapters.FeedAdapter
 import com.kratsapps.memedom.adapters.ImageAdapter
 import com.kratsapps.memedom.firebaseutils.FireStorageHandler
-import com.kratsapps.memedom.firebaseutils.FirestoreHandler
 import com.kratsapps.memedom.models.MemeDomUser
+import com.kratsapps.memedom.models.Memes
 import com.kratsapps.memedom.utils.*
 
 
@@ -40,6 +40,11 @@ class ProfileFragment : Fragment() {
     lateinit var profileView: CardView
     lateinit var profileRecyclerView: RecyclerView
     lateinit var progressCardView: CardView
+    lateinit var username: TextView
+    lateinit var gender: TextView
+    lateinit var profilePhoto: ImageButton
+    lateinit var bioText: EditText
+    lateinit var photosScrollView: HorizontalScrollView
 
     lateinit var rootView: View
     lateinit var galleryAdapter: ImageAdapter
@@ -50,12 +55,11 @@ class ProfileFragment : Fragment() {
     private var mainUser: MemeDomUser? = null
     private var mainUserID: String? = null
 
+    var memeItems: MutableList<Memes> = mutableListOf()
     var galleryItems: MutableList<String> = mutableListOf()
-    var profileIsExpanded: Boolean = false
     var profilePhotoSelected: Boolean = true
 
     var galleryIsChanged: Boolean = false
-    var profilePhotoIsChanged: Boolean = false
 
     private val IMAGE_GALLERY_REQUEST_CODE: Int = 2001
 
@@ -79,6 +83,7 @@ class ProfileFragment : Fragment() {
         mainUserID = mainUser?.uid
         rootView = inflater.inflate(R.layout.fragment_profile, container, false)
         setupUI()
+        setupActionUI()
         getAllUserMemes()
         setupGallery()
         return rootView
@@ -88,32 +93,31 @@ class ProfileFragment : Fragment() {
         val crownCount = rootView.findViewById<TextView>(R.id.crownsCount)
         val postCount = rootView.findViewById<TextView>(R.id.postCount)
         val matchCount = rootView.findViewById<TextView>(R.id.matchCount)
+        Log.d("UserMemes", "We getting the memes of $mainUser inside $mainActivity")
 
-        mainActivity = this.activity as MainActivity
-
-        if (mainActivity != null && mainUser != null) {
+        if (mainActivity != null && mainUser != null && mainActivity.profileMemes.isEmpty()) {
             mainActivity.setupProfileFragment() { profileMemes ->
+                Log.d("UserMemes", "User Profile Memes ${profileMemes.count()}")
 
                 var crown: Int = 0
                 for (meme in profileMemes) {
                     crown += meme.getPostLikeCount()
                 }
 
-//                matchCount.setText("$matchesCount")
-//                postCount.setText("$postsCount")
-//                crownCount.setText("$crownsCount")
+                matchCount.setText("${mainUser!!.matches.count()}")
+                postCount.setText("${profileMemes.count()}")
+                crownCount.setText("$crown")
 
-                val feedAdapter = FeedAdapter(profileMemes, this.activity!!, true)
-                profileRecyclerView.addItemDecoration(
-                    DefaultItemDecorator(
-                        resources.getDimensionPixelSize(
-                            R.dimen.vertical_recyclerView
-                        )
-                    )
-                )
+                var userMemes = mutableListOf<String>()
+                for (meme in profileMemes) {
+                    userMemes.add(meme.postImageURL)
+                }
+
+                val feedAdapter = ImageAdapter(userMemes, profileMemes, this.activity!!, this, true)
+                val galleryManager: GridLayoutManager =
+                    GridLayoutManager(mainActivity, 3, GridLayoutManager.VERTICAL, false)
                 profileRecyclerView.adapter = feedAdapter
-                profileRecyclerView.layoutManager = LinearLayoutManager(activity)
-                profileRecyclerView.setHasFixedSize(true)
+                profileRecyclerView.layoutManager = galleryManager
                 profileRecyclerView.itemAnimator?.removeDuration
             }
         }
@@ -121,20 +125,26 @@ class ProfileFragment : Fragment() {
 
     private fun setupUI() {
 
+        username = rootView.findViewById<TextView>(R.id.username)
+        gender = rootView.findViewById<TextView>(R.id.gender)
+        profilePhoto = rootView.findViewById<ImageButton>(R.id.profilePhoto)
+        bioText = rootView.findViewById<EditText>(R.id.bioText)
+        photosScrollView = rootView.findViewById<HorizontalScrollView>(R.id.photosScrollView)
+
         profileRecyclerView = rootView.findViewById(R.id.profileRecycler)
-        galleryRecyclerView = rootView.findViewById(R.id.galleryRecycler) as RecyclerView
+        galleryRecyclerView = rootView.findViewById(R.id.galleryRecycler)
 
         profileView = rootView.findViewById<CardView>(R.id.profile_cardView)
-        val username = rootView.findViewById<TextView>(R.id.username)
-        val gender = rootView.findViewById<TextView>(R.id.gender)
-        val profilePhoto = rootView.findViewById<ImageButton>(R.id.profilePhoto)
-        val bioText = rootView.findViewById<EditText>(R.id.bioText)
-        val addGalleryBtn = rootView.findViewById<Button>(R.id.addGalleryBtn)
-        val saveBtn = rootView.findViewById<Button>(R.id.saveBtn)
         progressCardView = rootView.findViewById<CardView>(R.id.progressCardView)
         progressCardView.visibility = View.INVISIBLE
 
-        saveBtn.visibility = View.INVISIBLE
+        AndroidUtils().getScreenWidthAndHeight(mainActivity, { width, height ->
+            profileRecyclerView.layoutParams.width = width
+            profileRecyclerView.layoutParams.height = height
+
+            galleryRecyclerView.layoutParams.width = width
+            galleryRecyclerView.layoutParams.height = height
+        })
 
         if (mainUser != null) {
             username.setText(mainUser!!.name)
@@ -147,109 +157,16 @@ class ProfileFragment : Fragment() {
 
             Log.d("ProfileURL", "ProfilePhotoItem ${mainUser!!.profilePhoto}")
 
-            Glide.with(this.activity!!)
+            Glide.with(mainActivity)
                 .load(mainUser!!.profilePhoto)
                 .error(ContextCompat.getDrawable(this.context!!, R.drawable.ic_action_name))
                 .circleCrop()
                 .into(profilePhoto)
         }
 
-        var height: Int = 0
-
-        activity?.displayMetrics()?.run {
-            height = heightPixels
-            val width = widthPixels
-
-            val params = profileView.layoutParams as ConstraintLayout.LayoutParams
-            params.height = height
-            params.width = width
-            params.topMargin = height
-            profileView.requestLayout()
-        }
-
-        val expandBtn = rootView.findViewById(R.id.expandBtn) as ImageButton
-        expandBtn.setOnClickListener {
-            if (!profileIsExpanded) {
-
-                Log.d("Expand Profile Card", "Expanded")
-
-                profileView
-                    .animate()
-                    .setDuration(500)
-                    .translationY(((height / 1.8) - height).toFloat())
-                    .withEndAction {
-                        profileIsExpanded = !profileIsExpanded
-                    }
-
-                expandBtn
-                    .animate()
-                    .setDuration(500)
-                    .rotationBy(180f)
-                    .start()
-            } else {
-                saveBtn.visibility = View.INVISIBLE
-                profileView
-                    .animate()
-                    .setDuration(500)
-                    .translationY(-0F)
-                    .withEndAction {
-                        profileIsExpanded = !profileIsExpanded
-                    }
-                expandBtn
-                    .animate()
-                    .setDuration(500)
-                    .rotationBy(180f)
-                    .start()
-
-            }
-        }
-
-        profilePhoto.setOnClickListener {
-            profilePhotoSelected = true
-            saveBtn.visibility = View.VISIBLE
-            prepOpenImageGallery()
-        }
-
-        addGalleryBtn.setOnClickListener {
-            profilePhotoSelected = false
-            saveBtn.visibility = View.VISIBLE
-            prepOpenImageGallery()
-        }
-
-        bioText.addTextChangedListener(object : TextWatcher {
-
-            override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {
-
-                Log.d("Expanded", "Profile view should increase")
-
-                profileView
-                    .animate()
-                    .setDuration(500)
-                    .translationY(((height / 1.8) - height).toFloat())
-                    .withEndAction {
-                        profileIsExpanded = !profileIsExpanded
-                    }
-
-                expandBtn
-                    .animate()
-                    .setDuration(500)
-                    .rotationBy(180f)
-                    .start()
-            }
-
-            @RequiresApi(Build.VERSION_CODES.LOLLIPOP)
-            override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
-                if (count > 0) {
-                    saveBtn.visibility = View.VISIBLE
-                }
-            }
-
-            override fun afterTextChanged(s: Editable?) {}
-        })
-
         if (mainUserID != null) {
-            saveBtn.setOnClickListener {
-                //ProfilePhoto
+            /*
+            //ProfilePhoto
                 val profileImage = profilePhoto.drawable
                 val userBio = bioText.text.toString()
 
@@ -270,7 +187,6 @@ class ProfileFragment : Fragment() {
                         mainUser!!.gallery = galleryItems
 
                         DatabaseManager(this.context!!).convertUserObject(mainUser!!, "MainUser", {})
-                        saveBtn.visibility = View.INVISIBLE
                         progressCardView.visibility = View.INVISIBLE
                     })
                 } else {
@@ -283,13 +199,38 @@ class ProfileFragment : Fragment() {
                         progressCardView.visibility = View.INVISIBLE
                     })
                 }
-            }
+            */
         }
     }
 
-    public fun showSave() {
-        val saveBtn = rootView.findViewById<Button>(R.id.saveBtn)
-        saveBtn.visibility = View.VISIBLE
+    private fun setupActionUI() {
+        profilePhoto.setOnClickListener {
+            profilePhotoSelected = true
+            prepOpenImageGallery()
+        }
+
+        val memeSegment = rootView.findViewById<AppCompatRadioButton>(R.id.memeSegment)
+        val gallerySegment = rootView.findViewById<AppCompatRadioButton>(R.id.gallerySegment)
+        val screenWidth = ScreenSize().getScreenWidth()
+
+        memeSegment.setOnClickListener {
+            memeSegment.isChecked = true
+            gallerySegment.isChecked = false
+
+            memeSegment.setTextColor(Color.WHITE)
+            gallerySegment.setTextColor(Color.parseColor("#58BADC"))
+            photosScrollView.smoothScrollTo(0, 0)
+        }
+
+        gallerySegment.setOnClickListener {
+            gallerySegment.isChecked = true
+            memeSegment.isChecked = false
+
+            gallerySegment.setTextColor(Color.WHITE)
+            memeSegment.setTextColor(Color.parseColor("#58BADC"))
+            photosScrollView.smoothScrollTo(screenWidth, 0)
+        }
+
     }
 
     private fun prepOpenImageGallery() {
@@ -303,30 +244,22 @@ class ProfileFragment : Fragment() {
         val context = this.context
         val activity = this.activity
 
-        val images = DatabaseManager(profileContext).retrieveSavedUser()?.gallery
-        val galleryManager: GridLayoutManager =
-            GridLayoutManager(activity, 3, GridLayoutManager.VERTICAL, false)
+        val savedImages = DatabaseManager(profileContext).retrieveSavedUser()?.gallery
+        var images = listOf<String>("https://firebasestorage.googleapis.com/v0/b/memedom-fb37b.appspot.com/o/AppSettings%2Fplus.png?alt=media&token=c4e6af5c-d0ea-4570-ab19-655997bfac29")
+        if (savedImages != null) {
+            images += savedImages
+        }
+        val galleryManager: GridLayoutManager = GridLayoutManager(activity, 3, GridLayoutManager.VERTICAL, false)
 
         if (context != null && activity != null && images != null) {
+
+            Log.d("UserGallery", "User photos $images")
             galleryItems = images.toMutableList()
-            galleryAdapter = ImageAdapter(galleryItems, activity, this)
-            galleryRecyclerView.addItemDecoration(
-                DefaultItemDecorator(
-                    resources.getDimensionPixelSize(
-                        R.dimen.vertical_recyclerView
-                    )
-                )
-            )
+            galleryAdapter = ImageAdapter(galleryItems, null, activity, this, false)
             galleryRecyclerView.adapter = galleryAdapter
             galleryRecyclerView.layoutManager = galleryManager
             galleryRecyclerView.itemAnimator?.removeDuration
         }
-    }
-
-    fun Activity.displayMetrics(): DisplayMetrics {
-        val displayMetrics = DisplayMetrics()
-        windowManager.defaultDisplay.getMetrics(displayMetrics)
-        return displayMetrics
     }
 
     @RequiresApi(Build.VERSION_CODES.P)

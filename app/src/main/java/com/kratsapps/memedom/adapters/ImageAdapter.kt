@@ -2,22 +2,28 @@ package com.kratsapps.memedom.adapters
 
 import android.app.Activity
 import android.content.Context
+import android.content.Intent
+import android.content.res.ColorStateList
+import android.graphics.Color
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
+import com.kratsapps.memedom.CommentsActivity
 import com.kratsapps.memedom.MemedomActivity
 import com.kratsapps.memedom.R
 import com.kratsapps.memedom.fragments.ProfileFragment
 import com.kratsapps.memedom.models.MemeDomUser
+import com.kratsapps.memedom.models.Memes
 import kotlinx.android.synthetic.main.image_cell.view.*
 
 
-class ImageAdapter(private val imageList: MutableList<String>, private val activity: Activity, private val fragment: ProfileFragment?): RecyclerView.Adapter<ImageAdapter.ImageViewHolder>() {
+class ImageAdapter(private val imageList: MutableList<String>, private val memeList: MutableList<Memes>?, private val activity: Activity, private val fragment: ProfileFragment?, isMemes: Boolean): RecyclerView.Adapter<ImageAdapter.ImageViewHolder>() {
 
     lateinit var adapterContext: Context
+    val isMeme = isMemes
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ImageViewHolder {
         val v: View = LayoutInflater.from(parent.context).inflate(
@@ -39,15 +45,25 @@ class ImageAdapter(private val imageList: MutableList<String>, private val activ
             .thumbnail(0.25f)
             .into(holder.imageCell)
 
-        holder.deleteBtn.setOnClickListener {
-            removeAt(position)
-            fragment?.showSave()
-        }
-
         if (activity is MemedomActivity) {
             holder.deleteBtn.visibility = View.GONE
             holder.imageCell.setOnClickListener {
                 (activity as MemedomActivity).didSelectCurrentImage(position)
+            }
+        } else {
+            if (isMeme && memeList != null) {
+                holder.deleteBtn.visibility = View.GONE
+                holder.imageCell.setOnClickListener {
+                    navigateToComments(memeList[position])
+                }
+            } else if (position == 0) {
+                holder.deleteBtn.visibility = View.GONE
+                holder.imageCell.setColorFilter(Color.parseColor("#111111"))
+            } else {
+                holder.deleteBtn.visibility = View.VISIBLE
+                holder.deleteBtn.setOnClickListener {
+                    removeAt(position)
+                }
             }
         }
 
@@ -58,6 +74,16 @@ class ImageAdapter(private val imageList: MutableList<String>, private val activ
     class ImageViewHolder(itemView: View): RecyclerView.ViewHolder(itemView) {
         val imageCell = itemView.imageCell
         val deleteBtn = itemView.deleteButton
+    }
+
+    private fun navigateToComments(meme: Memes) {
+        val intent: Intent = Intent(activity, CommentsActivity::class.java)
+        intent.putExtra("CommentMeme", meme)
+        activity.startActivity(intent)
+        activity.overridePendingTransition(
+            R.anim.enter_activity,
+            R.anim.enter_activity
+        )
     }
 
     fun removeAt(position: Int) {

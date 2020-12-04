@@ -2,12 +2,16 @@ package com.kratsapps.memedom.utils
 
 import android.animation.Animator
 import android.animation.AnimatorListenerAdapter
+import android.app.Activity
+import android.content.Context
 import android.graphics.Color
 import android.graphics.LinearGradient
+import android.graphics.Point
 import android.graphics.Shader
 import android.graphics.drawable.PaintDrawable
 import android.graphics.drawable.ShapeDrawable.ShaderFactory
 import android.graphics.drawable.shapes.RectShape
+import android.view.Display
 import android.view.View
 
 
@@ -51,6 +55,21 @@ class AndroidUtils {
         val p = PaintDrawable()
         p.shape = RectShape()
         p.shaderFactory = sf
+    }
+
+    fun getScreenWidthAndHeight(context: Activity, dimensions: (Int, Int) -> Unit) {
+        var display: Display?
+
+        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.R) {
+            display = context.display
+        } else {
+            display = context.windowManager.defaultDisplay
+        }
+        val size = Point()
+        display?.getRealSize(size)
+        var width = size.x
+        var height = size.y
+        dimensions(width, height)
     }
 
 
