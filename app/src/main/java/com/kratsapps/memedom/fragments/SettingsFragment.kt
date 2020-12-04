@@ -32,6 +32,10 @@ class SettingsFragment : Fragment() {
     lateinit var maleFilter: AppCompatRadioButton
     lateinit var femaleFilter: AppCompatRadioButton
     lateinit var otherFilter: AppCompatRadioButton
+
+    lateinit var lookingMaleFilter: AppCompatRadioButton
+    lateinit var lookingFemaleFilter: AppCompatRadioButton
+    lateinit var lookingOtherFilter: AppCompatRadioButton
     var mainUser: MemeDomUser? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -57,9 +61,15 @@ class SettingsFragment : Fragment() {
     private fun setupUI() {
         mainUser = DatabaseManager(this.context!!).retrieveSavedUser()
 
-        maleFilter = rootView.findViewById<AppCompatRadioButton>(R.id.maleFilter)
-        femaleFilter = rootView.findViewById<AppCompatRadioButton>(R.id.femaleFilter)
-        otherFilter = rootView.findViewById<AppCompatRadioButton>(R.id.otherFilter)
+        Log.d("MainUserFilters", "Gender ${mainUser?.gender} LookingFor ${mainUser?.lookingFor} min ${mainUser?.minAge} max ${mainUser?.maxAge}")
+
+        maleFilter = rootView.findViewById<AppCompatRadioButton>(R.id.genderMale)
+        femaleFilter = rootView.findViewById<AppCompatRadioButton>(R.id.genderFemale)
+        otherFilter = rootView.findViewById<AppCompatRadioButton>(R.id.genderOther)
+
+        lookingMaleFilter = rootView.findViewById<AppCompatRadioButton>(R.id.lookingMaleFilter)
+        lookingFemaleFilter = rootView.findViewById<AppCompatRadioButton>(R.id.lookingFemaleFilter)
+        lookingOtherFilter = rootView.findViewById<AppCompatRadioButton>(R.id.lookingOtherFilter)
 
         val signoutBtn = rootView.findViewById<Button>(R.id.signoutBtn)
         val contactBtn = rootView.findViewById<Button>(R.id.contactBtn)
@@ -75,25 +85,49 @@ class SettingsFragment : Fragment() {
             returnToLoggedOutState()
         }
 
-        if(mainUser?.gender.equals("Female")) {
-            activateFemale()
-        } else if (mainUser?.gender.equals("Male")) {
-            activateMale()
-        } else {
-            activateOther()
-        }
-
         if (mainUser != null) {
+
+            val mainUserGender = mainUser!!.gender
+            val mainLookingFor = mainUser!!.lookingFor
+
+            if (mainUserGender == "Male") {
+                activateFilter(maleFilter, "Male", null, listOf(femaleFilter, otherFilter))
+            } else if (mainUserGender == "Female") {
+                activateFilter(femaleFilter, "Female", null, listOf(otherFilter, maleFilter))
+            } else {
+                activateFilter(otherFilter, "Other", null, listOf(maleFilter, femaleFilter))
+            }
+
+            if (mainLookingFor == "Male") {
+                activateFilter(lookingMaleFilter, null, "Male", listOf(lookingFemaleFilter, lookingOtherFilter))
+            } else if (mainLookingFor == "Female") {
+                activateFilter(lookingFemaleFilter, null, "Male", listOf(lookingMaleFilter, lookingOtherFilter))
+            } else {
+                activateFilter(lookingOtherFilter, null, "Other", listOf(lookingMaleFilter, lookingFemaleFilter))
+            }
+
             maleFilter.setOnClickListener {
-                activateMale()
+                activateFilter(maleFilter, "Male", null, listOf(femaleFilter, otherFilter))
             }
 
             femaleFilter.setOnClickListener {
-                activateFemale()
+                activateFilter(femaleFilter, "Female", null, listOf(otherFilter, maleFilter))
             }
 
             otherFilter.setOnClickListener {
-                activateOther()
+                activateFilter(otherFilter, "Other", null, listOf(maleFilter, femaleFilter))
+            }
+
+            lookingMaleFilter.setOnClickListener {
+                activateFilter(lookingMaleFilter, null, "Male", listOf(lookingFemaleFilter, lookingOtherFilter))
+            }
+
+            lookingFemaleFilter.setOnClickListener {
+                activateFilter(lookingFemaleFilter, null, "Male", listOf(lookingMaleFilter, lookingOtherFilter))
+            }
+
+            lookingOtherFilter.setOnClickListener {
+                activateFilter(lookingOtherFilter, null, "Other", listOf(lookingMaleFilter, lookingFemaleFilter))
             }
         }
 
@@ -131,14 +165,14 @@ class SettingsFragment : Fragment() {
         val minText = rootView.findViewById<TextView>(R.id.minText)
         val maxText = rootView.findViewById<TextView>(R.id.maxText)
 
-        val min = DatabaseManager(settingContext).retrievePrefsInt("minAge", 16)
-        val max = DatabaseManager(settingContext).retrievePrefsInt("maxAge", 65)
+        val min = if (mainUser != null) mainUser?.minAge else 16
+        val max = if (mainUser != null) mainUser?.maxAge else 65
 
         minText.setText("$min")
         maxText.setText("$max")
 
-        ageSeekbar.setMinThumbValue(min)
-        ageSeekbar.setMaxThumbValue(max)
+        ageSeekbar.setMinThumbValue(min!!)
+        ageSeekbar.setMaxThumbValue(max!!)
 
         ageSeekbar.seekBarChangeListener = object : SeekBarChangeListener {
             override fun onStartedSeeking() {}
@@ -152,15 +186,10 @@ class SettingsFragment : Fragment() {
                 )
 
                 if(minValue >= 16) {
-                    DatabaseManager(settingContext).saveToPrefsInt(
-                        "minAge",
-                        ageSeekbar.getMinThumbValue()
-                    )
+                    mainUser?.minAge = ageSeekbar.getMinThumbValue()
                 }
-                DatabaseManager(settingContext).saveToPrefsInt(
-                    "maxAge",
-                    ageSeekbar.getMaxThumbValue()
-                )
+                mainUser?.maxAge = ageSeekbar.getMaxThumbValue()
+                DatabaseManager(settingContext).convertUserObject(mainUser!!, "MainUser", {})
             }
 
             override fun onValueChanged(minThumbValue: Int, maxThumbValue: Int) {
@@ -176,40 +205,22 @@ class SettingsFragment : Fragment() {
         }
     }
 
-    private fun activateFemale() {
-        femaleFilter.isChecked = true
-        otherFilter.isChecked = false
-        maleFilter.isChecked = false
-        femaleFilter.setTextColor(Color.WHITE)
-        maleFilter.setTextColor(Color.parseColor("#ff00ddff"))
-        otherFilter.setTextColor(Color.parseColor("#ff00ddff"))
+    private fun activateFilter(active: AppCompatRadioButton, gender: String?, lookingFor: String?, deactives: List<AppCompatRadioButton>) {
+        for (segment in deactives) {
+            segment.isChecked = false
+        }
 
-        mainUser?.gender = "Female"
-        DatabaseManager(this.context!!).convertUserObject(mainUser!!, "MainUser", {})
-    }
+        active.isChecked = true
 
-    private fun activateMale() {
-        maleFilter.isChecked = true
-        femaleFilter.isChecked = false
-        otherFilter.isChecked = false
-        maleFilter.setTextColor(Color.WHITE)
-        femaleFilter.setTextColor(Color.parseColor("#ff00ddff"))
-        otherFilter.setTextColor(Color.parseColor("#ff00ddff"))
+        if (gender != null) {
+            mainUser?.gender = gender
+        }
 
-        mainUser?.gender = "Male"
-        DatabaseManager(this.context!!).convertUserObject(mainUser!!, "MainUser", {})
-    }
+        if (lookingFor != null) {
+            mainUser?.lookingFor = lookingFor
+        }
 
-    private fun activateOther() {
-        otherFilter.isChecked = true
-        maleFilter.isChecked = false
-        femaleFilter.isChecked = false
-        otherFilter.setTextColor(Color.WHITE)
-        femaleFilter.setTextColor(Color.parseColor("#ff00ddff"))
-        maleFilter.setTextColor(Color.parseColor("#ff00ddff"))
-
-        mainUser?.gender = "Other"
-        DatabaseManager(this.context!!).convertUserObject(mainUser!!, "MainUser", {})
+        DatabaseManager(settingContext).convertUserObject(mainUser!!, "MainUser", {})
     }
 
     fun getOpenFacebookIntent(){

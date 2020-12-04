@@ -42,6 +42,7 @@ class FeedAdapter(
     var filteredFeedList = feedList
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): FeedViewHolder {
+        Log.d("HomeFragment", "Filtering with $filteredFeedList")
         val itemView = LayoutInflater.from(parent.context).inflate(
             R.layout.feed_item,
             parent, false
@@ -57,7 +58,6 @@ class FeedAdapter(
 
         val mainUser = DatabaseManager(feedAdapterContext).retrieveSavedUser()
         val mainUserID = mainUser?.uid
-        val postLikers = currentItem.postLikers
 
         val shareCount = if(currentItem.postShares >= 10) "${currentItem.postShares}" else ""
         val commentsCount = if(currentItem.postComments >= 10) "${currentItem.postComments}"  else ""
@@ -65,8 +65,6 @@ class FeedAdapter(
         var currentPostLikes = currentItem.getPostLikeCount()
 
         Log.d("Scrolling", "Scrolled through meme ${currentItem.postID}")
-
-        //DatabaseManager(feedAdapterContext).savePostID(currentItem.postID)
 
         val lp: ConstraintLayout.LayoutParams = holder.feedImage.getLayoutParams() as ConstraintLayout.LayoutParams
         lp.height = (currentItem.postHeight * 1.5).toInt()
@@ -112,19 +110,18 @@ class FeedAdapter(
             if (mainUser != null) {
                 holder.card_view.setBackgroundResource(R.color.errorColor)
                 holder.linearReport.visibility = View.GONE
-                mainUser.rejectedMemes += postUID
+                mainUser.seenOldMemes += postUID
                 DatabaseManager(feedAdapterContext).convertUserObject(mainUser!!, "MainUser", {})
             }
         }
 
         holder.likeBtn.setOnClickListener {
-            if(mainUserID != null && mainUser != null) {
-                if(!postLikers.contains(mainUserID)) {
+            if(mainUserID != null) {
+                if(!currentItem.postLikers.contains(mainUserID)) {
                     //animate in crown
                     currentItem.postLikers += mainUserID
                     animateLikeImageView(holder, mainUser, currentItem)
-
-                    mainUser.rejectedMemes += postUID
+                    mainUser.seenOldMemes += postUID
                     DatabaseManager(feedAdapterContext).convertUserObject(mainUser!!, "MainUser", {})
                 }
             }
@@ -137,7 +134,7 @@ class FeedAdapter(
         holder.feedImage.setOnClickListener(object : DoubleClickListener() {
             override fun onSingleClick(v: View?) {
                 Log.d("Gesture", "User has tapped once")
-                if (mainUser?.uid != null && postLikers.contains(mainUser.uid)) {
+                if (mainUser?.uid != null && currentItem.postLikers.contains(mainUser.uid)) {
                     navigateToComments(currentItem)
                     //make sure when user logs out, all data is destroyed
                 }
@@ -146,7 +143,7 @@ class FeedAdapter(
             override fun onDoubleClick(v: View?) {
                 Log.d("Gesture", "User has tapped twice")
                 if (mainUser?.uid != null) {
-                    if (!postLikers.contains(mainUser.uid)) {
+                    if (!currentItem.postLikers.contains(mainUser.uid)) {
                         //animate in crown
                         currentItem.postLikers += mainUser.uid
                         animateLikeImageView(holder, mainUser, currentItem)
@@ -159,18 +156,17 @@ class FeedAdapter(
 
             Log.d(
                 "Matches",
-                "Current matches ${mainUser.matches} currentItem ${currentItem.postUserUID}"
+                "Current matches ${mainUser.matches} currentItem ${currentItem.postLikers}"
             )
 
-            if(mainUser.matches.contains(currentItem.postUserUID)) {
-                activatePoints(
-                    holder,
-                    currentPostLikes,
-                    Assets().specialColor,
-                    R.color.specialColor
-                )
-            } else if(postLikers.contains(mainUser.uid)) {
-                activatePoints(holder, currentPostLikes, Assets().appFGColor, R.color.appFGColor)
+            if (mainUser.matches.contains(currentItem.postUserUID)) {
+                activatePoints(holder, currentPostLikes, Assets().specialColor, R.color.specialColor)
+            } else if(currentItem.postLikers.contains(mainUser.uid)) {
+                if (currentItem.postType == "Friends") {
+                    activatePoints(holder, currentPostLikes, Assets().appFGColor, R.color.appFGColor)
+                } else if (currentItem.postType == "Dating") {
+                    activatePoints(holder, currentPostLikes, Assets().appDateFGColor, R.color.appDateFGColor)
+                }
             } else {
                 deactivatePoints(holder)
             }
@@ -218,7 +214,11 @@ class FeedAdapter(
                 holder.pointsLayout.visibility = View.VISIBLE
                 holder.postUserInfo.visibility = View.VISIBLE
                 val updatedPoints = meme.postLikers.count() + 1
-                activatePoints(holder, updatedPoints, Assets().appFGColor, R.color.appFGColor)
+                if (meme.postType == "Friends") {
+                    activatePoints(holder, updatedPoints, Assets().appFGColor, R.color.appFGColor)
+                } else {
+                    activatePoints(holder, updatedPoints, Assets().appDateFGColor, R.color.appDateFGColor)
+                }
 
                 val fieldValue: FieldValue = FieldValue.arrayUnion(mainUser.uid)
                 val updatedPointsHash = hashMapOf<String, Any>(
@@ -238,6 +238,7 @@ class FeedAdapter(
     private fun deactivatePoints(holder: FeedViewHolder) {
         holder.pointsLayout.visibility = View.GONE
         holder.postUserInfo.visibility = View.GONE
+        holder.likeBtn.visibility = View.VISIBLE
 
         if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.M) {
             holder.shareBtn.setTextColor(Assets().appFGColor)

@@ -186,59 +186,8 @@ class FirestoreHandler {
     }
 
     //Getting
-    fun getAllFriendMemes(context: Context,
-                          mainUser: MemeDomUser?,
-                          dayLimit: Long,
-                          memeLimit: Long,
-                          completed: (MutableList<Memes>) -> Unit) {
 
-        val todayCalendar: Calendar = GregorianCalendar()
-        todayCalendar[Calendar.HOUR_OF_DAY] = 0
-        todayCalendar[Calendar.MINUTE] = 0
-        todayCalendar[Calendar.SECOND] = 0
-        todayCalendar[Calendar.MILLISECOND] = 0
-        val today = todayCalendar.timeInMillis
-
-        val tomorrowCalendar: Calendar = GregorianCalendar()
-        tomorrowCalendar[Calendar.HOUR_OF_DAY] = 0
-        tomorrowCalendar[Calendar.MINUTE] = 0
-        tomorrowCalendar[Calendar.SECOND] = 0
-        tomorrowCalendar[Calendar.MILLISECOND] = 0
-        tomorrowCalendar.add(Calendar.DAY_OF_YEAR, dayLimit.toInt() * -1)
-        val tomorrow = tomorrowCalendar.timeInMillis
-
-        firestoreDB
-            .collection(MEMES_PATH)
-            .whereGreaterThanOrEqualTo("postDate", tomorrow)
-            .orderBy("postDate", DESCENDING)
-            .limit(memeLimit)
-            .get()
-            .addOnSuccessListener { documents ->
-
-                var memes: MutableList<Memes> = arrayListOf()
-                for (document in documents) {
-
-                    val newMeme: Memes = document.toObject(Memes::class.java)
-
-                    if (mainUser != null) {
-                        if (!mainUser.rejects.contains(newMeme.postUserUID)
-                            && !mainUser.rejectedMemes.contains(newMeme.postID)
-                        ) {
-                            Log.d("Memes", "User is not null")
-                            memes.add(newMeme)
-                        }
-                    } else {
-                        Log.d("Memes", "User is null")
-                        memes.add(newMeme)
-                    }
-                }
-
-                Log.d("Memes", "Completed getting memes $memes")
-                completed(memes)
-            }
-    }
-
-    fun getAllDatingMemes(
+    fun getAllMemes(
         context: Context,
         mainUser: MemeDomUser?,
         dayLimit: Long,
@@ -265,21 +214,18 @@ class FirestoreHandler {
             "Today ${convertLongToTime(today)} Days after ${convertLongToTime(tomorrow)} with day limit $dayLimit"
         )
 
-        val minValue = DatabaseManager(context).retrievePrefsInt("minAge", 16)
-        val maxValue = DatabaseManager(context).retrievePrefsInt("maxAge", 65)
-
-        val lookingFor = if (mainUser?.lookingFor != null) listOf<String>(mainUser.lookingFor) else listOf("Female", "Male", "Other")
+        val minValue = if (mainUser != null) mainUser?.minAge else 16
+        val maxValue = if (mainUser != null) mainUser?.maxAge else 65
 
         firestoreDB
             .collection(MEMES_PATH)
-            .whereIn("userGender", lookingFor)
             .whereGreaterThanOrEqualTo("postDate", tomorrow)
             .orderBy("postDate", DESCENDING)
             .limit(memeLimit)
             .get()
             .addOnSuccessListener { documents ->
 
-                Log.d("Filtering", "Found memes ${documents.count()} for gender $lookingFor")
+                Log.d("Filtering", "Found memes ${documents.count()}")
 
                 var memes: MutableList<Memes> = arrayListOf()
                 for (document in documents) {
@@ -293,7 +239,7 @@ class FirestoreHandler {
 
                     if (mainUser != null) {
                         if (!mainUser.rejects.contains(newMeme.postUserUID)
-                            && !mainUser.rejectedMemes.contains(newMeme.postID)
+                            && !mainUser.seenOldMemes.contains(newMeme.postID)
                             && newMeme.userAge.toInt() >= minValue && newMeme.userAge.toInt() <= maxValue
                         ) {
                             Log.d("Memes", "User is not null")

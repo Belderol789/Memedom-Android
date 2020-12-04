@@ -7,7 +7,7 @@
     tools:context=".fragments.HomeFragment">
 
     <LinearLayout
-        android:id="@+id/lookingFor"
+        android:id="@+id/homeSegment"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginStart="4dp"
@@ -22,7 +22,7 @@
             android:orientation="horizontal">
 
             <androidx.appcompat.widget.AppCompatRadioButton
-                android:id="@+id/memedomSegment"
+                android:id="@+id/friendsSegment"
                 android:layout_width="0dp"
                 android:layout_height="50dp"
                 android:layout_weight="1"
@@ -30,20 +30,20 @@
                 android:button="@android:color/transparent"
                 android:checked="true"
                 android:gravity="center"
-                android:text="@string/memedom"
+                android:text="Friends"
                 android:textColor="@color/appFGColor" />
 
             <androidx.appcompat.widget.AppCompatRadioButton
-                android:id="@+id/matchSegment"
+                android:id="@+id/datingSegment"
                 android:layout_width="0dp"
                 android:layout_height="50dp"
                 android:layout_weight="1"
-                android:background="@drawable/radio_button_selector"
+                android:background="@drawable/radio_button_selector_dating"
                 android:button="@android:color/transparent"
                 android:checked="false"
                 android:gravity="center"
-                android:text="@string/matched"
-                android:textColor="@color/appFGColor" />
+                android:text="Dating"
+                android:textColor="@android:color/white" />
         </RadioGroup>
     </LinearLayout>
 
@@ -84,7 +84,7 @@
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/lookingFor">
+        app:layout_constraintTop_toBottomOf="@+id/homeSegment">
 
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/recyclerViewHome"

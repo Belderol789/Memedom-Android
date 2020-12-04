@@ -20,7 +20,6 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
 import com.bumptech.glide.Glide
 import com.facebook.FacebookSdk
-import com.facebook.internal.Mutable
 import com.google.android.gms.ads.MobileAds
 import com.google.firebase.FirebaseApp
 import com.google.firebase.analytics.FirebaseAnalytics
@@ -53,11 +52,9 @@ class MainActivity : AppCompatActivity() {
     var profileIsLoaded: Boolean = false
 
     //HomeFragment
-    var friendMemes = mutableListOf<Memes>()
+    var friendsMemes = mutableListOf<Memes>()
     var datingMemes = mutableListOf<Memes>()
-    var filteredMemems = mutableListOf<Memes>()
     var allMemes = mutableListOf<Memes>()
-    var matchedMemes = mutableListOf<Memes>()
     //ProfileFragment
     var profileMemes = mutableListOf<Memes>()
 
@@ -89,19 +86,29 @@ class MainActivity : AppCompatActivity() {
     fun setupHomeFragment(completed: () -> Unit) {
         FirestoreHandler().getAppSettings() {points, dayLimit, memeLimit, matchLimit ->
             DatabaseManager(this).saveToPrefsInt("matchLimit", matchLimit.toInt())
-            FirestoreHandler().getAllFriendMemes(this, mainUser, dayLimit, memeLimit) {
-                filteredMemems.clear()
+            FirestoreHandler().getAllMemes(this, mainUser, dayLimit, memeLimit) {
+
+                friendsMemes.clear()
+                datingMemes.clear()
                 allMemes.clear()
-                matchedMemes.clear()
 
                 it.forEach {
-                    if (mainUser?.matches != null) {
-                        if(mainUser!!.matches.contains(it.postUserUID)) {
-                            matchedMemes.add(it)
+                    if (mainUser != null) {
+                        if (!(mainUser!!.seenOldMemes).contains(it.postID)) {
+
+                            Log.d("MainActivityHome", "SeenOldMemes ${mainUser!!.seenOldMemes} this meme ${it.postID}")
+
+                            if (mainUser?.lookingFor == it.userGender && it.postType == "Dating") {
+                                datingMemes.add(it)
+                            } else if (it.postType == "Friends") {
+                                friendsMemes.add(it)
+                                allMemes.add(it)
+                            }
                         }
+                    } else if (it.postType == "Friends") {
+                        friendsMemes.add(it)
+                        allMemes.add(it)
                     }
-                    filteredMemems.add(it)
-                    allMemes.add(it)
                 }
                 completed()
             }

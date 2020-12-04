@@ -92,7 +92,7 @@
             android:orientation="horizontal">
 
             <androidx.appcompat.widget.AppCompatRadioButton
-                android:id="@+id/maleFilter"
+                android:id="@+id/genderMale"
                 android:layout_width="0dp"
                 android:layout_height="50dp"
                 android:layout_weight="1"
@@ -104,7 +104,7 @@
                 android:textColor="@android:color/white" />
 
             <androidx.appcompat.widget.AppCompatRadioButton
-                android:id="@+id/femaleFilter"
+                android:id="@+id/genderFemale"
                 android:layout_width="0dp"
                 android:layout_height="50dp"
                 android:layout_weight="1"
@@ -113,10 +113,10 @@
                 android:checked="false"
                 android:gravity="center"
                 android:text="@string/female"
-                android:textColor="@color/appFGColor" />
+                android:textColor="@android:color/white" />
 
             <androidx.appcompat.widget.AppCompatRadioButton
-                android:id="@+id/otherFilter"
+                android:id="@+id/genderOther"
                 android:layout_width="0dp"
                 android:layout_height="50dp"
                 android:layout_weight="1"
@@ -125,7 +125,7 @@
                 android:checked="false"
                 android:gravity="center"
                 android:text="@string/other"
-                android:textColor="@color/appFGColor" />
+                android:textColor="@android:color/white" />
         </RadioGroup>
     </LinearLayout>
 
@@ -150,7 +150,7 @@
                 android:layout_width="0dp"
                 android:layout_height="50dp"
                 android:layout_weight="1"
-                android:background="@drawable/radio_button_selector_fill"
+                android:background="@drawable/radio_button_dating_selector"
                 android:button="@android:color/transparent"
                 android:checked="true"
                 android:gravity="center"
@@ -162,24 +162,24 @@
                 android:layout_width="0dp"
                 android:layout_height="50dp"
                 android:layout_weight="1"
-                android:background="@drawable/radio_button_selector_fill"
+                android:background="@drawable/radio_button_dating_selector"
                 android:button="@android:color/transparent"
                 android:checked="false"
                 android:gravity="center"
                 android:text="@string/female"
-                android:textColor="@color/appFGColor" />
+                android:textColor="@android:color/white" />
 
             <androidx.appcompat.widget.AppCompatRadioButton
                 android:id="@+id/lookingOtherFilter"
                 android:layout_width="0dp"
                 android:layout_height="50dp"
                 android:layout_weight="1"
-                android:background="@drawable/radio_button_selector_fill"
+                android:background="@drawable/radio_button_dating_selector"
                 android:button="@android:color/transparent"
                 android:checked="false"
                 android:gravity="center"
                 android:text="@string/other"
-                android:textColor="@color/appFGColor" />
+                android:textColor="@android:color/white" />
         </RadioGroup>
     </LinearLayout>
 

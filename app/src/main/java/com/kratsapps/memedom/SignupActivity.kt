@@ -184,8 +184,6 @@ class SignupActivity : AppCompatActivity() {
         if (!memeDomuser.birthday.isEmpty()) {
 
             DatabaseManager(this).clearPostIDs()
-            DatabaseManager(this).saveToPrefsInt("minAge", 16)
-            DatabaseManager(this).saveToPrefsInt("maxAge", 65)
 
             if (memeDomuser.profilePhoto.isEmpty()) {
                 memeDomuser.profilePhoto = defaultPhotoURL
@@ -202,7 +200,10 @@ class SignupActivity : AppCompatActivity() {
                 "birthday" to memeDomuser.birthday,
                 "profilePhoto" to memeDomuser.profilePhoto,
                 "uid" to memeDomuser.uid,
-                "gender" to memeDomuser.gender,
+                "gender" to "",
+                "lookingFor" to "",
+                "minAge" to 16,
+                "maxAge" to 65,
                 "email" to memeDomuser.email,
                 "liked" to hashMapOf(memeDomuser.uid to 0),
                 "gallery" to memeDomuser.gallery,

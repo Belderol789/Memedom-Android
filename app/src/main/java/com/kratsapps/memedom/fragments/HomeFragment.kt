@@ -3,6 +3,7 @@ package com.kratsapps.memedom.fragments
 import DefaultItemDecorator
 import android.content.Context
 import android.content.Intent
+import android.graphics.Color
 import android.os.Bundle
 import android.util.Log
 import android.view.LayoutInflater
@@ -25,16 +26,13 @@ import com.kratsapps.memedom.CredentialActivity
 import com.kratsapps.memedom.MainActivity
 import com.kratsapps.memedom.R
 import com.kratsapps.memedom.models.Memes
-import com.kratsapps.memedom.utils.DatabaseManager
 import com.kratsapps.memedom.adapters.FeedAdapter
-import com.kratsapps.memedom.firebaseutils.FirestoreHandler
-import com.kratsapps.memedom.utils.AndroidUtils
 
 class HomeFragment : Fragment() {
 
     lateinit var rootView: View
-    lateinit var matchedSegment: AppCompatRadioButton
-    lateinit var memedomSegment: AppCompatRadioButton
+    lateinit var datingSegment: AppCompatRadioButton
+    lateinit var friendsSegment: AppCompatRadioButton
     lateinit var homeContext: Context
     lateinit var feedAdapter: FeedAdapter
     lateinit var feedRecyclerView: RecyclerView
@@ -42,9 +40,10 @@ class HomeFragment : Fragment() {
     lateinit var loadingView: CardView
     lateinit var mainActivity: MainActivity
 
+    private var friendMemes = mutableListOf<Memes>()
+    private var datingMemes = mutableListOf<Memes>()
     private var filteredMemems = mutableListOf<Memes>()
-    private var allMemes = mutableListOf<Memes>()
-    private var matchedMemes = mutableListOf<Memes>()
+
     var firebaseAuth: FirebaseAuth? = null
     var mAuthListener: FirebaseAuth.AuthStateListener? = null
 
@@ -53,20 +52,23 @@ class HomeFragment : Fragment() {
         var blankScreen = rootView.findViewById<LinearLayout>(R.id.blankLayout)
         blankScreen.visibility = View.GONE
 
-        if (mainActivity.allMemes.isEmpty()) {
+        if (mainActivity.friendsMemes.isEmpty()) {
 
             loadingView.visibility = View.VISIBLE
             Log.d("Main Activity", "Home-Fragment getting memes")
 
             mainActivity.setupHomeFragment {
-                if (mainActivity.allMemes.isEmpty()) {
+                if (mainActivity.friendsMemes.isEmpty()) {
                     blankScreen.visibility = View.VISIBLE
                 } else {
                     blankScreen.visibility = View.GONE
                 }
-                filteredMemems = mainActivity.filteredMemems
-                allMemes = mainActivity.allMemes
-                matchedMemes = mainActivity.matchedMemes
+
+                friendMemes = mainActivity.friendsMemes
+                datingMemes = mainActivity.datingMemes
+                filteredMemems = mainActivity.allMemes
+
+                Log.d("MainActivityMemes", "filtered memes $filteredMemems")
 
                 homeSwipe.isRefreshing = false
                 loadingView.visibility = View.INVISIBLE
@@ -76,9 +78,12 @@ class HomeFragment : Fragment() {
 
             Log.d("Main Activity", "AllMemes exist")
 
-            filteredMemems = mainActivity.filteredMemems
-            allMemes = mainActivity.allMemes
-            matchedMemes = mainActivity.matchedMemes
+            Log.d("MainActivityMemes", "filtered memes $filteredMemems")
+
+            friendMemes = mainActivity.friendsMemes
+            datingMemes = mainActivity.datingMemes
+            filteredMemems = mainActivity.allMemes
+
             homeSwipe.isRefreshing = false
             loadingView.visibility = View.INVISIBLE
             setupFeedView()
@@ -130,8 +135,8 @@ class HomeFragment : Fragment() {
 
     private fun setupUI() {
 
-        memedomSegment = rootView.findViewById(R.id.memedomSegment)
-        matchedSegment = rootView.findViewById(R.id.matchSegment)
+        friendsSegment = rootView.findViewById(R.id.friendsSegment)
+        datingSegment = rootView.findViewById(R.id.datingSegment)
 
         loadingView = rootView.findViewById(R.id.progressCardView)
         val loadingImageView = rootView.findViewById<ImageView>(R.id.loadingImageView)
@@ -140,25 +145,28 @@ class HomeFragment : Fragment() {
             .load(R.raw.loader)
             .into(loadingImageView)
 
-        Log.d("HomeContext", "Views initialized $memedomSegment")
+        Log.d("HomeContext", "Views initialized $friendsSegment")
 
-        matchedSegment.setOnClickListener{
-            Log.d("Segment-Matched", "Link segment tapped ${matchedMemes.count()}")
-            updateSegments("Matched")
+        datingSegment.setOnClickListener{
+            Log.d("Segment-Matched", "Link segment tapped ${datingMemes.count()}")
+            updateSegments(true)
         }
-        memedomSegment.setOnClickListener{
-            Log.d("Segment-Memedom", "Popular segment tapped ${allMemes.count()}")
-            updateSegments("Memedom")
+        friendsSegment.setOnClickListener{
+            Log.d("Segment-Memedom", "Popular segment tapped ${friendMemes.count()}")
+            updateSegments(false)
         }
         homeSwipe = rootView.findViewById<SwipeRefreshLayout>(R.id.homeSwipe)
         homeSwipe.setOnRefreshListener(OnRefreshListener {
             mainActivity.allMemes.clear()
+            mainActivity.friendsMemes.clear()
+            mainActivity.datingMemes.clear()
             getAllMemes()
         })
         homeSwipe.setColorSchemeResources(android.R.color.holo_blue_bright, android.R.color.holo_orange_light)
     }
 
     private fun setupFeedView() {
+        Log.d("MainActivityMemes", "Setting up feed view ${filteredMemems.count()}")
         feedAdapter = FeedAdapter(filteredMemems, mainActivity, false)
         feedRecyclerView = rootView.findViewById(R.id.recyclerViewHome) as RecyclerView
         feedRecyclerView.addItemDecoration(
@@ -195,16 +203,25 @@ class HomeFragment : Fragment() {
         }
     }
 
-    private fun updateSegments(type: String) {
+    private fun updateSegments(isDating: Boolean) {
         feedAdapter.clear()
-        if(type.equals("Matched")) {
-            filteredMemems.addAll(matchedMemes)
-            matchedSegment.isChecked = true
-            memedomSegment.isChecked = false
+
+        Log.d("Filtereing", "Current memes ${datingMemes.count()} ${friendMemes.count()}")
+
+        if(isDating) {
+            filteredMemems.addAll(datingMemes)
+
+            datingSegment.isChecked = true
+            datingSegment.setTextColor(Color.parseColor("#FF69B4"))
+            friendsSegment.isChecked = false
+            friendsSegment.setTextColor(Color.WHITE)
         } else {
-            filteredMemems.addAll(allMemes)
-            memedomSegment.isChecked = true
-            matchedSegment.isChecked = false
+            filteredMemems.addAll(friendMemes)
+
+            friendsSegment.isChecked = true
+            friendsSegment.setTextColor(Color.parseColor("#58BADC"))
+            datingSegment.isChecked = false
+            datingSegment.setTextColor(Color.WHITE)
         }
 
         Log.d("Filtering", "Filtered Memes ${filteredMemems.count()}")

@@ -60,9 +60,6 @@ class LoginActivity : AppCompatActivity() {
         Log.d("Firestore Login", "Logging in as $email")
 
         loginLoadingView.visibility = View.VISIBLE
-
-        DatabaseManager(this).saveToPrefsInt("minAge", 16)
-        DatabaseManager(this).saveToPrefsInt("maxAge", 65)
         DatabaseManager(this).clearPostIDs()
 
         auth.signInWithEmailAndPassword(email, password)
