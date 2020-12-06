@@ -188,6 +188,187 @@
         app:srcCompat="@drawable/ic_action_back" />
 
     <androidx.cardview.widget.CardView
+        android:id="@+id/otherDetailsCard"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:visibility="invisible"
+        app:cardBackgroundColor="@color/appBGColor"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/signupBackBtn"
+        tools:visibility="invisible">
+
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            tools:context=".MainActivity">
+
+            <Button
+                android:id="@+id/signupFinishBtn"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="16dp"
+                android:layout_marginTop="20dp"
+                android:layout_marginEnd="16dp"
+                android:background="@drawable/round_button"
+                android:text="Finish Signup"
+                android:textColor="@color/whiteColor"
+                android:textStyle="bold"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/linearLayout8" />
+
+            <ImageButton
+                android:id="@+id/profilePhotoBtn"
+                android:layout_width="120dp"
+                android:layout_height="120dp"
+                android:background="@drawable/round_imageview"
+                android:tint="@color/appFGColor"
+                app:layout_constraintBottom_toTopOf="@+id/linearLayout8"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                app:srcCompat="@drawable/ic_action_plus" />
+
+            <LinearLayout
+                android:id="@+id/linearLayout8"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:divider="@drawable/divider_vertical"
+                android:orientation="vertical"
+                android:showDividers="middle"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent">
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="16dp"
+                    android:layout_marginTop="8dp"
+                    android:text="@string/my_gender"
+                    android:textColor="@color/whiteColor"
+                    android:textStyle="bold" />
+
+                <LinearLayout
+                    android:id="@+id/lookingFor"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="16dp"
+                    android:layout_marginTop="8dp"
+                    android:layout_marginEnd="16dp">
+
+                    <RadioGroup
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="horizontal">
+
+                        <androidx.appcompat.widget.AppCompatRadioButton
+                            android:id="@+id/lookingMaleFilter"
+                            android:layout_width="0dp"
+                            android:layout_height="50dp"
+                            android:layout_weight="1"
+                            android:background="@drawable/radio_button_selector_fill"
+                            android:button="@android:color/transparent"
+                            android:checked="true"
+                            android:gravity="center"
+                            android:text="@string/male"
+                            android:textColor="@android:color/white" />
+
+                        <androidx.appcompat.widget.AppCompatRadioButton
+                            android:id="@+id/lookingFemaleFilter"
+                            android:layout_width="0dp"
+                            android:layout_height="50dp"
+                            android:layout_weight="1"
+                            android:background="@drawable/radio_button_selector_fill"
+                            android:button="@android:color/transparent"
+                            android:checked="false"
+                            android:gravity="center"
+                            android:text="@string/female"
+                            android:textColor="@android:color/white" />
+
+                        <androidx.appcompat.widget.AppCompatRadioButton
+                            android:id="@+id/lookingOtherFilter"
+                            android:layout_width="0dp"
+                            android:layout_height="50dp"
+                            android:layout_weight="1"
+                            android:background="@drawable/radio_button_selector_fill"
+                            android:button="@android:color/transparent"
+                            android:checked="false"
+                            android:gravity="center"
+                            android:text="@string/other"
+                            android:textColor="@android:color/white" />
+                    </RadioGroup>
+                </LinearLayout>
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="16dp"
+                    android:layout_marginTop="8dp"
+                    android:text="I'm Looking For"
+                    android:textColor="@color/whiteColor"
+                    android:textStyle="bold" />
+
+                <LinearLayout
+                    android:id="@+id/gender"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="16dp"
+                    android:layout_marginTop="8dp"
+                    android:layout_marginEnd="16dp">
+
+                    <RadioGroup
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="horizontal">
+
+                        <androidx.appcompat.widget.AppCompatRadioButton
+                            android:id="@+id/genderMale"
+                            android:layout_width="0dp"
+                            android:layout_height="50dp"
+                            android:layout_weight="1"
+                            android:background="@drawable/radio_button_selector_dating"
+                            android:button="@android:color/transparent"
+                            android:checked="true"
+                            android:gravity="center"
+                            android:text="@string/male"
+                            android:textColor="@android:color/white" />
+
+                        <androidx.appcompat.widget.AppCompatRadioButton
+                            android:id="@+id/genderFemale"
+                            android:layout_width="0dp"
+                            android:layout_height="50dp"
+                            android:layout_weight="1"
+                            android:background="@drawable/radio_button_selector_dating"
+                            android:button="@android:color/transparent"
+                            android:checked="false"
+                            android:gravity="center"
+                            android:text="@string/female"
+                            android:textColor="@android:color/white" />
+
+                        <androidx.appcompat.widget.AppCompatRadioButton
+                            android:id="@+id/genderOther"
+                            android:layout_width="0dp"
+                            android:layout_height="50dp"
+                            android:layout_weight="1"
+                            android:background="@drawable/radio_button_selector_dating"
+                            android:button="@android:color/transparent"
+                            android:checked="false"
+                            android:gravity="center"
+                            android:text="@string/other"
+                            android:textColor="@android:color/white" />
+                    </RadioGroup>
+                </LinearLayout>
+            </LinearLayout>
+
+        </androidx.constraintlayout.widget.ConstraintLayout>
+
+    </androidx.cardview.widget.CardView>
+
+    <androidx.cardview.widget.CardView
         android:id="@+id/signupLoadingView"
         android:layout_width="0dp"
         android:layout_height="0dp"

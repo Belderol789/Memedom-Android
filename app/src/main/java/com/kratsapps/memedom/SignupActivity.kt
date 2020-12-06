@@ -1,8 +1,12 @@
 package com.kratsapps.memedom
 
+import android.app.Activity
 import android.app.DatePickerDialog
 import android.content.Context
 import android.content.Intent
+import android.content.pm.PackageManager
+import android.graphics.Color
+import android.os.Build
 import android.os.Bundle
 import android.provider.MediaStore
 import android.text.InputType
@@ -11,15 +15,21 @@ import android.view.MotionEvent
 import android.view.View
 import android.view.inputmethod.InputMethodManager
 import android.widget.Button
+import android.widget.ImageView
 import android.widget.Toast
+import androidx.annotation.RequiresApi
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
+import androidx.appcompat.widget.AppCompatRadioButton
+import androidx.core.app.ActivityCompat
 import com.bumptech.glide.Glide
 import com.facebook.*
 import com.facebook.login.LoginResult
 import com.facebook.login.widget.LoginButton
 import com.google.firebase.auth.FacebookAuthProvider
 import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.storage.FirebaseStorage
+import com.kratsapps.memedom.firebaseutils.FireStorageHandler
 import com.kratsapps.memedom.firebaseutils.FirestoreHandler
 import com.kratsapps.memedom.models.MemeDomUser
 import com.kratsapps.memedom.utils.*
@@ -31,7 +41,6 @@ import java.text.SimpleDateFormat
 import java.util.*
 
 class SignupActivity : AppCompatActivity() {
-
 
     private val defaultPhotoURL: String = "https://firebasestorage.googleapis.com/v0/b/memedom-fb37b.appspot.com/o/AppSettings%2Fmemedom%20icon.png?alt=media&token=e29c4cae-3a13-47fb-b3c0-0136445a45cf"
     private val IMAGE_GALLERY_REQUEST_CODE: Int = 2001
@@ -54,7 +63,35 @@ class SignupActivity : AppCompatActivity() {
         setupFacebookSignup()
     }
 
+    override fun onRequestPermissionsResult(
+        requestCode: Int,
+        permissions: Array<out String>,
+        grantResults: IntArray
+    ) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults)
+        if (requestCode == 121 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+            profilePhotoBtn.isClickable = true
+        }
+    }
+
+    private fun requestPermissionToPhotos() {
+        if (ActivityCompat.checkSelfPermission(
+                this,
+                android.Manifest.permission.READ_EXTERNAL_STORAGE
+            ) != PackageManager.PERMISSION_GRANTED
+        ) {
+            ActivityCompat.requestPermissions(
+                this,
+                Array(1) { android.Manifest.permission.READ_EXTERNAL_STORAGE },
+                121
+            )
+        } else {
+            profilePhotoBtn.isClickable = true
+        }
+    }
+
     private fun setupUI() {
+        //otherDetailsCard.visibility = View.INVISIBLE
         editTextSignupBirthday.setRawInputType(InputType.TYPE_NULL)
         memeDomuser.gender = "Other"
 
@@ -90,6 +127,10 @@ class SignupActivity : AppCompatActivity() {
             ).show()
         }
 
+        profilePhotoBtn.setOnClickListener {
+            prepOpenImageGallery()
+        }
+
         buttonNextSignupAuth.setOnClickListener {
             checkIfFieldsHaveValues()
         }
@@ -98,6 +139,49 @@ class SignupActivity : AppCompatActivity() {
             onBackPressed()
         }
 
+        genderMale.setOnClickListener {
+            activateFilter(genderMale, "Male", null, listOf(genderFemale, genderOther))
+        }
+
+        genderFemale.setOnClickListener {
+            activateFilter(genderFemale, "Female", null, listOf(genderMale, genderOther))
+        }
+
+        genderOther.setOnClickListener {
+            activateFilter(genderOther, "Other", null, listOf(genderFemale, genderMale))
+        }
+
+        lookingMaleFilter.setOnClickListener {
+            activateFilter(lookingMaleFilter, null, "Male", listOf(lookingFemaleFilter, lookingOtherFilter))
+        }
+
+        lookingFemaleFilter.setOnClickListener {
+            activateFilter(lookingFemaleFilter, null, "Male", listOf(lookingMaleFilter, lookingOtherFilter))
+        }
+
+        lookingOtherFilter.setOnClickListener {
+            activateFilter(lookingOtherFilter, null, "Other", listOf(lookingMaleFilter, lookingFemaleFilter))
+        }
+
+        signupFinishBtn.setOnClickListener {
+            saveUserImage()
+        }
+    }
+
+    private fun activateFilter(active: AppCompatRadioButton, gender: String?, lookingFor: String?, deactives: List<AppCompatRadioButton>) {
+        for (segment in deactives) {
+            segment.isChecked = false
+        }
+
+        active.isChecked = true
+
+        if (gender != null) {
+            memeDomuser.gender = gender
+        }
+
+        if (lookingFor != null) {
+            memeDomuser.lookingFor = lookingFor
+        }
     }
 
     private fun navigateToMain() {
@@ -147,9 +231,10 @@ class SignupActivity : AppCompatActivity() {
                     Log.d("Authentication", "createUserWithEmail:success")
                     val user = auth.currentUser
                     if (user != null) {
+                        showCardView()
                         memeDomuser.uid = user.uid
                         memeDomuser.email = email
-                        signupUser()
+                        requestPermissionToPhotos()
                     }
                 } else {
                     signupLoadingView.visibility = View.INVISIBLE
@@ -180,6 +265,18 @@ class SignupActivity : AppCompatActivity() {
         return super.dispatchTouchEvent(ev)
     }
 
+    private fun saveUserImage() {
+        signupLoadingView.visibility = View.VISIBLE
+        if (profilePhotoBtn.drawable != null) {
+            FireStorageHandler().uploadPhotoWith(memeDomuser.uid, profilePhotoBtn.drawable, { profilePhotoURL ->
+                memeDomuser.profilePhoto = profilePhotoURL
+                signupUser()
+            })
+        } else {
+            signupUser()
+        }
+    }
+
     private fun signupUser() {
         if (!memeDomuser.birthday.isEmpty()) {
 
@@ -200,17 +297,17 @@ class SignupActivity : AppCompatActivity() {
                 "birthday" to memeDomuser.birthday,
                 "profilePhoto" to memeDomuser.profilePhoto,
                 "uid" to memeDomuser.uid,
-                "gender" to "",
-                "lookingFor" to "",
-                "minAge" to 16,
-                "maxAge" to 65,
+                "gender" to memeDomuser.gender,
+                "lookingFor" to memeDomuser.lookingFor,
                 "email" to memeDomuser.email,
                 "liked" to hashMapOf(memeDomuser.uid to 0),
                 "gallery" to memeDomuser.gallery,
                 "bio" to memeDomuser.bio,
                 "matches" to memeDomuser.matches,
                 "rejects" to memeDomuser.rejects,
-                "memes" to memeDomuser.memes
+                "memes" to memeDomuser.memes,
+                "minAge" to 16,
+                "maxAge" to 65
             )
             FirestoreHandler().addDataToFirestore("User", memeDomuser.uid, newUser, {
                 signupLoadingView.visibility = View.INVISIBLE
@@ -313,8 +410,14 @@ class SignupActivity : AppCompatActivity() {
                     Log.d("Authentication", "signInWithCredential:success")
                     val user = auth.currentUser
                     if (user != null) {
+                        showCardView()
                         memeDomuser.uid = user.uid
-                        signupUser()
+                        profilePhotoBtn.background = null
+                        profilePhotoBtn.setColorFilter(Color.parseColor("#00ff0000"))
+                        Glide.with(this)
+                            .load(memeDomuser.profilePhoto)
+                            .circleCrop()
+                            .into(profilePhotoBtn)
                     }
                 } else {
                     // If sign in fails, display a message to the user.
@@ -329,13 +432,31 @@ class SignupActivity : AppCompatActivity() {
             }
     }
 
-    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
-        super.onActivityResult(requestCode, resultCode, data)
-        callbackManager.onActivityResult(requestCode, resultCode, data)
+    private fun showCardView() {
+        signupBackBtn.visibility = View.GONE
+        signupLoadingView.visibility = View.INVISIBLE
+        otherDetailsCard.visibility = View.VISIBLE
+        profilePhotoBtn.isClickable = true
     }
 
     //Facebook~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
+    @RequiresApi(Build.VERSION_CODES.P)
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        super.onActivityResult(requestCode, resultCode, data)
+        callbackManager.onActivityResult(requestCode, resultCode, data)
+        if (resultCode == Activity.RESULT_OK) {
+            if (requestCode == IMAGE_GALLERY_REQUEST_CODE && data != null && data.data != null) {
+                val imageData = data.data
+                profilePhotoBtn.background = null
+                profilePhotoBtn.setColorFilter(Color.parseColor("#00ff0000"))
+                Glide.with(this)
+                    .load(imageData)
+                    .circleCrop()
+                    .into(profilePhotoBtn)
+            }
+        }
+    }
 }
 
 /*
