@@ -151,6 +151,11 @@ class ProfileFragment : Fragment() {
         profileView = rootView.findViewById<CardView>(R.id.profile_cardView)
         progressCardView = rootView.findViewById<CardView>(R.id.progressCardView)
         progressCardView.visibility = View.INVISIBLE
+        val loadingImageView = rootView.findViewById(R.id.loadingImageView) as ImageView
+        Glide.with(this)
+            .asGif()
+            .load(R.raw.loader)
+            .into(loadingImageView)
 
         AndroidUtils().getScreenWidthAndHeight(mainActivity, { width, height ->
             profileRecyclerView.layoutParams.width = width

@@ -28,24 +28,47 @@
             android:layout_height="match_parent"
             android:padding="8dp">
 
-            <ImageButton
-                android:id="@+id/expandBtn"
+            <LinearLayout
+                android:id="@+id/choicesLayout"
                 android:layout_width="match_parent"
-                android:layout_height="30dp"
-                android:layout_marginTop="16dp"
-                android:background="@color/transparent"
-                android:padding="8dp"
-                android:src="@drawable/ic_action_up_arrow"
-                android:tint="@color/whiteColor"
+                android:layout_height="50dp"
+                android:layout_marginStart="8dp"
+                android:layout_marginTop="8dp"
+                android:layout_marginEnd="8dp"
+                android:divider="@drawable/divider_horizontal"
+                android:orientation="horizontal"
+                android:showDividers="middle"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent" />
+                app:layout_constraintTop_toBottomOf="@+id/linearLayout3">
+
+                <Button
+                    android:id="@+id/rejectBtn"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:background="@drawable/soft_button_disabled"
+                    android:text="Reject"
+                    android:textAllCaps="false"
+                    android:textColor="@color/whiteColor" />
+
+                <Button
+                    android:id="@+id/matchBtn"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:background="@drawable/soft_button"
+                    android:text="Match"
+                    android:textColor="@color/whiteColor"
+                    android:textStyle="bold" />
+            </LinearLayout>
+
 
             <LinearLayout
                 android:id="@+id/statsLayout"
                 android:layout_width="0dp"
                 android:layout_height="60dp"
-                android:layout_marginTop="20dp"
+                android:layout_marginTop="8dp"
                 android:layout_marginEnd="16dp"
                 android:divider="@drawable/divider_horizontal"
                 android:gravity="center"
@@ -53,7 +76,7 @@
                 android:showDividers="middle"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toEndOf="@+id/profilePhoto"
-                app:layout_constraintTop_toBottomOf="@+id/linearLayout3">
+                app:layout_constraintTop_toBottomOf="@+id/choicesLayout">
 
                 <LinearLayout
                     android:layout_width="60dp"
@@ -94,13 +117,13 @@
                         android:id="@+id/textView5"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:text="Links"
+                        android:text="Followers"
                         android:textAlignment="center"
                         android:textColor="@color/appFGColor"
                         android:textSize="12sp" />
 
                     <TextView
-                        android:id="@+id/linksCount"
+                        android:id="@+id/matchCount"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:text="0"
@@ -143,12 +166,12 @@
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="16dp"
-                android:layout_marginTop="20dp"
+                android:layout_marginTop="8dp"
                 android:layout_marginEnd="16dp"
                 android:orientation="vertical"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/choicesLayout">
+                app:layout_constraintTop_toTopOf="parent">
 
                 <TextView
                     android:id="@+id/username"
@@ -158,7 +181,7 @@
                     android:text="Username"
                     android:textAlignment="center"
                     android:textColor="@color/whiteColor"
-                    android:textSize="24sp"
+                    android:textSize="20sp"
                     android:textStyle="bold" />
 
                 <TextView
@@ -181,6 +204,8 @@
                 android:layout_marginTop="16dp"
                 android:layout_marginEnd="16dp"
                 android:backgroundTint="@color/appFGColor"
+                android:hint="Write About Yourself"
+                android:maxLength="300"
                 android:textColor="@color/whiteColor"
                 android:textColorHint="@color/appSecondaryColor"
                 android:textSize="12sp"
@@ -188,77 +213,92 @@
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/profilePhoto" />
 
-            <androidx.recyclerview.widget.RecyclerView
-                android:id="@+id/galleryRecycler"
+            <HorizontalScrollView
+                android:id="@+id/photosScrollView"
                 android:layout_width="0dp"
                 android:layout_height="0dp"
-                android:layout_marginTop="8dp"
-                android:layout_marginBottom="100dp"
-                android:background="@color/appBGColorLight"
+                android:layout_marginTop="16dp"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/bioText" />
+                app:layout_constraintTop_toBottomOf="@+id/photosLayout">
 
-            <ImageView
+                <LinearLayout
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent"
+                    android:orientation="horizontal">
+
+                    <androidx.recyclerview.widget.RecyclerView
+                        android:id="@+id/profileRecycler"
+                        android:layout_width="302dp"
+                        android:layout_height="match_parent"
+                        android:background="@color/transparent" />
+
+                    <androidx.recyclerview.widget.RecyclerView
+                        android:id="@+id/galleryRecycler"
+                        android:layout_width="200dp"
+                        android:layout_height="match_parent"
+                        android:background="@color/transparent" />
+
+                </LinearLayout>
+            </HorizontalScrollView>
+
+            <ImageButton
                 android:id="@+id/profilePhoto"
                 android:layout_width="80dp"
                 android:layout_height="80dp"
-                android:layout_marginStart="14dp"
+                android:layout_marginStart="16dp"
                 android:layout_marginTop="8dp"
                 android:background="@drawable/round_imageview"
                 android:src="@drawable/ic_action_name"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/linearLayout3" />
+                app:layout_constraintTop_toBottomOf="@+id/choicesLayout" />
 
             <LinearLayout
-                android:id="@+id/choicesLayout"
+                android:id="@+id/photosLayout"
                 android:layout_width="match_parent"
-                android:layout_height="50dp"
-                android:layout_marginStart="8dp"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="16dp"
                 android:layout_marginTop="16dp"
-                android:layout_marginEnd="8dp"
-                android:divider="@drawable/divider_horizontal"
-                android:orientation="horizontal"
-                android:showDividers="middle"
+                android:layout_marginEnd="16dp"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/expandBtn">
+                app:layout_constraintTop_toBottomOf="@+id/bioText">
 
-                <Button
-                    android:id="@+id/rejectBtn"
-                    android:layout_width="wrap_content"
+                <RadioGroup
+                    android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:background="@drawable/soft_button_disabled"
-                    android:text="Reject"
-                    android:textAllCaps="false"
-                    android:textColor="@color/whiteColor" />
+                    android:orientation="horizontal">
 
-                <Button
-                    android:id="@+id/matchBtn"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:background="@drawable/soft_button"
-                    android:text="Match"
-                    android:textColor="@color/whiteColor"
-                    android:textStyle="bold" />
+                    <androidx.appcompat.widget.AppCompatRadioButton
+                        android:id="@+id/memeSegment"
+                        android:layout_width="0dp"
+                        android:layout_height="50dp"
+                        android:layout_weight="1"
+                        android:background="@drawable/radio_button_selector_fill"
+                        android:button="@android:color/transparent"
+                        android:checked="true"
+                        android:gravity="center"
+                        android:text="Memes"
+                        android:textColor="@android:color/white" />
+
+                    <androidx.appcompat.widget.AppCompatRadioButton
+                        android:id="@+id/gallerySegment"
+                        android:layout_width="0dp"
+                        android:layout_height="50dp"
+                        android:layout_weight="1"
+                        android:background="@drawable/radio_button_selector_fill"
+                        android:button="@android:color/transparent"
+                        android:checked="false"
+                        android:gravity="center"
+                        android:text="Me's"
+                        android:textColor="@color/appFGColor" />
+                </RadioGroup>
             </LinearLayout>
 
         </androidx.constraintlayout.widget.ConstraintLayout>
 
     </androidx.cardview.widget.CardView>
-
-    <androidx.recyclerview.widget.RecyclerView
-        android:id="@+id/profileRecycler"
-        android:layout_width="0dp"
-        android:layout_height="0dp"
-        android:background="@color/appBGColor"
-        app:layout_constraintBottom_toTopOf="@+id/profile_cardView"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
 
     <androidx.cardview.widget.CardView
         android:id="@+id/congratsView"
@@ -269,7 +309,7 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        tools:visibility="visibile">
+        tools:visibility="visible">
 
         <androidx.constraintlayout.widget.ConstraintLayout
             android:layout_width="match_parent"
@@ -327,6 +367,36 @@
                 </androidx.constraintlayout.widget.ConstraintLayout>
 
             </androidx.cardview.widget.CardView>
+
+        </androidx.constraintlayout.widget.ConstraintLayout>
+
+    </androidx.cardview.widget.CardView>
+
+
+    <androidx.cardview.widget.CardView
+        android:id="@+id/profileActivityLoadingView"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:visibility="invisible"
+        app:cardBackgroundColor="@color/clearBlack"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent">
+
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            tools:context=".MainActivity">
+
+            <ImageView
+                android:id="@+id/loadingImageView"
+                android:layout_width="100dp"
+                android:layout_height="100dp"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
 
         </androidx.constraintlayout.widget.ConstraintLayout>
 

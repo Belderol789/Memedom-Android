@@ -81,7 +81,7 @@
                         android:id="@+id/textView5"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:text="Links"
+                        android:text="Followers"
                         android:textAlignment="center"
                         android:textColor="@color/appFGColor"
                         android:textSize="12sp" />
@@ -265,7 +265,7 @@
     </androidx.cardview.widget.CardView>
 
     <androidx.cardview.widget.CardView
-        android:id="@+id/progressCardView"
+        android:id="@+id/profileLoadingView"
         android:layout_width="0dp"
         android:layout_height="0dp"
         android:visibility="invisible"

@@ -19,6 +19,7 @@ import com.facebook.login.widget.LoginButton
 import com.google.firebase.auth.FacebookAuthProvider
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseUser
+import com.google.firebase.ktx.Firebase
 import com.kratsapps.memedom.firebaseutils.FirestoreHandler
 import com.kratsapps.memedom.models.MemeDomUser
 import com.kratsapps.memedom.utils.DatabaseManager
@@ -49,6 +50,26 @@ class LoginActivity : AppCompatActivity() {
 
          buttonNextLoginAuth.setOnClickListener {
             checkIfFieldsHaveValues()
+        }
+
+        forgotBtn.setOnClickListener {
+            val email = editTextLoginEmail.text.toString()
+            if (email.isEmpty()) {
+                Toast.makeText(
+                    baseContext, "Kindly Input ypur Email adress",
+                    Toast.LENGTH_SHORT
+                ).show()
+            } else {
+                FirebaseAuth.getInstance().sendPasswordResetEmail(email)
+                    .addOnCompleteListener { task ->
+                        if (task.isSuccessful) {
+                            Toast.makeText(
+                                baseContext, "Success! Kindly check your Email",
+                                Toast.LENGTH_SHORT
+                            ).show()
+                        }
+                    }
+            }
         }
 
         setupFacebookLogin()

@@ -54,7 +54,6 @@
             app:layout_constraintTop_toTopOf="@+id/authentication_view"
             tools:layout_editor_absoluteX="307dp" />
 
-
         <TextView
             android:id="@+id/textView14"
             android:layout_width="match_parent"
@@ -114,6 +113,16 @@
             android:textColor="@color/whiteColor"
             app:layout_constraintTop_toTopOf="@+id/authentication_view"
             tools:layout_editor_absoluteX="307dp" />
+
+        <Button
+            android:id="@+id/forgotBtn"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Forgot Password"
+            android:background="@color/transparent"
+            android:textColor="@color/appSecondaryColor"
+            tools:layout_editor_absoluteX="16dp"
+            tools:layout_editor_absoluteY="412dp" />
 
     </LinearLayout>
 

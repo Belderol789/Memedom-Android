@@ -9,6 +9,8 @@ import android.os.Bundle
 import android.util.Log
 import android.view.Display
 import android.view.View
+import android.widget.ImageView
+import android.widget.TextView
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -18,14 +20,18 @@ import com.kratsapps.memedom.adapters.FeedAdapter
 import com.kratsapps.memedom.firebaseutils.FirestoreHandler
 import com.kratsapps.memedom.adapters.ImageAdapter
 import com.kratsapps.memedom.models.Matches
+import com.kratsapps.memedom.models.Memes
+import com.kratsapps.memedom.utils.DatabaseManager
 import kotlinx.android.synthetic.main.activity_profile.*
 
 class ProfileActivity : AppCompatActivity() {
 
     var galleryItems: MutableList<String> = mutableListOf()
-    var profileIsExpanded: Boolean = false
 
     var matchUser: Matches? = null
+    var memeDomUser: MemeDomUser? = null
+    var matchUserID = ""
+    var matchUserMemes = mutableListOf<Memes>()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -33,146 +39,116 @@ class ProfileActivity : AppCompatActivity() {
 
         congratsView.visibility = View.GONE
         matchUser = intent.extras?.get("MatchUser") as? Matches
+        matchUserID = matchUser!!.uid
+        setupUI()
+    }
 
-        var matchUserID = ""
-        if (matchUser?.uid != null) {
-            matchUserID = matchUser!!.uid
-        } else {
-            matchUserID = intent.extras?.getString("MatchID") as String
+    private fun setupUI() {
+        profileActivityLoadingView.visibility = View.VISIBLE
+        Glide.with(this)
+            .asGif()
+            .load(R.raw.loader)
+            .into(loadingImageView)
+
+        FirestoreHandler().getUserDataWith(matchUserID, {
+            memeDomUser = it
+            setupUserData()
+            setupGallery()
+            getAllUserMemes()
+            setupActionButtons(it)
+            profileActivityLoadingView.visibility = View.GONE
+        })
+    }
+
+    private fun setupActionButtons(memeDomUser: MemeDomUser) {
+        rejectBtn.setOnClickListener {
+            FirestoreHandler().rejectUser(memeDomUser, this)
+            onBackPressed()
         }
 
-        if (!matchUserID.isEmpty()) {
-            getAllUserMemes(matchUserID)
-
-            FirestoreHandler().getUserDataWith(matchUserID, {
-
-                val memeDomUser = it
-                setupUserData(it)
-
-                rejectBtn.setOnClickListener {
-                    FirestoreHandler().rejectUser(memeDomUser, this)
-                    onBackPressed()
-                }
-
-                matchBtn.setOnClickListener {
-                    if (matchUser != null) {
-
-                        val data = hashMapOf<String, Any>(
-                            "matchStatus" to true,
-                            "matchDate" to System.currentTimeMillis()
-                        )
-                        FirestoreHandler().updateMatch(matchUserID, data, this, {})
-                        FirestoreHandler().updateUserLiked(matchUserID, this, {
-                            val intent = Intent().apply {
-                                putExtra("ChatMatch", matchUser)
-                            }
-                            setResult(Activity.RESULT_OK, intent)
-                            onBackPressed()
-                        })
-
-                    } else {
-                        congratsView.visibility = View.VISIBLE
+        matchBtn.setOnClickListener {
+            if (matchUser != null) {
+                val data = hashMapOf<String, Any>(
+                    "matchStatus" to true,
+                    "matchDate" to System.currentTimeMillis()
+                )
+                FirestoreHandler().updateMatch(matchUserID, data, this, {})
+                FirestoreHandler().updateUserLiked(matchUserID, this, {
+                    val intent = Intent().apply {
+                        putExtra("ChatMatch", matchUser)
                     }
-
-                }
-
-                okBtn.setOnClickListener {
-                    FirestoreHandler().sendToMatchUser(memeDomUser, this)
+                    setResult(Activity.RESULT_OK, intent)
                     onBackPressed()
-                }
-            })
-        }
+                })
 
-        var display: Display?
-
-        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.R) {
-            display = this.display
-        } else {
-            display = windowManager.defaultDisplay
-        }
-        val size = Point()
-        display?.getRealSize(size)
-        var width = size.x
-        var height = size.y
-
-        Log.d("heightIs", "$height")
-
-        val params = profile_cardView.layoutParams as ConstraintLayout.LayoutParams
-        params.height = height
-        params.width = width
-        params.topMargin = height
-        profile_cardView.requestLayout()
-
-        expandBtn.setOnClickListener {
-            if (!profileIsExpanded) {
-                profile_cardView
-                    .animate()
-                    .setDuration(500)
-                    .translationY(((height / 1.8) - height).toFloat())
-                    .withEndAction {
-                        profileIsExpanded = !profileIsExpanded
-                    }
-
-                expandBtn
-                    .animate()
-                    .setDuration(500)
-                    .rotationBy(180f)
-                    .start()
             } else {
-                profile_cardView
-                    .animate()
-                    .setDuration(500)
-                    .translationY(-0F)
-                    .withEndAction {
-                        profileIsExpanded = !profileIsExpanded
-                    }
-                expandBtn
-                    .animate()
-                    .setDuration(500)
-                    .rotationBy(180f)
-                    .start()
-
+                congratsView.visibility = View.VISIBLE
             }
+
+        }
+
+        okBtn.setOnClickListener {
+            FirestoreHandler().sendToMatchUser(memeDomUser!!, this)
+            onBackPressed()
         }
     }
 
-    private fun setupUserData(matchedUser: MemeDomUser) {
-        congratsText.setText("Congrats on connecting! You'll be able to chat with ${matchedUser.name} if they accept your invitation")
-        username.setText(matchedUser.name)
-        gender.setText(matchedUser.gender)
+    private fun setupUserData() {
+        congratsText.setText("Congrats on connecting! You'll be able to chat with ${memeDomUser!!.name} if they accept your invitation")
+        username.setText(memeDomUser!!.name)
+        gender.setText(memeDomUser!!.gender)
 
-        if(matchedUser.bio.isBlank()) {
+        if(memeDomUser!!.bio.isBlank()) {
             bioText.setText("No Bio Available")
         } else {
-            bioText.setText(matchedUser.bio)
+            bioText.setText(memeDomUser!!.bio)
         }
 
         Glide.with(this)
-            .load(matchedUser.profilePhoto)
+            .load(memeDomUser!!.profilePhoto)
             .circleCrop()
             .into(profilePhoto)
-
-        setupGallery(matchedUser.gallery)
     }
 
-    private fun setupGallery(images: List<String>) {
+    private fun setupGallery() {
+
+        var images = memeDomUser!!.gallery
         val galleryManager: GridLayoutManager = GridLayoutManager(this, 3, GridLayoutManager.VERTICAL, false)
-        galleryItems = images.toMutableList()
-        val galleryAdapter = ImageAdapter(galleryItems, null,this, null, false)
-        galleryRecycler.adapter = galleryAdapter
-        galleryRecycler.layoutManager = galleryManager
-        galleryRecycler.itemAnimator?.removeDuration
+
+        if (images != null) {
+            Log.d("UserGallery", "User photos $images")
+            galleryItems = images.toMutableList()
+            val galleryAdapter = ImageAdapter(galleryItems, null, this, null, false)
+            galleryRecycler.adapter = galleryAdapter
+            galleryRecycler.layoutManager = galleryManager
+            galleryRecycler.itemAnimator?.removeDuration
+        }
     }
 
-    private fun getAllUserMemes(mainUserID: String) {
-//        FirestoreHandler().getAllMemesOfMainUser(mainUserID) {
-//            val feedAdapter =  FeedAdapter(it, this, true)
-//            profileRecycler.addItemDecoration(DefaultItemDecorator(resources.getDimensionPixelSize(R.dimen.vertical_recyclerView)))
-//            profileRecycler.adapter = feedAdapter
-//            profileRecycler.layoutManager = LinearLayoutManager(this)
-//            profileRecycler.setHasFixedSize(true)
-//            profileRecycler.itemAnimator?.removeDuration
-//        }
-    }
+    private fun getAllUserMemes() {
+        matchUserMemes.clear()
+        FirestoreHandler().getAllMemesOfMainUser(memeDomUser!!.uid) {
+            matchUserMemes.add(it)
+            var crown: Int = 0
+            for (meme in matchUserMemes) {
+                crown += meme.getPostLikeCount()
+            }
 
+            matchCount.setText("${memeDomUser!!.matches.count()}")
+            postCount.setText("${matchUserMemes.count()}")
+            crownsCount.setText("$crown")
+
+            var userMemes = mutableListOf<String>()
+            for (meme in matchUserMemes) {
+                userMemes.add(meme.postImageURL)
+            }
+
+            val feedAdapter = ImageAdapter(userMemes, matchUserMemes, this, null, true)
+            val galleryManager: GridLayoutManager =
+                GridLayoutManager(this, 3, GridLayoutManager.VERTICAL, false)
+            profileRecycler.adapter = feedAdapter
+            profileRecycler.layoutManager = galleryManager
+            profileRecycler.itemAnimator?.removeDuration
+        }
+    }
 }
