@@ -67,6 +67,12 @@ class ImageAdapter(private val imageList: MutableList<String>, private val memeL
             }
         }
 
+        holder.imageCell.setOnClickListener {
+            if (position == 0 && fragment != null) {
+                fragment.profilePhotoSelected = false
+                fragment.openImageGallery()
+            }
+        }
     }
 
     override fun getItemCount() = imageList.size
@@ -88,7 +94,6 @@ class ImageAdapter(private val imageList: MutableList<String>, private val memeL
 
     fun removeAt(position: Int) {
         Log.d("ImageList", "Count before ${imageList.count()}")
-        fragment?.galleryIsChanged = true
         imageList.removeAt(position)
 
         notifyItemRemoved(position)

@@ -14,8 +14,6 @@ import android.util.Log
 import android.view.MotionEvent
 import android.view.View
 import android.view.inputmethod.InputMethodManager
-import android.widget.Button
-import android.widget.ImageView
 import android.widget.Toast
 import androidx.annotation.RequiresApi
 import androidx.appcompat.app.AlertDialog
@@ -25,15 +23,12 @@ import androidx.core.app.ActivityCompat
 import com.bumptech.glide.Glide
 import com.facebook.*
 import com.facebook.login.LoginResult
-import com.facebook.login.widget.LoginButton
 import com.google.firebase.auth.FacebookAuthProvider
 import com.google.firebase.auth.FirebaseAuth
-import com.google.firebase.storage.FirebaseStorage
 import com.kratsapps.memedom.firebaseutils.FireStorageHandler
 import com.kratsapps.memedom.firebaseutils.FirestoreHandler
 import com.kratsapps.memedom.models.MemeDomUser
 import com.kratsapps.memedom.utils.*
-import kotlinx.android.synthetic.main.activity_login.*
 import kotlinx.android.synthetic.main.activity_signup.*
 import kotlinx.android.synthetic.main.activity_signup.loadingImageView
 import org.json.JSONException
@@ -42,12 +37,12 @@ import java.util.*
 
 class SignupActivity : AppCompatActivity() {
 
-    private val defaultPhotoURL: String = "https://firebasestorage.googleapis.com/v0/b/memedom-fb37b.appspot.com/o/AppSettings%2Fmemedom%20icon.png?alt=media&token=e29c4cae-3a13-47fb-b3c0-0136445a45cf"
     private val IMAGE_GALLERY_REQUEST_CODE: Int = 2001
     private lateinit var auth: FirebaseAuth
 
     lateinit var callbackManager: CallbackManager
 
+    var hasProfilePhoto = false
     var memeDomuser: MemeDomUser = MemeDomUser()
     var userEmail: Boolean = true
 
@@ -93,8 +88,6 @@ class SignupActivity : AppCompatActivity() {
     private fun setupUI() {
         //otherDetailsCard.visibility = View.INVISIBLE
         editTextSignupBirthday.setRawInputType(InputType.TYPE_NULL)
-        memeDomuser.gender = "Other"
-
         Glide.with(this)
             .asGif()
             .load(R.raw.loader)
@@ -151,16 +144,16 @@ class SignupActivity : AppCompatActivity() {
             activateFilter(genderOther, "Other", null, listOf(genderFemale, genderMale))
         }
 
-        lookingMaleFilter.setOnClickListener {
-            activateFilter(lookingMaleFilter, null, "Male", listOf(lookingFemaleFilter, lookingOtherFilter))
+        signupMaleGender.setOnClickListener {
+            activateFilter(signupMaleGender, null, "Male", listOf(lookingFemaleFilter, lookingOtherFilter))
         }
 
         lookingFemaleFilter.setOnClickListener {
-            activateFilter(lookingFemaleFilter, null, "Male", listOf(lookingMaleFilter, lookingOtherFilter))
+            activateFilter(lookingFemaleFilter, null, "Male", listOf(signupMaleGender, lookingOtherFilter))
         }
 
         lookingOtherFilter.setOnClickListener {
-            activateFilter(lookingOtherFilter, null, "Other", listOf(lookingMaleFilter, lookingFemaleFilter))
+            activateFilter(lookingOtherFilter, null, "Other", listOf(signupMaleGender, lookingFemaleFilter))
         }
 
         signupFinishBtn.setOnClickListener {
@@ -267,7 +260,7 @@ class SignupActivity : AppCompatActivity() {
 
     private fun saveUserImage() {
         signupLoadingView.visibility = View.VISIBLE
-        if (profilePhotoBtn.drawable != null) {
+        if (hasProfilePhoto) {
             FireStorageHandler().uploadPhotoWith(memeDomuser.uid, profilePhotoBtn.drawable, { profilePhotoURL ->
                 memeDomuser.profilePhoto = profilePhotoURL
                 signupUser()
@@ -281,11 +274,6 @@ class SignupActivity : AppCompatActivity() {
         if (!memeDomuser.birthday.isEmpty()) {
 
             DatabaseManager(this).clearPostIDs()
-
-            if (memeDomuser.profilePhoto.isEmpty()) {
-                memeDomuser.profilePhoto = defaultPhotoURL
-            }
-
             memeDomuser.bio = ""
             memeDomuser.gallery = listOf()
             memeDomuser.rejects = listOf()
@@ -448,6 +436,7 @@ class SignupActivity : AppCompatActivity() {
         if (resultCode == Activity.RESULT_OK) {
             if (requestCode == IMAGE_GALLERY_REQUEST_CODE && data != null && data.data != null) {
                 val imageData = data.data
+                hasProfilePhoto = true
                 profilePhotoBtn.background = null
                 profilePhotoBtn.setColorFilter(Color.parseColor("#00ff0000"))
                 Glide.with(this)

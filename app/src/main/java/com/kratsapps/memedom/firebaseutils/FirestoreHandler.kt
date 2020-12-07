@@ -44,7 +44,7 @@ class FirestoreHandler {
             .document(document)
             .set(hashMap)
             .addOnSuccessListener {
-                Log.d("Firestore", "DocumentSnapshot successfully written for $path")
+                Log.d("Firestore", "DocumentSnapshot successfully written for $path $hashMap")
                 success(null)
             }.addOnFailureListener { e ->
                 Log.w("Firestore", "Error writing document", e)

@@ -253,7 +253,7 @@
                     android:textStyle="bold" />
 
                 <LinearLayout
-                    android:id="@+id/lookingFor"
+                    android:id="@+id/gender"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginStart="16dp"
@@ -266,7 +266,7 @@
                         android:orientation="horizontal">
 
                         <androidx.appcompat.widget.AppCompatRadioButton
-                            android:id="@+id/lookingMaleFilter"
+                            android:id="@+id/genderMale"
                             android:layout_width="0dp"
                             android:layout_height="50dp"
                             android:layout_weight="1"
@@ -278,7 +278,7 @@
                             android:textColor="@android:color/white" />
 
                         <androidx.appcompat.widget.AppCompatRadioButton
-                            android:id="@+id/lookingFemaleFilter"
+                            android:id="@+id/genderFemale"
                             android:layout_width="0dp"
                             android:layout_height="50dp"
                             android:layout_weight="1"
@@ -290,7 +290,7 @@
                             android:textColor="@android:color/white" />
 
                         <androidx.appcompat.widget.AppCompatRadioButton
-                            android:id="@+id/lookingOtherFilter"
+                            android:id="@+id/genderOther"
                             android:layout_width="0dp"
                             android:layout_height="50dp"
                             android:layout_weight="1"
@@ -313,7 +313,7 @@
                     android:textStyle="bold" />
 
                 <LinearLayout
-                    android:id="@+id/gender"
+                    android:id="@+id/lookingFor"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginStart="16dp"
@@ -326,7 +326,7 @@
                         android:orientation="horizontal">
 
                         <androidx.appcompat.widget.AppCompatRadioButton
-                            android:id="@+id/genderMale"
+                            android:id="@+id/signupMaleGender"
                             android:layout_width="0dp"
                             android:layout_height="50dp"
                             android:layout_weight="1"
@@ -338,7 +338,7 @@
                             android:textColor="@android:color/white" />
 
                         <androidx.appcompat.widget.AppCompatRadioButton
-                            android:id="@+id/genderFemale"
+                            android:id="@+id/lookingFemaleFilter"
                             android:layout_width="0dp"
                             android:layout_height="50dp"
                             android:layout_weight="1"
@@ -350,7 +350,7 @@
                             android:textColor="@android:color/white" />
 
                         <androidx.appcompat.widget.AppCompatRadioButton
-                            android:id="@+id/genderOther"
+                            android:id="@+id/lookingOtherFilter"
                             android:layout_width="0dp"
                             android:layout_height="50dp"
                             android:layout_weight="1"
@@ -362,6 +362,7 @@
                             android:textColor="@android:color/white" />
                     </RadioGroup>
                 </LinearLayout>
+
             </LinearLayout>
 
         </androidx.constraintlayout.widget.ConstraintLayout>

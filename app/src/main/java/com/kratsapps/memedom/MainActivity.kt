@@ -125,6 +125,13 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
+    fun saveProfileEdits(hashMap: HashMap<String, Any>) {
+
+        Log.d("Saving", "Updating user data")
+
+        FirestoreHandler().updateDatabaseObject("User", mainUser!!.uid, hashMap)
+    }
+
     private fun setupBottomNavigation() {
         navigationBottom.setOnNavigationItemSelectedListener {
             when (it.itemId) {

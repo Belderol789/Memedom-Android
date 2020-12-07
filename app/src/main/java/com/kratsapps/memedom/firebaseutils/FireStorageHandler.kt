@@ -43,6 +43,33 @@ class FireStorageHandler {
         }
     }
 
+    fun uploadPhotoData(id: String, imageUri: Uri, context: Context, success: (String) -> Unit) {
+        val bitmap = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
+            ImageDecoder.decodeBitmap(ImageDecoder.createSource(context.contentResolver, imageUri))
+        } else {
+            MediaStore.Images.Media.getBitmap(context.contentResolver, imageUri)
+        }
+
+        val baos = ByteArrayOutputStream()
+        bitmap.compress(Bitmap.CompressFormat.JPEG, 100, baos)
+        val data = baos.toByteArray()
+
+        val photoRef = profilePhotoRef.child(id)
+        var uploadTask = photoRef.putBytes(data)
+
+        uploadTask.addOnFailureListener{ e ->
+            Log.d("Storage", "Image not saved", e)
+        }.addOnSuccessListener { taskSnapshot ->
+            photoRef.downloadUrl.addOnSuccessListener {
+                val downloadURI = it.toString()
+                Log.d("Storage", "Image saved ${it.toString()}")
+                if (it != null) {
+                    success(it.toString())
+                }
+            }
+        }
+    }
+
     fun uploadPhotoWith(id: String, image: Drawable?, success: (String) -> Unit) {
 
         val bitmap = (image as BitmapDrawable).bitmap

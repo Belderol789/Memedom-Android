@@ -8,6 +8,8 @@ import android.graphics.Color
 import android.os.Build
 import android.os.Bundle
 import android.provider.MediaStore
+import android.text.Editable
+import android.text.TextWatcher
 import android.util.DisplayMetrics
 import android.util.Log
 import android.view.LayoutInflater
@@ -55,11 +57,9 @@ class ProfileFragment : Fragment() {
     private var mainUser: MemeDomUser? = null
     private var mainUserID: String? = null
 
-    var memeItems: MutableList<Memes> = mutableListOf()
     var galleryItems: MutableList<String> = mutableListOf()
     var profilePhotoSelected: Boolean = true
-
-    var galleryIsChanged: Boolean = false
+    var profileEdited: Boolean = false
 
     private val IMAGE_GALLERY_REQUEST_CODE: Int = 2001
 
@@ -87,6 +87,20 @@ class ProfileFragment : Fragment() {
         getAllUserMemes()
         setupGallery()
         return rootView
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
+        if (bioText.text.toString() != mainUser?.bio) {
+            mainUser?.bio = bioText.text.toString()
+            DatabaseManager(this.context!!).convertUserObject(mainUser!!, "MainUser", {})
+            mainActivity.saveProfileEdits(
+                hashMapOf(
+                    "bio" to bioText.text.toString()
+                )
+            )
+        }
+        Log.d("Destroying", "ProfileFragment getting destroyed")
     }
 
     private fun getAllUserMemes() {
@@ -164,42 +178,16 @@ class ProfileFragment : Fragment() {
                 .into(profilePhoto)
         }
 
-        if (mainUserID != null) {
-            /*
-            //ProfilePhoto
-                val profileImage = profilePhoto.drawable
-                val userBio = bioText.text.toString()
+        profilePhoto.setOnClickListener {
+            profilePhotoSelected = true
+            openImageGallery()
+        }
+    }
 
-                if (profilePhotoIsChanged) {
-                    FireStorageHandler().uploadPhotoWith(mainUserID!!, profileImage, {
-                        val updatedProfile: HashMap<String, Any> = hashMapOf(
-                            "bio" to userBio,
-                            "profilePhoto" to it,
-                            "gallery" to galleryItems
-                        )
-
-                        Log.d("Saving", "Updating user data")
-
-                        FirestoreHandler().updateDatabaseObject("User", mainUserID!!, updatedProfile)
-
-                        mainUser!!.profilePhoto = it
-                        mainUser!!.bio = userBio
-                        mainUser!!.gallery = galleryItems
-
-                        DatabaseManager(this.context!!).convertUserObject(mainUser!!, "MainUser", {})
-                        progressCardView.visibility = View.INVISIBLE
-                    })
-                } else {
-                    val updatedProfile: HashMap<String, Any> = hashMapOf(
-                        "bio" to userBio
-                    )
-                    FirestoreHandler().updateDatabaseObject("User", mainUserID!!, updatedProfile)
-                    mainUser!!.bio = userBio
-                    DatabaseManager(this.context!!).convertUserObject(mainUser!!, "MainUser", {
-                        progressCardView.visibility = View.INVISIBLE
-                    })
-                }
-            */
+    fun openImageGallery() {
+        Intent(Intent.ACTION_PICK, MediaStore.Images.Media.EXTERNAL_CONTENT_URI).apply {
+            type = "image/*"
+            startActivityForResult(this, IMAGE_GALLERY_REQUEST_CODE)
         }
     }
 
@@ -230,7 +218,6 @@ class ProfileFragment : Fragment() {
             memeSegment.setTextColor(Color.parseColor("#58BADC"))
             photosScrollView.smoothScrollTo(screenWidth, 0)
         }
-
     }
 
     private fun prepOpenImageGallery() {
@@ -244,7 +231,7 @@ class ProfileFragment : Fragment() {
         val context = this.context
         val activity = this.activity
 
-        val savedImages = DatabaseManager(profileContext).retrieveSavedUser()?.gallery
+        var savedImages = DatabaseManager(profileContext).retrieveSavedUser()?.gallery
         var images = listOf<String>("https://firebasestorage.googleapis.com/v0/b/memedom-fb37b.appspot.com/o/AppSettings%2Fplus.png?alt=media&token=c4e6af5c-d0ea-4570-ab19-655997bfac29")
         if (savedImages != null) {
             images += savedImages
@@ -269,21 +256,41 @@ class ProfileFragment : Fragment() {
         val profilePhoto = rootView.findViewById<ImageView>(R.id.profilePhoto)
         val userID = DatabaseManager(this.context!!).getMainUserID()
 
-        if (resultCode == Activity.RESULT_OK) {
+        if (resultCode == Activity.RESULT_OK && mainUser != null) {
             if (requestCode == IMAGE_GALLERY_REQUEST_CODE && data != null && data.data != null) {
+
+                profileEdited = true
+
                 val imageData = data.data
-                if (profilePhotoSelected) {
-                    Glide.with(this)
-                        .load(imageData)
-                        .circleCrop()
-                        .into(profilePhoto)
+                progressCardView.visibility = View.VISIBLE
+                if (profilePhotoSelected && imageData != null) {
+                    FireStorageHandler().uploadPhotoData(userID!!, imageData, profileContext, {
+                        progressCardView.visibility = View.INVISIBLE
+                        mainUser?.profilePhoto = it
+                        Glide.with(this)
+                            .load(it)
+                            .circleCrop()
+                            .into(profilePhoto)
+                        mainActivity.saveProfileEdits(
+                            hashMapOf(
+                                "profilePhoto" to it
+                            )
+                        )
+                        DatabaseManager(this.context!!).convertUserObject(mainUser!!, "MainUser", {})
+                    })
                 } else if (userID != null && imageData != null) {
-                    progressCardView.visibility = View.VISIBLE
                     FireStorageHandler().uploadGallery(userID, imageData, this.context!!, {
                         progressCardView.visibility = View.INVISIBLE
                         galleryItems.add(it)
                         galleryRecyclerView.adapter?.notifyDataSetChanged()
-                        Log.d("Gallery Items", "$galleryItems")
+
+                        mainUser!!.gallery += it
+                        mainActivity.saveProfileEdits(
+                            hashMapOf(
+                                "gallery" to mainUser!!.gallery
+                            )
+                        )
+                        DatabaseManager(this.context!!).convertUserObject(mainUser!!, "MainUser", {})
                     })
                 }
             }

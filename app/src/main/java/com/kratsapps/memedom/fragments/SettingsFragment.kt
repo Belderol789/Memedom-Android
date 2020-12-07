@@ -2,7 +2,6 @@ package com.kratsapps.memedom.fragments
 
 import android.content.Context
 import android.content.Intent
-import android.graphics.Color
 import android.net.Uri
 import android.os.Bundle
 import android.util.Log
@@ -67,7 +66,7 @@ class SettingsFragment : Fragment() {
         femaleFilter = rootView.findViewById<AppCompatRadioButton>(R.id.genderFemale)
         otherFilter = rootView.findViewById<AppCompatRadioButton>(R.id.genderOther)
 
-        lookingMaleFilter = rootView.findViewById<AppCompatRadioButton>(R.id.lookingMaleFilter)
+        lookingMaleFilter = rootView.findViewById<AppCompatRadioButton>(R.id.signupMaleGender)
         lookingFemaleFilter = rootView.findViewById<AppCompatRadioButton>(R.id.lookingFemaleFilter)
         lookingOtherFilter = rootView.findViewById<AppCompatRadioButton>(R.id.lookingOtherFilter)
 
