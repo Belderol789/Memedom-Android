@@ -94,7 +94,8 @@
                             android:layout_height="wrap_content"
                             android:layout_weight="1"
                             android:background="@color/appFGColor"
-                            android:text="View Profile" />
+                            android:text="View Profile"
+                            android:textColor="@color/whiteColor" />
 
                         <Button
                             android:id="@+id/matchBtn"
@@ -102,7 +103,8 @@
                             android:layout_height="wrap_content"
                             android:layout_weight="1"
                             android:background="@color/specialColor"
-                            android:text="Match!" />
+                            android:text="Match!"
+                            android:textColor="@color/whiteColor" />
                     </LinearLayout>
 
                     <ImageView

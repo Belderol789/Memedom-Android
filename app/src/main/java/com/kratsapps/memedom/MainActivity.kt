@@ -75,7 +75,6 @@ class MainActivity : AppCompatActivity() {
         checkLoginStatus()
         activateFacebook()
         setupBottomNavigation()
-        checkMatchingStatus()
     }
 
     fun activateNavBottom(active: Boolean) {
@@ -85,6 +84,7 @@ class MainActivity : AppCompatActivity() {
     fun setupHomeFragment(completed: () -> Unit) {
         FirestoreHandler().getAppSettings() {points, dayLimit, memeLimit, matchLimit ->
             DatabaseManager(this).saveToPrefsInt("matchLimit", matchLimit.toInt())
+            checkMatchingStatus()
             FirestoreHandler().getAllMemes(this, mainUser, dayLimit, memeLimit) {
 
                 datingMemes.clear()
@@ -109,8 +109,10 @@ class MainActivity : AppCompatActivity() {
     fun setupProfileFragment(completed: (MutableList<Memes>) -> Unit) {
         if (mainUser?.uid != null) {
             FirestoreHandler().getAllMemesOfMainUser(mainUser!!.uid) {
-                profileMemes.add(it)
-                Log.d("UserMemes", "Memes ${profileMemes.count()}")
+                if (it != null) {
+                    profileMemes.add(it)
+                    Log.d("UserMemes", "Memes ${profileMemes.count()}")
+                }
                 completed(profileMemes)
             }
         }

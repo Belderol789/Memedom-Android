@@ -50,7 +50,6 @@ class ImageAdapter(private val imageList: MutableList<String>, private val memeL
             holder.imageCell.setOnClickListener {
                 (activity as MemedomActivity).didSelectCurrentImage(position)
             }
-        } else {
             if (isMeme && memeList != null) {
                 holder.deleteBtn.visibility = View.GONE
                 holder.imageCell.setOnClickListener {
@@ -65,13 +64,21 @@ class ImageAdapter(private val imageList: MutableList<String>, private val memeL
                     removeAt(position)
                 }
             }
-        }
-
-        holder.imageCell.setOnClickListener {
-            if (position == 0 && fragment != null) {
-                fragment.profilePhotoSelected = false
-                fragment.openImageGallery()
+            holder.imageCell.setOnClickListener {
+                if (position == 0 && fragment != null) {
+                    fragment.profilePhotoSelected = false
+                    fragment.openImageGallery()
+                }
             }
+        } else {
+            if (isMeme && memeList != null) {
+                Log.d("ProfileActivity", "MemeList $memeList")
+                holder.imageCell.setOnClickListener {
+                    Log.d("ProfileActivity", "Selected MemeList ${memeList[position]}")
+                    navigateToComments(memeList[position])
+                }
+            }
+            holder.deleteBtn.visibility = View.GONE
         }
     }
 

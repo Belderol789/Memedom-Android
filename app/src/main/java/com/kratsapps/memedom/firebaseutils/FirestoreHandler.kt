@@ -325,9 +325,8 @@ class FirestoreHandler {
                             popUpData: (MemeDomUser) -> Unit) {
 
         Log.d("Firestore-matching", "$uid")
-
         val matchLimit = DatabaseManager(context).retrievePrefsInt(MATCH_LIMIT, 5)
-
+        Log.d("MatchLimit", "Limit $matchLimit")
         firestoreDB
             .collection(USERS_PATH)
             .document(uid)
@@ -338,14 +337,14 @@ class FirestoreHandler {
                 }
 
                 if (snapshot != null && snapshot.exists()) {
-                    val likedHashMap = snapshot.get("dating") as HashMap<String, Long>
+                    val datingHashMap = snapshot.get("dating") as HashMap<String, Long>
                     val memeDomuser = DatabaseManager(context).retrieveSavedUser()
                     Log.d(
                         "Firestore-matching",
                         "Matches ${memeDomuser?.matches} Rejects ${memeDomuser?.rejects}"
                     )
 
-                    for ((key, value) in likedHashMap) {
+                    for ((key, value) in datingHashMap) {
 
                         Log.d("Firestore-matching", "Current users $key and $value")
 
@@ -514,7 +513,7 @@ class FirestoreHandler {
     }
 
     fun getAllMemesOfMainUser(uid: String,
-                              memes: (Memes) -> Unit) {
+                              memes: (Memes?) -> Unit) {
 
         Log.d("UserMemes", "Getting Memes of $uid")
 
@@ -525,6 +524,7 @@ class FirestoreHandler {
             .addSnapshotListener {snapshot, e ->
                 if (e != null) {
                     Log.w("Profile-memes", "listen failed $e")
+                    memes(null)
                     return@addSnapshotListener
                 }
 
@@ -535,6 +535,8 @@ class FirestoreHandler {
                             memes(userMeme)
                         }
                     }
+                } else {
+                    memes(null)
                 }
             }
     }

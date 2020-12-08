@@ -20,7 +20,6 @@
         android:layout_gravity="top|right"
         android:layout_margin="8dp"
         android:background="@color/transparent"
-        android:tint="@color/whiteColor"
-        app:srcCompat="@drawable/ic_action_down_cancel" />
+        android:tint="@color/whiteColor"/>
 
 </FrameLayout>

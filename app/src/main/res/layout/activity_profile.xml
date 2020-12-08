@@ -31,10 +31,10 @@
             <LinearLayout
                 android:id="@+id/choicesLayout"
                 android:layout_width="match_parent"
-                android:layout_height="50dp"
-                android:layout_marginStart="8dp"
-                android:layout_marginTop="8dp"
-                android:layout_marginEnd="8dp"
+                android:layout_height="40dp"
+                android:layout_marginStart="16dp"
+                android:layout_marginTop="16dp"
+                android:layout_marginEnd="16dp"
                 android:divider="@drawable/divider_horizontal"
                 android:orientation="horizontal"
                 android:showDividers="middle"
@@ -58,6 +58,7 @@
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
                     android:background="@drawable/soft_button"
+                    android:backgroundTint="@color/appDateFGColor"
                     android:text="Match"
                     android:textColor="@color/whiteColor"
                     android:textStyle="bold" />
@@ -68,7 +69,7 @@
                 android:id="@+id/statsLayout"
                 android:layout_width="0dp"
                 android:layout_height="60dp"
-                android:layout_marginTop="8dp"
+                android:layout_marginTop="16dp"
                 android:layout_marginEnd="16dp"
                 android:divider="@drawable/divider_horizontal"
                 android:gravity="center"
@@ -248,7 +249,7 @@
                 android:layout_width="80dp"
                 android:layout_height="80dp"
                 android:layout_marginStart="16dp"
-                android:layout_marginTop="8dp"
+                android:layout_marginTop="16dp"
                 android:background="@drawable/round_imageview"
                 android:src="@drawable/ic_action_name"
                 app:layout_constraintStart_toStartOf="parent"
@@ -390,7 +391,7 @@
             tools:context=".MainActivity">
 
             <ImageView
-                android:id="@+id/loadingImageView"
+                android:id="@+id/profileLoadingImageView"
                 android:layout_width="100dp"
                 android:layout_height="100dp"
                 app:layout_constraintBottom_toBottomOf="parent"

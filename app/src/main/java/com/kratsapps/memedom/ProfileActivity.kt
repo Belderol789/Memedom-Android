@@ -3,6 +3,7 @@ package com.kratsapps.memedom
 import DefaultItemDecorator
 import android.app.Activity
 import android.content.Intent
+import android.graphics.Color
 import android.graphics.Point
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
@@ -21,7 +22,9 @@ import com.kratsapps.memedom.firebaseutils.FirestoreHandler
 import com.kratsapps.memedom.adapters.ImageAdapter
 import com.kratsapps.memedom.models.Matches
 import com.kratsapps.memedom.models.Memes
+import com.kratsapps.memedom.utils.AndroidUtils
 import com.kratsapps.memedom.utils.DatabaseManager
+import com.kratsapps.memedom.utils.ScreenSize
 import kotlinx.android.synthetic.main.activity_profile.*
 
 class ProfileActivity : AppCompatActivity() {
@@ -36,28 +39,64 @@ class ProfileActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_profile)
-
         congratsView.visibility = View.GONE
-        matchUser = intent.extras?.get("MatchUser") as? Matches
+        val matches = intent.extras?.get("MatchUser") as? Matches
+        val matchID = intent.extras?.get("MatchID") as? String
+        if (matches != null) {
+            matchUser = matches
+            matchUserID = matches.uid
+        }
+        if (matchID != null) {
+            matchUserID = matchID
+        }
         setupUI()
     }
 
     private fun setupUI() {
+        congratsView.visibility = View.INVISIBLE
         profileActivityLoadingView.visibility = View.VISIBLE
         Glide.with(this)
             .asGif()
             .load(R.raw.loader)
-            .into(loadingImageView)
+            .into(profileLoadingImageView)
+
+        AndroidUtils().getScreenWidthAndHeight(this, { width, height ->
+            profileRecycler.layoutParams.width = width
+            profileRecycler.layoutParams.height = height
+
+            galleryRecycler.layoutParams.width = width
+            galleryRecycler.layoutParams.height = height
+        })
 
         FirestoreHandler().getUsersDataWith(matchUserID, {
             memeDomUser = it
             matchUserID = it.email + it.uid
             setupUserData()
-            setupGallery()
             getAllUserMemes()
             setupActionButtons(it)
             profileActivityLoadingView.visibility = View.GONE
         })
+
+        val screenWidth = ScreenSize().getScreenWidth()
+
+        memeSegment.setOnClickListener {
+            memeSegment.isChecked = true
+            gallerySegment.isChecked = false
+
+            memeSegment.setTextColor(Color.WHITE)
+            gallerySegment.setTextColor(Color.parseColor("#58BADC"))
+            photosScrollView.smoothScrollTo(0, 0)
+        }
+
+        gallerySegment.setOnClickListener {
+            gallerySegment.isChecked = true
+            memeSegment.isChecked = false
+
+            gallerySegment.setTextColor(Color.WHITE)
+            memeSegment.setTextColor(Color.parseColor("#58BADC"))
+            photosScrollView.smoothScrollTo(screenWidth, 0)
+        }
+
     }
 
     private fun setupActionButtons(memeDomUser: MemeDomUser) {
@@ -118,7 +157,7 @@ class ProfileActivity : AppCompatActivity() {
         if (images != null) {
             Log.d("UserGallery", "User photos $images")
             galleryItems = images.toMutableList()
-            val galleryAdapter = ImageAdapter(galleryItems, null, this, null, false)
+            val galleryAdapter = ImageAdapter(galleryItems, matchUserMemes, this, null, false)
             galleryRecycler.adapter = galleryAdapter
             galleryRecycler.layoutManager = galleryManager
             galleryRecycler.itemAnimator?.removeDuration
@@ -128,27 +167,30 @@ class ProfileActivity : AppCompatActivity() {
     private fun getAllUserMemes() {
         matchUserMemes.clear()
         FirestoreHandler().getAllMemesOfMainUser(memeDomUser!!.uid) {
-            matchUserMemes.add(it)
-            var crown: Int = 0
-            for (meme in matchUserMemes) {
-                crown += meme.getPostLikeCount()
+            if (it != null) {
+                matchUserMemes.add(it)
+                var crown: Int = 0
+                for (meme in matchUserMemes) {
+                    crown += meme.getPostLikeCount()
+                }
+
+                matchCount.setText("${memeDomUser!!.matches.count()}")
+                postCount.setText("${matchUserMemes.count()}")
+                crownsCount.setText("$crown")
+
+                var userMemes = mutableListOf<String>()
+                for (meme in matchUserMemes) {
+                    userMemes.add(meme.postImageURL)
+                }
+
+                val feedAdapter = ImageAdapter(userMemes, matchUserMemes, this, null, true)
+                val galleryManager: GridLayoutManager =
+                    GridLayoutManager(this, 3, GridLayoutManager.VERTICAL, false)
+                profileRecycler.adapter = feedAdapter
+                profileRecycler.layoutManager = galleryManager
+                profileRecycler.itemAnimator?.removeDuration
             }
-
-            matchCount.setText("${memeDomUser!!.matches.count()}")
-            postCount.setText("${matchUserMemes.count()}")
-            crownsCount.setText("$crown")
-
-            var userMemes = mutableListOf<String>()
-            for (meme in matchUserMemes) {
-                userMemes.add(meme.postImageURL)
-            }
-
-            val feedAdapter = ImageAdapter(userMemes, matchUserMemes, this, null, true)
-            val galleryManager: GridLayoutManager =
-                GridLayoutManager(this, 3, GridLayoutManager.VERTICAL, false)
-            profileRecycler.adapter = feedAdapter
-            profileRecycler.layoutManager = galleryManager
-            profileRecycler.itemAnimator?.removeDuration
+            setupGallery()
         }
     }
 }
