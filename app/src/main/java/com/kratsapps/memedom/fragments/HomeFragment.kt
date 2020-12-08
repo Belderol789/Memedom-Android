@@ -43,6 +43,8 @@ class HomeFragment : Fragment() {
     private var datingMemes = mutableListOf<Memes>()
     private var filteredMemems = mutableListOf<Memes>()
 
+    var isMemedom = true
+
     var firebaseAuth: FirebaseAuth? = null
     var mAuthListener: FirebaseAuth.AuthStateListener? = null
 
@@ -69,7 +71,11 @@ class HomeFragment : Fragment() {
 
                 datingMemes = mainActivity.datingMemes
                 allMemes = mainActivity.allMemes
-                filteredMemems.addAll(allMemes)
+                if (isMemedom) {
+                    filteredMemems.addAll(allMemes)
+                } else {
+                    filteredMemems.addAll(datingMemes)
+                }
 
                 Log.d("MainActivityMemes", "filtered memes $filteredMemems")
 
@@ -85,7 +91,11 @@ class HomeFragment : Fragment() {
 
             datingMemes = mainActivity.datingMemes
             allMemes = mainActivity.allMemes
-            filteredMemems.addAll(allMemes)
+            if (isMemedom) {
+                filteredMemems.addAll(allMemes)
+            } else {
+                filteredMemems.addAll(datingMemes)
+            }
 
             homeSwipe.isRefreshing = false
             loadingView.visibility = View.INVISIBLE
@@ -205,15 +215,15 @@ class HomeFragment : Fragment() {
         Log.d("Filtereing", "Current memes ${datingMemes.count()} ${allMemes.count()}")
 
         if(isDating) {
+            isMemedom = false
             filteredMemems.addAll(datingMemes)
-
             datingSegment.isChecked = true
             datingSegment.setTextColor(Color.parseColor("#FF69B4"))
             friendsSegment.isChecked = false
             friendsSegment.setTextColor(Color.WHITE)
         } else {
+            isMemedom = true
             filteredMemems.addAll(allMemes)
-
             friendsSegment.isChecked = true
             friendsSegment.setTextColor(Color.parseColor("#58BADC"))
             datingSegment.isChecked = false

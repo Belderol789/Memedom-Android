@@ -89,6 +89,16 @@ class FeedAdapter(
             )
             .into(holder.postProfilePic)
 
+        if (currentItem.postType == "Friends") {
+            holder.likeBtn.setImageResource(R.drawable.ic_action_crown)
+            holder.likeImageView.setImageResource(R.drawable.ic_action_crown)
+            holder.pointsIcon.setImageResource(R.drawable.ic_action_crown)
+        } else {
+            holder.likeBtn.setImageResource(R.drawable.ic_action_like)
+            holder.likeImageView.setImageResource(R.drawable.ic_action_like)
+            holder.pointsIcon.setImageResource(R.drawable.ic_action_like)
+        }
+
         holder.postUserName.text = currentItem.postUsername
         holder.likeImageView.alpha = 0f
 
@@ -122,6 +132,20 @@ class FeedAdapter(
                     currentItem.postLikers += mainUserID
                     animateLikeImageView(holder, mainUser, currentItem)
                     mainUser.seenOldMemes += postUID
+
+                    val updatedPoints = currentItem.postLikers.count() + 1
+                    val fieldValue: FieldValue = FieldValue.arrayUnion(mainUser.uid)
+                    val updatedPointsHash = hashMapOf<String, Any>(
+                        "postLikers" to fieldValue,
+                        "postPoints" to updatedPoints.toLong()
+                    )
+                    FirestoreHandler().updateArrayDatabaseObject(
+                        "Memes",
+                        currentItem.postID,
+                        updatedPointsHash
+                    )
+                    FirestoreHandler().updateLikedDatabase(mainUser.uid, currentItem.postUserUID, 1)
+
                     DatabaseManager(feedAdapterContext).convertUserObject(mainUser!!, "MainUser", {})
                 }
             }
@@ -219,19 +243,6 @@ class FeedAdapter(
                 } else {
                     activatePoints(holder, updatedPoints, Assets().appDateFGColor, R.color.appDateFGColor)
                 }
-
-                val fieldValue: FieldValue = FieldValue.arrayUnion(mainUser.uid)
-                val updatedPointsHash = hashMapOf<String, Any>(
-                    "postLikers" to fieldValue,
-                    "postPoints" to updatedPoints.toLong()
-                )
-
-                FirestoreHandler().updateArrayDatabaseObject(
-                    "Memes",
-                    meme.postID,
-                    updatedPointsHash
-                )
-                FirestoreHandler().updateLikedDatabase(mainUser.uid, meme.postUserUID, 1)
             }
     }
 

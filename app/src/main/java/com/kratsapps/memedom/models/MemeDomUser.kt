@@ -8,22 +8,22 @@ import java.util.*
 import kotlin.collections.HashMap
 
 class MemeDomUser: Serializable {
-    var name: String = ""
-    var gender: String = "Male"
-    var lookingFor: String = "Female"
-    var birthday: String = ""
-    var profilePhoto: String = ""
-    var uid: String = ""
-    var email: String = ""
-    var bio: String = ""
-    var minAge: Int = 16
-    var maxAge: Int = 65
-    var gallery: List<String> = listOf()
-    var memes: List<String> = listOf()
+    var name: String = "" //1
+    var gender: String = "Male" //2
+    var lookingFor: String = "Female" //3
+    var birthday: String = "" //4
+    var profilePhoto: String = "" //5
+    var uid: String = "" //6
+    var email: String = "" //7
+    var bio: String = "" //8
+    var minAge: Int = 16 //9
+    var maxAge: Int = 65 //10
+    var gallery: List<String> = listOf() //11
+    var memes: List<String> = listOf() //12
 
-    var rejects: List<String> = listOf()
-    var matches: List<String> = listOf()
-    var liked: HashMap<String, Any> = hashMapOf()
+    var rejects: List<String> = listOf() //13
+    var matches: List<String> = listOf() //14
+    var liked: HashMap<String, Any> = hashMapOf() //15
 
     var seenOldMemes: List<String> = listOf()
 

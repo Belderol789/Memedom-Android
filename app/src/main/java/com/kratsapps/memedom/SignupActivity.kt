@@ -149,7 +149,7 @@ class SignupActivity : AppCompatActivity() {
         }
 
         lookingFemaleFilter.setOnClickListener {
-            activateFilter(lookingFemaleFilter, null, "Male", listOf(signupMaleGender, lookingOtherFilter))
+            activateFilter(lookingFemaleFilter, null, "Female", listOf(signupMaleGender, lookingOtherFilter))
         }
 
         lookingOtherFilter.setOnClickListener {
@@ -294,6 +294,7 @@ class SignupActivity : AppCompatActivity() {
                 "matches" to memeDomuser.matches,
                 "rejects" to memeDomuser.rejects,
                 "memes" to memeDomuser.memes,
+                "seenOldMemes" to listOf<String>(),
                 "minAge" to 16,
                 "maxAge" to 65
             )
