@@ -297,7 +297,10 @@ class SignupActivity : AppCompatActivity() {
                 "minAge" to 16,
                 "maxAge" to 65
             )
-            FirestoreHandler().addDataToFirestore("User", memeDomuser.uid, newUser, {
+
+            val documentPath = memeDomuser.email + memeDomuser.uid
+
+            FirestoreHandler().addDataToFirestore("User", documentPath, newUser, {
                 signupLoadingView.visibility = View.INVISIBLE
                 if (it != null) {
                     signupLoadingView.visibility = View.INVISIBLE

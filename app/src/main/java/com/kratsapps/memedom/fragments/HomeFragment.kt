@@ -33,14 +33,13 @@ class HomeFragment : Fragment() {
     lateinit var rootView: View
     lateinit var datingSegment: AppCompatRadioButton
     lateinit var friendsSegment: AppCompatRadioButton
-    lateinit var homeContext: Context
     lateinit var feedAdapter: FeedAdapter
     lateinit var feedRecyclerView: RecyclerView
     lateinit var homeSwipe: SwipeRefreshLayout
-    lateinit var loadingView: CardView
+    //lateinit var loadingView: CardView
     lateinit var mainActivity: MainActivity
 
-    private var friendMemes = mutableListOf<Memes>()
+    private var allMemes = mutableListOf<Memes>()
     private var datingMemes = mutableListOf<Memes>()
     private var filteredMemems = mutableListOf<Memes>()
 
@@ -50,23 +49,27 @@ class HomeFragment : Fragment() {
     private fun getAllMemes() {
 
         var blankScreen = rootView.findViewById<LinearLayout>(R.id.blankLayout)
-        blankScreen.visibility = View.GONE
+        val loadingView = rootView.findViewById<CardView>(R.id.progressCardView)
 
-        if (mainActivity.friendsMemes.isEmpty()) {
+        blankScreen.visibility = View.GONE
+        filteredMemems.clear()
+
+        if (mainActivity.allMemes.isEmpty()) {
 
             loadingView.visibility = View.VISIBLE
             Log.d("Main Activity", "Home-Fragment getting memes")
 
             mainActivity.setupHomeFragment {
-                if (mainActivity.friendsMemes.isEmpty()) {
+
+                if (mainActivity.allMemes.isEmpty()) {
                     blankScreen.visibility = View.VISIBLE
                 } else {
                     blankScreen.visibility = View.GONE
                 }
 
-                friendMemes = mainActivity.friendsMemes
                 datingMemes = mainActivity.datingMemes
-                filteredMemems = mainActivity.allMemes
+                allMemes = mainActivity.allMemes
+                filteredMemems.addAll(allMemes)
 
                 Log.d("MainActivityMemes", "filtered memes $filteredMemems")
 
@@ -80,20 +83,14 @@ class HomeFragment : Fragment() {
 
             Log.d("MainActivityMemes", "filtered memes $filteredMemems")
 
-            friendMemes = mainActivity.friendsMemes
             datingMemes = mainActivity.datingMemes
-            filteredMemems = mainActivity.allMemes
+            allMemes = mainActivity.allMemes
+            filteredMemems.addAll(allMemes)
 
             homeSwipe.isRefreshing = false
             loadingView.visibility = View.INVISIBLE
             setupFeedView()
         }
-    }
-
-    override fun onAttach(context: Context) {
-        super.onAttach(context)
-        homeContext = context
-        Log.d("OnCreateView", "Called Attached")
     }
 
     override fun onCreateView(
@@ -138,9 +135,9 @@ class HomeFragment : Fragment() {
         friendsSegment = rootView.findViewById(R.id.friendsSegment)
         datingSegment = rootView.findViewById(R.id.datingSegment)
 
-        loadingView = rootView.findViewById(R.id.progressCardView)
         val loadingImageView = rootView.findViewById<ImageView>(R.id.loadingImageView)
-        Glide.with(homeContext)
+
+        Glide.with(this)
             .asGif()
             .load(R.raw.loader)
             .into(loadingImageView)
@@ -152,13 +149,12 @@ class HomeFragment : Fragment() {
             updateSegments(true)
         }
         friendsSegment.setOnClickListener{
-            Log.d("Segment-Memedom", "Popular segment tapped ${friendMemes.count()}")
+            Log.d("Segment-Memedom", "Popular segment tapped ${allMemes.count()}")
             updateSegments(false)
         }
         homeSwipe = rootView.findViewById<SwipeRefreshLayout>(R.id.homeSwipe)
         homeSwipe.setOnRefreshListener(OnRefreshListener {
             mainActivity.allMemes.clear()
-            mainActivity.friendsMemes.clear()
             mainActivity.datingMemes.clear()
             getAllMemes()
         })
@@ -169,13 +165,13 @@ class HomeFragment : Fragment() {
         Log.d("MainActivityMemes", "Setting up feed view ${filteredMemems.count()}")
         feedAdapter = FeedAdapter(filteredMemems, mainActivity, false)
         feedRecyclerView = rootView.findViewById(R.id.recyclerViewHome) as RecyclerView
-        feedRecyclerView.addItemDecoration(
-            DefaultItemDecorator(
-                resources.getDimensionPixelSize(
-                    R.dimen.vertical_recyclerView
-                )
-            )
-        )
+//        feedRecyclerView.addItemDecoration(
+//            DefaultItemDecorator(
+//                resources.getDimensionPixelSize(
+//                    R.dimen.vertical_recyclerView
+//                )
+//            )
+//        )
         feedRecyclerView.adapter = feedAdapter
         feedRecyclerView.layoutManager = LinearLayoutManager(mainActivity)
         feedRecyclerView.setHasFixedSize(true)
@@ -206,7 +202,7 @@ class HomeFragment : Fragment() {
     private fun updateSegments(isDating: Boolean) {
         feedAdapter.clear()
 
-        Log.d("Filtereing", "Current memes ${datingMemes.count()} ${friendMemes.count()}")
+        Log.d("Filtereing", "Current memes ${datingMemes.count()} ${allMemes.count()}")
 
         if(isDating) {
             filteredMemems.addAll(datingMemes)
@@ -216,7 +212,7 @@ class HomeFragment : Fragment() {
             friendsSegment.isChecked = false
             friendsSegment.setTextColor(Color.WHITE)
         } else {
-            filteredMemems.addAll(friendMemes)
+            filteredMemems.addAll(allMemes)
 
             friendsSegment.isChecked = true
             friendsSegment.setTextColor(Color.parseColor("#58BADC"))

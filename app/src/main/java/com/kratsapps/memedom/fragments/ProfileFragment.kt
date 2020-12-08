@@ -127,7 +127,7 @@ class ProfileFragment : Fragment() {
                     userMemes.add(meme.postImageURL)
                 }
 
-                val feedAdapter = ImageAdapter(userMemes, profileMemes, this.activity!!, this, true)
+                val feedAdapter = ImageAdapter(userMemes, profileMemes, mainActivity, this, true)
                 val galleryManager: GridLayoutManager =
                     GridLayoutManager(mainActivity, 3, GridLayoutManager.VERTICAL, false)
                 profileRecyclerView.adapter = feedAdapter
@@ -149,7 +149,7 @@ class ProfileFragment : Fragment() {
         galleryRecyclerView = rootView.findViewById(R.id.galleryRecycler)
 
         profileView = rootView.findViewById<CardView>(R.id.profile_cardView)
-        progressCardView = rootView.findViewById<CardView>(R.id.progressCardView)
+        progressCardView = rootView.findViewById<CardView>(R.id.profileLoadingView)
         progressCardView.visibility = View.INVISIBLE
         val loadingImageView = rootView.findViewById(R.id.loadingImageView) as ImageView
         Glide.with(this)

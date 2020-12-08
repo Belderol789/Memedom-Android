@@ -66,7 +66,7 @@ class SettingsFragment : Fragment() {
         femaleFilter = rootView.findViewById<AppCompatRadioButton>(R.id.genderFemale)
         otherFilter = rootView.findViewById<AppCompatRadioButton>(R.id.genderOther)
 
-        lookingMaleFilter = rootView.findViewById<AppCompatRadioButton>(R.id.signupMaleGender)
+        lookingMaleFilter = rootView.findViewById<AppCompatRadioButton>(R.id.lookingMaleFilter)
         lookingFemaleFilter = rootView.findViewById<AppCompatRadioButton>(R.id.lookingFemaleFilter)
         lookingOtherFilter = rootView.findViewById<AppCompatRadioButton>(R.id.lookingOtherFilter)
 

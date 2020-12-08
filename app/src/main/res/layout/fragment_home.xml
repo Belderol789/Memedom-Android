@@ -30,7 +30,7 @@
                 android:button="@android:color/transparent"
                 android:checked="true"
                 android:gravity="center"
-                android:text="Friends"
+                android:text="@string/friends"
                 android:textColor="@color/appFGColor" />
 
             <androidx.appcompat.widget.AppCompatRadioButton
@@ -42,7 +42,7 @@
                 android:button="@android:color/transparent"
                 android:checked="false"
                 android:gravity="center"
-                android:text="Dating"
+                android:text="@string/dating"
                 android:textColor="@android:color/white" />
         </RadioGroup>
     </LinearLayout>

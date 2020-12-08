@@ -52,7 +52,6 @@ class MainActivity : AppCompatActivity() {
     var profileIsLoaded: Boolean = false
 
     //HomeFragment
-    var friendsMemes = mutableListOf<Memes>()
     var datingMemes = mutableListOf<Memes>()
     var allMemes = mutableListOf<Memes>()
     //ProfileFragment
@@ -88,27 +87,19 @@ class MainActivity : AppCompatActivity() {
             DatabaseManager(this).saveToPrefsInt("matchLimit", matchLimit.toInt())
             FirestoreHandler().getAllMemes(this, mainUser, dayLimit, memeLimit) {
 
-                friendsMemes.clear()
                 datingMemes.clear()
                 allMemes.clear()
 
                 it.forEach {
                     if (mainUser != null) {
                         if (!(mainUser!!.seenOldMemes).contains(it.postID)) {
-
                             Log.d("MainActivityHome", "SeenOldMemes ${mainUser!!.seenOldMemes} this meme ${it.postID}")
-
                             if (mainUser?.lookingFor == it.userGender && it.postType == "Dating") {
                                 datingMemes.add(it)
-                            } else if (it.postType == "Friends") {
-                                friendsMemes.add(it)
-                                allMemes.add(it)
                             }
                         }
-                    } else if (it.postType == "Friends") {
-                        friendsMemes.add(it)
-                        allMemes.add(it)
                     }
+                    allMemes.add(it)
                 }
                 completed()
             }
@@ -143,7 +134,6 @@ class MainActivity : AppCompatActivity() {
             }
             true
         }
-        makeCurrentFragment(homeFragment)
     }
 
     fun makeCurrentFragment(fragment: Fragment) =
