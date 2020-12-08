@@ -250,11 +250,13 @@ class CreateFragment : Fragment() {
         val imageViewMeme = rootView.findViewById(R.id.imageViewMeme) as ImageView
         val buttonPost = rootView.findViewById(R.id.buttonPost) as Button
         val postTitle = rootView.findViewById(R.id.editTextTitle) as EditText
+        val switchDating = rootView.findViewById(R.id.datingSwitch) as SwitchCompat
 
         addImageButton.visibility = View.VISIBLE
         removeImageBtn.visibility = View.INVISIBLE
 
         buttonPost.alpha = 0.25f
+        switchDating.isChecked = false
         imageViewMeme.setImageDrawable(null)
         postTitle.setText(null)
     }

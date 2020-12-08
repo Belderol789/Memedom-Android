@@ -2,6 +2,8 @@ package com.kratsapps.memedom.firebaseutils
 
 import android.content.Context
 import android.util.Log
+import androidx.room.Database
+import com.facebook.internal.Mutable
 import com.google.firebase.firestore.FieldValue
 import com.google.firebase.firestore.Query
 import com.google.firebase.firestore.SetOptions
@@ -13,6 +15,7 @@ import java.text.SimpleDateFormat
 import java.util.*
 import kotlin.collections.HashMap
 import kotlin.math.round
+import kotlin.reflect.KClass
 
 class FirestoreHandler {
 
@@ -94,24 +97,54 @@ class FirestoreHandler {
             }
     }
 
+    fun getCurrentNumberOfLikes(
+        mainuserID: String,
+        postUserID: String,
+        matchType: String,
+        completed: (currentLikes: Long) -> Unit
+    ) {
+        firestoreDB
+            .collection(USERS_PATH)
+            .document(mainuserID)
+            .get()
+            .addOnSuccessListener {
+                val likedHashMap = it.get(matchType) as HashMap<String, Long>
+
+                Log.d("Firestore-Liked", "Got like hashmap $likedHashMap with uid as $postUserID")
+
+                val userLiked = likedHashMap.get(postUserID)
+                if (userLiked != null) {
+                    Log.d("Firestore-Liked", "Current number $userLiked")
+                    completed(userLiked)
+                } else {
+                    completed(0)
+                }
+            }
+            .addOnFailureListener {
+                completed(0)
+            }
+    }
+
     //Editing
-    fun updateLikeDatabase(mainuserID: String,
-                            postUserID: String,
-                            matchType: String,
-                            plus: Long) {
+    fun<T: Any> T.getClass(): KClass<T> {
+        return javaClass.kotlin
+    }
 
-        getCurrentNumberOfLikes(mainuserID, postUserID, matchType, {
-            val updatedCount = it?.plus(plus)
-            val updatedLike = hashMapOf(mainuserID to updatedCount)
-            val updateLiked: HashMap<String, Any> = hashMapOf(
-                matchType to updatedLike
-            )
-            firestoreDB
-                .collection(USERS_PATH)
-                .document(mainuserID)
-                .set(updateLiked, SetOptions.merge())
+    fun updateLikeDatabase(mainuserID: String, postUserID: String, matchType: String, context: Context, plus: Long) {
+        val mainUser = DatabaseManager(context).retrieveSavedUser()
 
-        })
+        if (mainUser != null) {
+            getCurrentNumberOfLikes(mainuserID, postUserID, matchType, {
+                val updatedCount = it?.plus(plus)
+                val updatedLike = hashMapOf(postUserID to updatedCount)
+                val updateLiked: HashMap<String, Any> = hashMapOf(matchType to updatedLike)
+
+                firestoreDB
+                    .collection(USERS_PATH)
+                    .document(mainuserID)
+                    .set(updateLiked, SetOptions.merge())
+            })
+        }
         Log.d("Firestore-Liked", "Updating $postUserID to $mainuserID")
     }
 
@@ -238,10 +271,9 @@ class FirestoreHandler {
                         "Filtering-Memes",
                         "MemeAge ${newMeme.userAge} min $minValue max $maxValue"
                     )
-
+                    //!mainUser.seenOldMemes.contains(newMeme.postID)
                     if (mainUser != null) {
                         if (!mainUser.rejects.contains(newMeme.postUserUID)
-                            && !mainUser.seenOldMemes.contains(newMeme.postID)
                             && newMeme.userAge.toInt() >= minValue && newMeme.userAge.toInt() <= maxValue
                         ) {
                             Log.d("Memes", "User is not null")
@@ -285,34 +317,6 @@ class FirestoreHandler {
             .addOnSuccessListener { document ->
                 val mainUser: MemeDomUser = document.toObject(MemeDomUser::class.java)!!
                 completed(mainUser)
-            }
-    }
-
-    fun getCurrentNumberOfLikes(
-        mainuserID: String,
-        postUserID: String,
-        matchType: String,
-        completed: (currentLikes: Long?) -> Unit
-    ) {
-        firestoreDB
-            .collection(USERS_PATH)
-            .document(mainuserID)
-            .get()
-            .addOnSuccessListener {
-                val likedHashMap = it.get(matchType) as HashMap<String, Long>
-
-                Log.d("Firestore-Liked", "Got like hashmap $likedHashMap with uid as $postUserID")
-
-                val userLiked = likedHashMap.get(postUserID)
-                if (userLiked != null) {
-                    Log.d("Firestore-Liked", "Current number $userLiked")
-                    completed(userLiked)
-                } else {
-                    completed(0)
-                }
-            }
-            .addOnFailureListener {
-                completed(0)
             }
     }
 
@@ -465,12 +469,9 @@ class FirestoreHandler {
 
             var fieldValue: FieldValue = FieldValue.arrayUnion(matchUserUID)
             updateDatabaseObject(USERS_PATH, mainUser.uid, hashMapOf("matches" to fieldValue))
-
             mainUser.matches += matchUserUID
-
             DatabaseManager(context).convertUserObject(mainUser, "MainUser", {})
-
-            updateLikeDatabase(mainUser.uid, matchUserUID, "dating", 1)
+            updateLikeDatabase(mainUser.uid, matchUserUID, "dating", context, 1)
 
             completed()
         }
