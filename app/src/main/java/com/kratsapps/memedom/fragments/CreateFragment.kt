@@ -21,6 +21,7 @@ import android.widget.ImageView
 import androidx.annotation.RequiresApi
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.widget.AppCompatRadioButton
+import androidx.appcompat.widget.SwitchCompat
 import androidx.cardview.widget.CardView
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
@@ -118,19 +119,16 @@ class CreateFragment : Fragment() {
     }
 
     fun setupTypeSelection() {
-        val dating = rootView.findViewById<AppCompatRadioButton>(R.id.datingFilter)
-        val friends = rootView.findViewById<AppCompatRadioButton>(R.id.friendsFilter)
-
-        dating.setOnClickListener {
-            postType = "Dating"
-            setButtonColor(R.color.appDateFGColor)
+        val dating = rootView.findViewById<SwitchCompat>(R.id.datingSwitch)
+        dating.setOnCheckedChangeListener { _, isChecked ->
+            if (isChecked) {
+                postType = "Dating"
+                setButtonColor(R.color.appDateFGColor)
+            } else {
+                postType = "Friends"
+                setButtonColor(R.color.appFGColor)
+            }
         }
-
-        friends.setOnClickListener {
-            postType = "Friends"
-            setButtonColor(R.color.appFGColor)
-        }
-
     }
 
     fun setButtonColor(color: Int) {
@@ -180,6 +178,7 @@ class CreateFragment : Fragment() {
                         "postUsername" to savedUser.name,
                         "postProfileURL" to savedUser.profilePhoto,
                         "postUserUID" to savedUser.uid,
+                        "postUserEmail" to savedUser.email,
                         "postPoints" to 1,
                         "postHeight" to imageHeight.toLong(),
                         "postType" to postType

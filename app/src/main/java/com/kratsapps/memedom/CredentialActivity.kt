@@ -137,7 +137,7 @@ class CredentialActivity : AppCompatActivity() {
             if(userSignup) {
                 navigateToSignup(false)
             } else {
-                FirestoreHandler().getUserDataWith(memeDomUser.uid, {
+                FirestoreHandler().getUsersDataWith(firebaseUser.uid, {
                     DatabaseManager(this).convertUserObject(it, "MainUser", {
                         val intent: Intent = Intent(this, MainActivity::class.java)
                         startActivity(intent)

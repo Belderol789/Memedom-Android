@@ -173,15 +173,8 @@ class HomeFragment : Fragment() {
 
     private fun setupFeedView() {
         Log.d("MainActivityMemes", "Setting up feed view ${filteredMemems.count()}")
-        feedAdapter = FeedAdapter(filteredMemems, mainActivity, false)
+        feedAdapter = FeedAdapter(filteredMemems, mainActivity, false, isMemedom)
         feedRecyclerView = rootView.findViewById(R.id.recyclerViewHome) as RecyclerView
-//        feedRecyclerView.addItemDecoration(
-//            DefaultItemDecorator(
-//                resources.getDimensionPixelSize(
-//                    R.dimen.vertical_recyclerView
-//                )
-//            )
-//        )
         feedRecyclerView.adapter = feedAdapter
         feedRecyclerView.layoutManager = LinearLayoutManager(mainActivity)
         feedRecyclerView.setHasFixedSize(true)
@@ -231,6 +224,6 @@ class HomeFragment : Fragment() {
         }
 
         Log.d("Filtering", "Filtered Memes ${filteredMemems.count()}")
-        feedAdapter.addItems(filteredMemems)
+        feedAdapter.addItems(filteredMemems, isMemedom)
     }
 }

@@ -95,22 +95,24 @@ class FirestoreHandler {
     }
 
     //Editing
-    fun updateLikedDatabase(mainUserID: String,
+    fun updateLikeDatabase(mainuserID: String,
                             postUserID: String,
+                            matchType: String,
                             plus: Long) {
-        getCurrentNumberOfLikes(mainUserID, postUserID, {
+
+        getCurrentNumberOfLikes(mainuserID, postUserID, matchType, {
             val updatedCount = it?.plus(plus)
-            val updatedLike = hashMapOf(postUserID to updatedCount)
+            val updatedLike = hashMapOf(mainuserID to updatedCount)
             val updateLiked: HashMap<String, Any> = hashMapOf(
-                "liked" to updatedLike
+                matchType to updatedLike
             )
             firestoreDB
                 .collection(USERS_PATH)
-                .document(mainUserID)
+                .document(mainuserID)
                 .set(updateLiked, SetOptions.merge())
 
         })
-        Log.d("Firestore-Liked", "Updating $postUserID to $mainUserID")
+        Log.d("Firestore-Liked", "Updating $postUserID to $mainuserID")
     }
 
     fun updateDatabaseObject(path: String,
@@ -274,7 +276,7 @@ class FirestoreHandler {
             }
     }
 
-    fun getUserDataWith(uid: String,
+    fun getUsersDataWith(uid: String,
                         completed: (MemeDomUser) -> Unit) {
         firestoreDB
             .collection(USERS_PATH)
@@ -289,6 +291,7 @@ class FirestoreHandler {
     fun getCurrentNumberOfLikes(
         mainuserID: String,
         postUserID: String,
+        matchType: String,
         completed: (currentLikes: Long?) -> Unit
     ) {
         firestoreDB
@@ -296,7 +299,7 @@ class FirestoreHandler {
             .document(mainuserID)
             .get()
             .addOnSuccessListener {
-                val likedHashMap = it.get("liked") as HashMap<String, Long>
+                val likedHashMap = it.get(matchType) as HashMap<String, Long>
 
                 Log.d("Firestore-Liked", "Got like hashmap $likedHashMap with uid as $postUserID")
 
@@ -331,7 +334,7 @@ class FirestoreHandler {
                 }
 
                 if (snapshot != null && snapshot.exists()) {
-                    val likedHashMap = snapshot.get("liked") as HashMap<String, Long>
+                    val likedHashMap = snapshot.get("dating") as HashMap<String, Long>
                     val memeDomuser = DatabaseManager(context).retrieveSavedUser()
                     Log.d(
                         "Firestore-matching",
@@ -347,7 +350,7 @@ class FirestoreHandler {
                             !memeDomuser.matches.contains(key)
                             && !memeDomuser.rejects.contains(key)
                         ) {
-                            getUserDataWith(key, {
+                            getUsersDataWith(key, {
                                 popUpData(it)
                             })
                         }
@@ -369,7 +372,6 @@ class FirestoreHandler {
         if (memeDomuser != null && !memeDomuser.rejects.contains(matchUser.uid)) {
             memeDomuser.rejects += matchUser.uid
             DatabaseManager(context).convertUserObject(memeDomuser, "MainUser", {})
-            updateLikedDatabase(memeDomuser.uid!!, matchUser.uid!!, 1)
         }
     }
 
@@ -416,21 +418,6 @@ class FirestoreHandler {
         }
     }
 
-    /*
-    var newMatches: MutableList<Matches> = mutableListOf()
-
-                        for (match in value?.documents) {
-                            val matchingUser = match.toObject(Matches::class.java)
-
-                            Log.d("Firestore-matching", "Got matched user ${matchingUser?.uid}")
-
-                            if (matchingUser != null) {
-                                newMatches.add(matchingUser)
-                            }
-                        }
-                        completed(newMatches)
-     */
-
     fun sendToMatchUser(matchUser: MemeDomUser,
                         context: Context) {
 
@@ -475,13 +462,15 @@ class FirestoreHandler {
 
         val mainUser = DatabaseManager(context).retrieveSavedUser()
         if (mainUser != null && !mainUser.matches.contains(matchUserUID)) {
+
             var fieldValue: FieldValue = FieldValue.arrayUnion(matchUserUID)
             updateDatabaseObject(USERS_PATH, mainUser.uid, hashMapOf("matches" to fieldValue))
 
             mainUser.matches += matchUserUID
 
             DatabaseManager(context).convertUserObject(mainUser, "MainUser", {})
-            updateLikedDatabase(mainUser.uid!!, matchUserUID, 1)
+
+            updateLikeDatabase(mainUser.uid, matchUserUID, "dating", 1)
 
             completed()
         }

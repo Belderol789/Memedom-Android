@@ -40,49 +40,6 @@
         app:layout_constraintTop_toBottomOf="@+id/editTextTitle"
         tools:srcCompat="@tools:sample/backgrounds/scenic" />
 
-    <LinearLayout
-        android:id="@+id/postTypeLayout"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="16dp"
-        android:layout_marginTop="16dp"
-        android:layout_marginEnd="16dp"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/imageViewMeme">
-
-        <RadioGroup
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="horizontal">
-
-            <androidx.appcompat.widget.AppCompatRadioButton
-                android:id="@+id/friendsFilter"
-                android:layout_width="0dp"
-                android:layout_height="50dp"
-                android:layout_weight="1"
-                android:background="@drawable/radio_button_selector_fill"
-                android:button="@android:color/transparent"
-                android:checked="true"
-                android:gravity="center"
-                android:text="@string/friends"
-                android:textColor="@android:color/white" />
-
-            <androidx.appcompat.widget.AppCompatRadioButton
-                android:id="@+id/datingFilter"
-                android:layout_width="0dp"
-                android:layout_height="50dp"
-                android:layout_weight="1"
-                android:background="@drawable/radio_button_selector_dating"
-                android:button="@android:color/transparent"
-                android:checked="false"
-                android:gravity="center"
-                android:text="@string/dating"
-                android:textColor="@android:color/white" />
-
-        </RadioGroup>
-    </LinearLayout>
-
     <ImageButton
         android:id="@+id/addImageButton"
         android:layout_width="45dp"
@@ -90,7 +47,7 @@
         android:background="@color/transparent"
         android:src="@drawable/ic_action_plus"
         android:tint="@color/appFGColor"
-        app:layout_constraintBottom_toTopOf="@+id/postTypeLayout"
+        app:layout_constraintBottom_toBottomOf="@+id/imageViewMeme"
         app:layout_constraintEnd_toEndOf="@+id/imageViewMeme"
         app:layout_constraintStart_toStartOf="@+id/imageViewMeme"
         app:layout_constraintTop_toBottomOf="@+id/editTextTitle" />
@@ -107,6 +64,30 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/editTextTitle" />
 
+    <LinearLayout
+        android:id="@+id/linearLayout9"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="16dp"
+        android:layout_marginTop="8dp"
+        android:layout_marginEnd="16dp"
+        android:orientation="horizontal"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/imageViewMeme">
+
+        <androidx.appcompat.widget.SwitchCompat
+            android:id="@+id/datingSwitch"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="Post also in dating"
+            android:textColor="#FFFFFF"
+            android:textSize="18sp"
+            android:theme="@style/SCBSwitch"
+            android:textStyle="bold" />
+    </LinearLayout>
+
     <androidx.cardview.widget.CardView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -114,11 +95,11 @@
         android:layout_marginTop="16dp"
         android:layout_marginEnd="16dp"
         android:background="@drawable/cornered_card"
-        app:cardCornerRadius="8dp"
         app:cardBackgroundColor="@color/transparent"
+        app:cardCornerRadius="8dp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/postTypeLayout">
+        app:layout_constraintTop_toBottomOf="@+id/linearLayout9">
 
         <Button
             android:id="@+id/buttonPost"

@@ -32,14 +32,11 @@ import com.kratsapps.memedom.utils.DoubleClickListener
 import kotlinx.android.synthetic.main.feed_item.view.*
 
 
-class FeedAdapter(
-    private var feedList: MutableList<Memes>,
-    private val activity: Activity,
-    val isProfile: Boolean
-): RecyclerView.Adapter<FeedAdapter.FeedViewHolder>() {
+class FeedAdapter(private var feedList: MutableList<Memes>, private val activity: Activity, val isProfile: Boolean, isMemedom: Boolean): RecyclerView.Adapter<FeedAdapter.FeedViewHolder>() {
 
     lateinit var feedAdapterContext: Context
     var filteredFeedList = feedList
+    var isMemeDom = isMemedom
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): FeedViewHolder {
         Log.d("HomeFragment", "Filtering with $filteredFeedList")
@@ -89,7 +86,7 @@ class FeedAdapter(
             )
             .into(holder.postProfilePic)
 
-        if (currentItem.postType == "Friends") {
+        if (isMemeDom) {
             holder.likeBtn.setImageResource(R.drawable.ic_action_crown)
             holder.likeImageView.setImageResource(R.drawable.ic_action_crown)
             holder.pointsIcon.setImageResource(R.drawable.ic_action_crown)
@@ -139,12 +136,18 @@ class FeedAdapter(
                         "postLikers" to fieldValue,
                         "postPoints" to updatedPoints.toLong()
                     )
+
                     FirestoreHandler().updateArrayDatabaseObject(
                         "Memes",
                         currentItem.postID,
                         updatedPointsHash
                     )
-                    FirestoreHandler().updateLikedDatabase(mainUser.uid, currentItem.postUserUID, 1)
+
+                    if (isMemeDom) {
+                        FirestoreHandler().updateLikeDatabase(mainUserID, currentItem.postUserUID, "liked", 1)
+                    } else {
+                        FirestoreHandler().updateLikeDatabase(mainUserID, currentItem.postUserUID, "dating", 1)
+                    }
 
                     DatabaseManager(feedAdapterContext).convertUserObject(mainUser!!, "MainUser", {})
                 }
@@ -186,9 +189,9 @@ class FeedAdapter(
             if (mainUser.matches.contains(currentItem.postUserUID)) {
                 activatePoints(holder, currentPostLikes, Assets().specialColor, R.color.specialColor)
             } else if(currentItem.postLikers.contains(mainUser.uid)) {
-                if (currentItem.postType == "Friends") {
+                if (isMemeDom) {
                     activatePoints(holder, currentPostLikes, Assets().appFGColor, R.color.appFGColor)
-                } else if (currentItem.postType == "Dating") {
+                } else  {
                     activatePoints(holder, currentPostLikes, Assets().appDateFGColor, R.color.appDateFGColor)
                 }
             } else {
@@ -238,7 +241,7 @@ class FeedAdapter(
                 holder.pointsLayout.visibility = View.VISIBLE
                 holder.postUserInfo.visibility = View.VISIBLE
                 val updatedPoints = meme.postLikers.count() + 1
-                if (meme.postType == "Friends") {
+                if (isMemeDom) {
                     activatePoints(holder, updatedPoints, Assets().appFGColor, R.color.appFGColor)
                 } else {
                     activatePoints(holder, updatedPoints, Assets().appDateFGColor, R.color.appDateFGColor)
@@ -323,7 +326,8 @@ class FeedAdapter(
         notifyDataSetChanged()
     }
 
-    fun addItems(memes: MutableList<Memes>) {
+    fun addItems(memes: MutableList<Memes>, memedom: Boolean) {
+        isMemeDom = memedom
         filteredFeedList = memes
         notifyDataSetChanged()
     }

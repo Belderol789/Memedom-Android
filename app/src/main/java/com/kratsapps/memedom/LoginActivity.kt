@@ -117,11 +117,9 @@ class LoginActivity : AppCompatActivity() {
     private fun loginSuccess(firebaseUser: FirebaseUser?) {
         if (firebaseUser?.uid != null && firebaseUser?.email != null) {
 
-            val documentPath = firebaseUser.email + firebaseUser.uid
+            Log.d("DocumentPath", "Login with user ${firebaseUser.uid}")
 
-            Log.d("DocumentPath", "Login with user $documentPath")
-
-            FirestoreHandler().getUserDataWith(documentPath, {
+            FirestoreHandler().getUsersDataWith(firebaseUser.uid, {
                 Log.d("Firestore Login", "Logged in as $it")
                 loginLoadingView.visibility = View.INVISIBLE
                 DatabaseManager(this).convertUserObject(it, "MainUser", {

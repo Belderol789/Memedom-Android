@@ -148,12 +148,11 @@ class MainActivity : AppCompatActivity() {
 
     private fun checkMatchingStatus() {
         val user = FirebaseAuth.getInstance().currentUser
-
         val numberOfTimes = DatabaseManager(this).retrievePrefsInt("matchLimit", 5)
 
         if (user != null) {
             navigationBottom.visibility = View.VISIBLE
-            FirestoreHandler().checkMatchingStatus(this.applicationContext, user.uid, {
+            FirestoreHandler().checkMatchingStatus(this, user.uid, {
                 currentMatchUser = it
                 matchView.visibility = View.VISIBLE
                 matchView.infoTextView.text = "You've liked ${it.name} \nmemes $numberOfTimes times!"

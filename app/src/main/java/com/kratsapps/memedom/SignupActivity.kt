@@ -289,6 +289,7 @@ class SignupActivity : AppCompatActivity() {
                 "lookingFor" to memeDomuser.lookingFor,
                 "email" to memeDomuser.email,
                 "liked" to hashMapOf(memeDomuser.uid to 0),
+                "dating" to hashMapOf(memeDomuser.uid to 0),
                 "gallery" to memeDomuser.gallery,
                 "bio" to memeDomuser.bio,
                 "matches" to memeDomuser.matches,
@@ -299,9 +300,7 @@ class SignupActivity : AppCompatActivity() {
                 "maxAge" to 65
             )
 
-            val documentPath = memeDomuser.email + memeDomuser.uid
-
-            FirestoreHandler().addDataToFirestore("User", documentPath, newUser, {
+            FirestoreHandler().addDataToFirestore("User", memeDomuser.uid, newUser, {
                 signupLoadingView.visibility = View.INVISIBLE
                 if (it != null) {
                     signupLoadingView.visibility = View.INVISIBLE

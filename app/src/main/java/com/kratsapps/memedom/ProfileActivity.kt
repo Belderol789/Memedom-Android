@@ -39,7 +39,6 @@ class ProfileActivity : AppCompatActivity() {
 
         congratsView.visibility = View.GONE
         matchUser = intent.extras?.get("MatchUser") as? Matches
-        matchUserID = matchUser!!.uid
         setupUI()
     }
 
@@ -50,8 +49,9 @@ class ProfileActivity : AppCompatActivity() {
             .load(R.raw.loader)
             .into(loadingImageView)
 
-        FirestoreHandler().getUserDataWith(matchUserID, {
+        FirestoreHandler().getUsersDataWith(matchUserID, {
             memeDomUser = it
+            matchUserID = it.email + it.uid
             setupUserData()
             setupGallery()
             getAllUserMemes()
