@@ -14,6 +14,7 @@ import android.view.animation.Animation
 import android.view.inputmethod.InputMethodManager
 import android.widget.EditText
 import android.widget.ImageView
+import android.widget.LinearLayout
 import android.widget.Toast
 import androidx.annotation.NonNull
 import androidx.appcompat.app.AppCompatActivity
@@ -80,7 +81,7 @@ class MainActivity : AppCompatActivity() {
     fun activateNavBottom(active: Boolean) {
         navigationBottom.isEnabled = active
     }
-
+    //HomeFragment
     fun setupHomeFragment(completed: () -> Unit) {
         FirestoreHandler().getAppSettings() {points, dayLimit, memeLimit, matchLimit ->
             DatabaseManager(this).saveToPrefsInt("matchLimit", matchLimit.toInt())
@@ -105,7 +106,7 @@ class MainActivity : AppCompatActivity() {
             }
         }
     }
-
+    //ProfileFragmrny
     fun setupProfileFragment(completed: (MutableList<Memes>) -> Unit) {
         if (mainUser?.uid != null) {
             FirestoreHandler().getAllMemesOfMainUser(mainUser!!.uid) {
@@ -123,6 +124,14 @@ class MainActivity : AppCompatActivity() {
         Log.d("Saving", "Updating user data")
 
         FirestoreHandler().updateDatabaseObject("User", mainUser!!.uid, hashMap)
+    }
+
+    //MessagesFragment
+    fun getAllMatches(completed: (MutableList<Matches>) -> Unit) {
+        FirestoreHandler().checkNewMatch(this, {
+            completed(it)
+            Log.d("MessagesFragment", "GotNewMatches $it for mainUser $mainUser")
+        })
     }
 
     private fun setupBottomNavigation() {
@@ -265,16 +274,21 @@ class MainActivity : AppCompatActivity() {
 
 
         Log.d("ChatUser", "Request code $requestCode")
+        if (data != null) {
+            if (requestCode == 999) {
 
-        if (requestCode == 999 && data != null) {
+                Log.d("ChatUser", "Request data $data")
 
-            Log.d("ChatUser", "Request data $data")
+                val chatUserData = data.getSerializableExtra("ChatMatch") as Matches
 
-            val chatUserData = data.getSerializableExtra("ChatMatch") as Matches
+                Log.d("ChatUser", "Request dataSerial $chatUserData")
 
-            Log.d("ChatUser", "Request dataSerial $chatUserData")
-
-            goToChat(chatUserData)
+                goToChat(chatUserData)
+            } else if (requestCode == 420) {
+                Log.d("Rejected", "Got Position $data")
+                val rejectPosition = data?.getIntExtra("Position", 0)
+                msgFragment.matchAdapter.removeRow(rejectPosition)
+            }
         }
     }
 

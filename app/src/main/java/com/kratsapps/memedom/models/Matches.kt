@@ -10,13 +10,14 @@ class Matches: Serializable {
     var profilePhoto: String = ""
     var matchText: String = ""
     var matchStatus: Boolean = false
-    var matchDate: Long = 0
+    var chatDate: Long = 0
+    var onlineDate: Long = 0
     var offered: String = ""
 
 
-    fun postDateString(): String {
+    fun postDateString(date: Long): String {
 
-        val postDateFromNow = (GregorianCalendar().timeInMillis - matchDate)
+        val postDateFromNow = (GregorianCalendar().timeInMillis - date)
 
         val seconds: Int = (postDateFromNow / 1000).toInt()
         val minutes = seconds / 60
@@ -26,7 +27,7 @@ class Matches: Serializable {
         val months = weeks / 4
         val years = months / 12
 
-        Log.d("MatchDate", "MatchDate $matchDate NOW $postDateFromNow")
+        Log.d("MatchDate", "MatchDate $date NOW $postDateFromNow")
 
         if (months > 12) {
             return "${years}y ago"

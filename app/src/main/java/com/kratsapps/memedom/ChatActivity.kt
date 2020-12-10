@@ -175,25 +175,27 @@ class ChatActivity : AppCompatActivity() {
 
     private fun updateLastMessage() {
 
-        val lastItem = allMessageItems.last()
-        var lastText = "Sent a message!"
+        if (!allMessageItems.isEmpty()) {
+            val lastItem = allMessageItems.last()
+            var lastText = "Sent a message!"
+            if (URLUtil.isValidUrl(lastItem.chatContent)) {
+                lastText = "Sent  an image!"
+            } else if (!lastItem.chatContent.isEmpty()) {
+                lastText = lastItem.chatContent
+            }
 
-        if (URLUtil.isValidUrl(lastItem.chatContent)) {
-            lastText = "Sent  an image!"
-        } else if (!lastItem.chatContent.isEmpty()) {
-            lastText = lastItem.chatContent
-        }
+            val data = hashMapOf<String, Any>(
+                "matchText" to lastText,
+                "matchDate" to System.currentTimeMillis()
+            )
 
-        val data = hashMapOf<String, Any>(
-            "matchText" to lastText,
-            "matchDate" to System.currentTimeMillis()
-        )
-
-        FirestoreHandler().updateMatch(currentChat.uid, data, this, {
+            FirestoreHandler().updateMatch(currentChat.uid, data, this, {
+                onBackPressed()
+            })
+        } else {
             onBackPressed()
-        })
+        }
     }
-
 
     private fun openMemedom() {
         val intent: Intent = Intent(this, MemedomActivity::class.java)
@@ -245,7 +247,6 @@ class ChatActivity : AppCompatActivity() {
             Log.d("MemedomImage", "Got image back with requestCode $requestCode")
 
             if (userID != null) {
-
                 if (requestCode == IMAGE_GALLERY_REQUEST_CODE && data != null && data.data != null) {
                     AndroidUtils().animateView(progressOverlay, View.VISIBLE, 0.4f, 200)
                     val imageData = data.data

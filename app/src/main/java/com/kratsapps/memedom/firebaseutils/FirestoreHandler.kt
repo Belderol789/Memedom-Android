@@ -2,8 +2,6 @@ package com.kratsapps.memedom.firebaseutils
 
 import android.content.Context
 import android.util.Log
-import androidx.room.Database
-import com.facebook.internal.Mutable
 import com.google.firebase.firestore.FieldValue
 import com.google.firebase.firestore.Query
 import com.google.firebase.firestore.SetOptions
@@ -384,10 +382,13 @@ class FirestoreHandler {
         val mainUser = DatabaseManager(context).retrieveSavedUser()
 
         if (mainUser != null) {
+
+            Log.d("MessagesFragment", "MainUser ${mainUser.uid}")
+
             firestoreDB
                 .collection(MATCHED)
                 .whereArrayContains("uids", mainUser.uid)
-                .orderBy("matchDate", DESCENDING)
+                .orderBy("chatDate", DESCENDING)
                 .addSnapshotListener { value, error ->
                     if (error != null) {
                         Log.w("Firestore-matching", "listen failed $error")
@@ -397,7 +398,7 @@ class FirestoreHandler {
                     if (value?.documents != null) {
 
                         val matches = mutableListOf<Matches>()
-
+                        Log.d("MessagesFragment", "Documents ${value.documents}")
                         for(document in value.documents) {
                             val documentData = document.data
                             if (documentData != null) {
@@ -407,14 +408,19 @@ class FirestoreHandler {
                                 matchObject.profilePhoto = matchData.get("profilePhoto") as String
                                 matchObject.uid = matchData.get("uid") as String
 
-                                matchObject.matchDate = documentData.get("matchDate") as Long
+                                matchObject.chatDate = documentData.get("chatDate") as Long
+                                matchObject.onlineDate = documentData.get("onlineDate") as Long
                                 matchObject.matchText = documentData.get("matchText") as String
                                 matchObject.matchStatus = documentData.get("matchStatus") as Boolean
                                 matchObject.offered = documentData.get("offered") as String
 
+
+                                Log.d("MessagesFragment", "Object to be added $matchObject")
+
                                 matches.add(matchObject)
                             }
                         }
+                        Log.d("MessagesFragment", "Completed $matches")
                         completed(matches)
                     }
                 }
@@ -443,9 +449,10 @@ class FirestoreHandler {
                     "profilePhoto" to matchUser.profilePhoto,
                     "uid" to matchUser.uid
                 ),
+                "onlineDate" to today,
+                "chatDate" to today,
                 "uids" to listOf(matchUser.uid, mainUser.uid),
                 "matchText" to "New Match!",
-                "matchDate" to today,
                 "matchStatus" to false,
                 "offered" to matchUser.uid
             )

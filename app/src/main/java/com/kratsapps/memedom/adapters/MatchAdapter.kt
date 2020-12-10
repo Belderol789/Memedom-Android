@@ -1,10 +1,8 @@
 package com.kratsapps.memedom.adapters
 
-import android.app.Activity
 import android.content.Context
 import android.content.Intent
 import android.os.Build
-import android.service.autofill.FieldClassification
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
@@ -19,7 +17,6 @@ import com.kratsapps.memedom.*
 import com.kratsapps.memedom.firebaseutils.FirestoreHandler
 import com.kratsapps.memedom.models.Matches
 import com.kratsapps.memedom.models.MemeDomUser
-import com.kratsapps.memedom.models.Memes
 import kotlinx.android.synthetic.main.matches_item.view.*
 import java.util.*
 
@@ -61,7 +58,14 @@ class MatchAdapter(
             matchText = currentMatch.matchText
         }
         holder.matchTextView.setText(matchText)
-        holder.matchDate.setText(currentMatch.postDateString())
+        if (currentMatch.chatDate != 0L) {
+            holder.chatDate.setText(currentMatch.postDateString(currentMatch.chatDate))
+        }
+
+        if (currentMatch.onlineDate != 0L) {
+            val onlineDateString = "Last online: ${currentMatch.postDateString(currentMatch.onlineDate)}"
+            holder.onlineDate.setText(onlineDateString)
+        }
 
         Glide.with(activity)
             .load(currentMatch.profilePhoto)
@@ -81,7 +85,15 @@ class MatchAdapter(
         holder.profileBtn.setOnClickListener {
             val intent: Intent = Intent(matchAdapterContext, ProfileActivity::class.java)
             intent.putExtra("MatchUser", currentMatch)
-            activity.startActivityForResult(intent, 999)
+            intent.putExtra("Position", position)
+            activity.startActivityForResult(intent, 420)
+        }
+
+        holder.rejectBtn.setOnClickListener {
+            val memeDomUser = MemeDomUser()
+            memeDomUser.uid = currentMatch.uid
+            FirestoreHandler().rejectUser(memeDomUser, matchAdapterContext)
+            removeRow(position)
         }
 
         holder.chatBtn.setOnClickListener {
@@ -89,19 +101,16 @@ class MatchAdapter(
         }
 
         holder.matchBtn.setOnClickListener {
-
+            // Go to Chat
             val data = hashMapOf<String, Any>(
                 "matchStatus" to true,
                 "matchDate" to System.currentTimeMillis()
             )
-
             FirestoreHandler().updateMatch(currentMatch.uid, data, matchAdapterContext, {})
             FirestoreHandler().updateUserLiked(currentMatch.uid, matchAdapterContext, {
                 goToChat(currentMatch)
             })
-            // Go to Chat
         }
-
     }
 
     private fun goToChat(currentMatch: Matches) {
@@ -122,13 +131,15 @@ class MatchAdapter(
 
     class MatchViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
         val usernameText = itemView.usernameText
-        val matchDate = itemView.matchDate
+        val chatDate = itemView.chatDate
+        val onlineDate = itemView.onlineDate
         val userImage = itemView.userImage
 
         val actionLayout = itemView.actionLayout
         val profileBtn = itemView.profileBtn
         val matchBtn = itemView.matchBtn
         val chatBtn = itemView.chatBtn
+        val rejectBtn = itemView.rejectBtn
 
         val matchTextView = itemView.matchTextView
     }
@@ -161,6 +172,11 @@ class MatchAdapter(
                 notifyDataSetChanged()
             }
         }
+    }
+
+    fun removeRow(position: Int) {
+        matchFilterList.removeAt(position)
+        notifyItemRemoved(position)
     }
 
     fun clear() {

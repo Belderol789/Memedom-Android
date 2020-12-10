@@ -30,7 +30,7 @@ import kotlinx.android.synthetic.main.activity_profile.*
 class ProfileActivity : AppCompatActivity() {
 
     var galleryItems: MutableList<String> = mutableListOf()
-
+    var position: Int? = null
     var matchUser: Matches? = null
     var memeDomUser: MemeDomUser? = null
     var matchUserID = ""
@@ -40,8 +40,11 @@ class ProfileActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_profile)
         congratsView.visibility = View.GONE
+
         val matches = intent.extras?.get("MatchUser") as? Matches
         val matchID = intent.extras?.get("MatchID") as? String
+        position = intent.extras?.get("Position") as? Int
+
         if (matches != null) {
             matchUser = matches
             matchUserID = matches.uid
@@ -96,13 +99,17 @@ class ProfileActivity : AppCompatActivity() {
             memeSegment.setTextColor(Color.parseColor("#58BADC"))
             photosScrollView.smoothScrollTo(screenWidth, 0)
         }
-
     }
 
     private fun setupActionButtons(memeDomUser: MemeDomUser) {
+
+        closeProfBtn.setOnClickListener {
+            onBackPressed()
+        }
+
         rejectBtn.setOnClickListener {
             FirestoreHandler().rejectUser(memeDomUser, this)
-            onBackPressed()
+            didReject()
         }
 
         matchBtn.setOnClickListener {
@@ -193,4 +200,13 @@ class ProfileActivity : AppCompatActivity() {
             setupGallery()
         }
     }
+
+    fun didReject() {
+        val intent = Intent().apply {
+            putExtra("Position", position)
+        }
+        setResult(Activity.RESULT_OK, intent)
+        onBackPressed()
+    }
+
 }
