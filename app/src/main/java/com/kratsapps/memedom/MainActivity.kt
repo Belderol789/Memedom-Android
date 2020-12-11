@@ -50,7 +50,6 @@ class MainActivity : AppCompatActivity() {
 
     var currentMatchUser: MemeDomUser? = null
     var mainUser: MemeDomUser? = null
-    var profileIsLoaded: Boolean = false
 
     //HomeFragment
     var datingMemes = mutableListOf<Memes>()
@@ -122,7 +121,6 @@ class MainActivity : AppCompatActivity() {
     fun saveProfileEdits(hashMap: HashMap<String, Any>) {
 
         Log.d("Saving", "Updating user data")
-
         FirestoreHandler().updateDatabaseObject("User", mainUser!!.uid, hashMap)
     }
 
@@ -173,7 +171,7 @@ class MainActivity : AppCompatActivity() {
                     .into(matchView.profilePhoto)
 
                 val randomGif =
-                    listOf(R.raw.gif1, R.raw.gif2, R.raw.gif3, R.raw.gif4, R.raw.gif5).random()
+                    listOf(R.raw.gif1, R.raw.gif2, R.raw.gif3, R.raw.gif4, R.raw.gif5, R.raw.gif6, R.raw.gif7, R.raw.gif8).random()
 
                 Glide.with(this)
                     .asGif()
@@ -263,10 +261,10 @@ class MainActivity : AppCompatActivity() {
 
         if (user != null) {
             navigationBottom.visibility = View.VISIBLE
-            makeCurrentFragment(homeFragment)
         } else {
             navigationBottom.visibility = View.GONE
         }
+        makeCurrentFragment(homeFragment)
     }
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {

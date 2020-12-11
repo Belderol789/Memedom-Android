@@ -6,6 +6,7 @@ import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.graphics.Color
+import android.net.Uri
 import android.os.Build
 import android.os.Bundle
 import android.provider.MediaStore
@@ -66,6 +67,8 @@ class SignupActivity : AppCompatActivity() {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults)
         if (requestCode == 121 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
             profilePhotoBtn.isClickable = true
+        } else {
+            profilePhotoBtn.isClickable = false
         }
     }
 
@@ -86,7 +89,9 @@ class SignupActivity : AppCompatActivity() {
     }
 
     private fun setupUI() {
-        //otherDetailsCard.visibility = View.INVISIBLE
+        otherDetailsCard.visibility = View.INVISIBLE
+        privacyView.visibility = View.INVISIBLE
+
         editTextSignupBirthday.setRawInputType(InputType.TYPE_NULL)
         Glide.with(this)
             .asGif()
@@ -118,6 +123,14 @@ class SignupActivity : AppCompatActivity() {
                 cal.get(Calendar.MONTH),
                 cal.get(Calendar.DAY_OF_MONTH)
             ).show()
+        }
+
+        privacyBtn.setOnClickListener {
+            proceedToPrivacy()
+        }
+
+        removePolicyBtn.setOnClickListener {
+            privacyView.visibility = View.INVISIBLE
         }
 
         profilePhotoBtn.setOnClickListener {
@@ -159,6 +172,10 @@ class SignupActivity : AppCompatActivity() {
         signupFinishBtn.setOnClickListener {
             saveUserImage()
         }
+    }
+
+    private fun proceedToPrivacy() {
+        privacyView.visibility = View.VISIBLE
     }
 
     private fun activateFilter(active: AppCompatRadioButton, gender: String?, lookingFor: String?, deactives: List<AppCompatRadioButton>) {
