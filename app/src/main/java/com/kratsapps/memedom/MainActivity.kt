@@ -19,6 +19,8 @@ import android.widget.Toast
 import androidx.annotation.NonNull
 import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
+import androidx.recyclerview.widget.GridLayoutManager
+import androidx.recyclerview.widget.LinearLayoutManager
 import com.bumptech.glide.Glide
 import com.facebook.FacebookSdk
 import com.google.android.gms.ads.MobileAds
@@ -28,11 +30,13 @@ import com.google.firebase.analytics.ktx.analytics
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseUser
 import com.google.firebase.ktx.Firebase
+import com.kratsapps.memedom.adapters.TutorialAdapter
 import com.kratsapps.memedom.fragments.*
 import com.kratsapps.memedom.models.MemeDomUser
 import com.kratsapps.memedom.firebaseutils.FirestoreHandler
 import com.kratsapps.memedom.models.Matches
 import com.kratsapps.memedom.models.Memes
+import com.kratsapps.memedom.models.TutorialModel
 import com.kratsapps.memedom.utils.DatabaseManager
 import kotlinx.android.synthetic.main.activity_main.*
 import kotlinx.android.synthetic.main.activity_main.view.*
@@ -208,6 +212,47 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
+    private fun setupTutorialView() {
+
+        tutorialView.visibility = View.VISIBLE
+
+        val firstTutorial = TutorialModel()
+        firstTutorial.tutorialImage = R.mipmap.ic_launcher_memedom
+        firstTutorial.titleText = "Post/Like Memes"
+        firstTutorial.subtitleText = "Post your own memes and start liking others"
+
+        val secondTutorial = TutorialModel()
+        secondTutorial.tutorialImage = R.mipmap.ic_launcher_memedom
+        secondTutorial.titleText = "Find your Match!"
+        secondTutorial.subtitleText = "You match with people whose memes you like"
+
+        val thirdTutorial = TutorialModel()
+        thirdTutorial.tutorialImage = R.mipmap.ic_launcher_memedom
+        thirdTutorial.titleText = "Chat and Share Memes"
+        thirdTutorial.subtitleText = "Have fun chatting and sharing memes"
+
+        val tutorialModel = mutableListOf<TutorialModel>(
+            firstTutorial,
+            secondTutorial,
+            thirdTutorial
+        )
+        val tutorialAdapter = TutorialAdapter(tutorialModel)
+        val tutorialManager: GridLayoutManager = GridLayoutManager(this, 1, GridLayoutManager.HORIZONTAL, false)
+        tutorialRecycler.adapter = tutorialAdapter
+        tutorialRecycler.layoutManager = tutorialManager
+
+        skipBtn.setOnClickListener {
+            tutorialView.visibility = View.GONE
+        }
+        var i = 1
+        nextBtn.setOnClickListener {
+            tutorialRecycler.smoothScrollToPosition(i)
+            if (i < tutorialModel.count()) {
+                i += 1
+            }
+        }
+    }
+
     private fun proceedToProfile() {
         val intent: Intent = Intent(this@MainActivity, ProfileActivity::class.java)
         intent.putExtra("MatchID", currentMatchUser!!.uid)
@@ -260,8 +305,10 @@ class MainActivity : AppCompatActivity() {
         Log.d("UserCredential", "Current user $user")
 
         if (user != null) {
+            tutorialView.visibility = View.GONE
             navigationBottom.visibility = View.VISIBLE
         } else {
+            setupTutorialView()
             navigationBottom.visibility = View.GONE
         }
         makeCurrentFragment(homeFragment)
