@@ -14,13 +14,11 @@ import android.view.animation.Animation
 import android.view.inputmethod.InputMethodManager
 import android.widget.EditText
 import android.widget.ImageView
-import android.widget.LinearLayout
 import android.widget.Toast
 import androidx.annotation.NonNull
 import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.GridLayoutManager
-import androidx.recyclerview.widget.LinearLayoutManager
 import com.bumptech.glide.Glide
 import com.facebook.FacebookSdk
 import com.google.android.gms.ads.MobileAds
@@ -43,6 +41,10 @@ import kotlinx.android.synthetic.main.activity_main.view.*
 
 
 class MainActivity : AppCompatActivity() {
+
+    companion object {
+        const val START_CHAT_REQUEST_CODE = 69
+    }
 
     val profileFragment = ProfileFragment()
     val homeFragment = HomeFragment()
@@ -168,7 +170,7 @@ class MainActivity : AppCompatActivity() {
             FirestoreHandler().checkMatchingStatus(this, user.uid, {
                 currentMatchUser = it
                 matchView.visibility = View.VISIBLE
-                matchView.infoTextView.text = "You've liked ${it.name} \nmemes $numberOfTimes times!"
+                matchView.infoTextView.text = "You've liked ${it.name} \nmemes 10 times!"
                 Glide.with(this)
                     .load(it.profilePhoto)
                     .circleCrop()
@@ -217,17 +219,17 @@ class MainActivity : AppCompatActivity() {
         tutorialView.visibility = View.VISIBLE
 
         val firstTutorial = TutorialModel()
-        firstTutorial.tutorialImage = R.mipmap.ic_launcher_memedom
+        firstTutorial.tutorialImage = R.mipmap.tutorial_1
         firstTutorial.titleText = "Post/Like Memes"
         firstTutorial.subtitleText = "Post your own memes and start liking others"
 
         val secondTutorial = TutorialModel()
-        secondTutorial.tutorialImage = R.mipmap.ic_launcher_memedom
+        secondTutorial.tutorialImage = R.mipmap.tutorial_2
         secondTutorial.titleText = "Find your Match!"
         secondTutorial.subtitleText = "You match with people whose memes you like"
 
         val thirdTutorial = TutorialModel()
-        thirdTutorial.tutorialImage = R.mipmap.ic_launcher_memedom
+        thirdTutorial.tutorialImage = R.mipmap.tutorial_3
         thirdTutorial.titleText = "Chat and Share Memes"
         thirdTutorial.subtitleText = "Have fun chatting and sharing memes"
 
@@ -291,11 +293,9 @@ class MainActivity : AppCompatActivity() {
         val user = FirebaseAuth.getInstance().currentUser
         setUIForUser(user)
 
-        val firebaseAuth = FirebaseAuth.getInstance()
-        val mAuthListener = FirebaseAuth.AuthStateListener {
+        FirebaseAuth.AuthStateListener {
             fun onAuthStateChanged(@NonNull firebaseAuth: FirebaseAuth) {
-                val user = FirebaseAuth.getInstance().currentUser
-                setUIForUser(user)
+                setUIForUser(FirebaseAuth.getInstance().currentUser)
             }
         }
     }
@@ -331,7 +331,7 @@ class MainActivity : AppCompatActivity() {
                 goToChat(chatUserData)
             } else if (requestCode == 420) {
                 Log.d("Rejected", "Got Position $data")
-                val rejectPosition = data?.getIntExtra("Position", 0)
+                val rejectPosition = data.getIntExtra("Position", 0)
                 msgFragment.matchAdapter.removeRow(rejectPosition)
             }
         }
@@ -344,7 +344,7 @@ class MainActivity : AppCompatActivity() {
         chatUser.profilePhoto = currentMatch.profilePhoto
         chatUser.uid = currentMatch.uid
         intent.putExtra("ChatUser", chatUser)
-        this.startActivity(intent)
+        this.startActivityForResult(intent, START_CHAT_REQUEST_CODE)
         this.overridePendingTransition(
             R.anim.enter_activity,
             R.anim.enter_activity

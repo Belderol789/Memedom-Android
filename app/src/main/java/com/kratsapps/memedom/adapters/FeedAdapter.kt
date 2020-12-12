@@ -90,10 +90,16 @@ class FeedAdapter(private var feedList: MutableList<Memes>, private val activity
             holder.likeBtn.setImageResource(R.drawable.ic_action_crown)
             holder.likeImageView.setImageResource(R.drawable.ic_action_crown)
             holder.pointsIcon.setImageResource(R.drawable.ic_action_crown)
+            holder.likeImageView.setColorFilter(
+                ContextCompat.getColor(feedAdapterContext, R.color.appFGColor)
+            )
         } else {
             holder.likeBtn.setImageResource(R.drawable.ic_action_like)
             holder.likeImageView.setImageResource(R.drawable.ic_action_like)
             holder.pointsIcon.setImageResource(R.drawable.ic_action_like)
+            holder.likeImageView.setColorFilter(
+                ContextCompat.getColor(feedAdapterContext, R.color.appDateFGColor)
+            )
         }
 
         holder.postUserName.text = currentItem.postUsername

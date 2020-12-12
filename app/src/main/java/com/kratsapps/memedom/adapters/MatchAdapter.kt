@@ -27,6 +27,9 @@ class MatchAdapter(
     private val mainUser: MemeDomUser
 ) : RecyclerView.Adapter<MatchAdapter.MatchViewHolder>(),
     Filterable {
+    companion object {
+        const val START_CHAT_REQUEST_CODE = 69
+    }
 
     lateinit var matchAdapterContext: Context
     var matchFilterList = matchList
@@ -67,20 +70,20 @@ class MatchAdapter(
             holder.onlineDate.setText(onlineDateString)
         }
 
+        if (currentMatch.matchStatus == true || mainUser.matches.contains(currentMatch.uid)) {
+            holder.actionLayout.visibility = View.GONE
+            holder.matchTextView.visibility = View.VISIBLE
+            holder.chatBtn.visibility = View.VISIBLE
+        } else {
+            holder.actionLayout.visibility = View.VISIBLE
+            holder.matchTextView.visibility = View.GONE
+            holder.chatBtn.visibility = View.GONE
+        }
+
         Glide.with(activity)
             .load(currentMatch.profilePhoto)
             .circleCrop()
             .into(holder.userImage)
-
-        if (!mainUser.matches.contains(currentMatch.uid)) {
-            holder.actionLayout.visibility = View.VISIBLE
-            holder.matchTextView.visibility = View.GONE
-            holder.chatBtn.visibility = View.GONE
-        } else {
-            holder.actionLayout.visibility = View.GONE
-            holder.matchTextView.visibility = View.VISIBLE
-            holder.chatBtn.visibility = View.VISIBLE
-        }
 
         holder.profileBtn.setOnClickListener {
             val intent: Intent = Intent(matchAdapterContext, ProfileActivity::class.java)
@@ -120,7 +123,7 @@ class MatchAdapter(
         chatUser.profilePhoto = currentMatch.profilePhoto
         chatUser.uid = currentMatch.uid
         intent.putExtra("ChatUser", chatUser)
-        activity.startActivity(intent)
+        activity.startActivityForResult(intent, START_CHAT_REQUEST_CODE)
         activity.overridePendingTransition(
             R.anim.enter_activity,
             R.anim.enter_activity

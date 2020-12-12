@@ -256,13 +256,12 @@
             android:id="@+id/likeImageView"
             android:layout_width="100dp"
             android:layout_height="100dp"
-            android:alpha="1"
             app:layout_constraintBottom_toBottomOf="@+id/feedImage"
             app:layout_constraintEnd_toEndOf="@+id/feedImage"
             app:layout_constraintStart_toStartOf="@+id/feedImage"
             app:layout_constraintTop_toTopOf="@+id/feedImage"
-            app:srcCompat="@drawable/ic_action_crown"
-            app:tint="@color/specialColor" />
+            app:srcCompat="@drawable/ic_action_like"
+            app:tint="@color/appFGColor" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 

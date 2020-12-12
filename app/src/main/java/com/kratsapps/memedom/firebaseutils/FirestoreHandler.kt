@@ -528,6 +528,7 @@ class FirestoreHandler {
             .collection(MEMES_PATH)
             .whereEqualTo("postUserUID", uid)
             .orderBy("postPoints", DESCENDING)
+            .limit(10)
             .addSnapshotListener {snapshot, e ->
                 if (e != null) {
                     Log.w("Profile-memes", "listen failed $e")

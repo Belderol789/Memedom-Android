@@ -136,7 +136,6 @@ class SettingsFragment : Fragment() {
     private fun sendEmail() {
         val receipient: String = "krats.apps@gmail.com"
         val subject: String = "Memedom Contact"
-        val message: String = ""
 
         val mIntent = Intent(Intent.ACTION_SEND)
         mIntent.data = Uri.parse("mailto:")
