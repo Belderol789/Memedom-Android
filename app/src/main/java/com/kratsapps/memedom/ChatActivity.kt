@@ -173,30 +173,6 @@ class ChatActivity : AppCompatActivity() {
         }
     }
 
-    private fun updateLastMessage() {
-
-        if (!allMessageItems.isEmpty()) {
-            val lastItem = allMessageItems.last()
-            var lastText = "Sent a message!"
-            if (URLUtil.isValidUrl(lastItem.chatContent)) {
-                lastText = "Sent  an image!"
-            } else if (!lastItem.chatContent.isEmpty()) {
-                lastText = lastItem.chatContent
-            }
-
-            val data = hashMapOf<String, Any>(
-                "matchText" to lastText,
-                "matchDate" to System.currentTimeMillis()
-            )
-
-            FirestoreHandler().updateMatch(currentChat.uid, data, this, {
-                onBackPressed()
-            })
-        } else {
-            onBackPressed()
-        }
-    }
-
     private fun openMemedom() {
         val intent: Intent = Intent(this, MemedomActivity::class.java)
         startActivityForResult(intent, START_MEMEDOM_REQUEST_CODE)
@@ -267,6 +243,26 @@ class ChatActivity : AppCompatActivity() {
                     })
                 }
             }
+        }
+    }
+
+    fun updateLastMessage() {
+        if (!allMessageItems.isEmpty()) {
+            val lastItem = allMessageItems.last()
+            var lastText = "Sent a message!"
+            if (URLUtil.isValidUrl(lastItem.chatContent)) {
+                lastText = "Sent  an image!"
+            } else if (!lastItem.chatContent.isEmpty()) {
+                lastText = lastItem.chatContent
+            }
+            val intent = Intent().apply {
+                putExtra("matchText", lastText)
+                putExtra("currentChatUID", currentChat.uid)
+            }
+            setResult(Activity.RESULT_OK, intent)
+            onBackPressed()
+        } else {
+            onBackPressed()
         }
     }
 

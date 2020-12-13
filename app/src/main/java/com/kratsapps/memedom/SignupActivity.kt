@@ -45,13 +45,11 @@ class SignupActivity : AppCompatActivity() {
 
     var hasProfilePhoto = false
     var memeDomuser: MemeDomUser = MemeDomUser()
-    var userEmail: Boolean = true
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_signup)
         auth = FirebaseAuth.getInstance()
-        userEmail = intent.getBooleanExtra("AUTH_METHOD", true)
 
         Log.i("Navigation", "Navigated to Signup")
         setupUI()

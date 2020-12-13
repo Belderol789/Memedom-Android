@@ -14,7 +14,6 @@ class Matches: Serializable {
     var onlineDate: Long = 0
     var offered: String = ""
 
-
     fun postDateString(date: Long): String {
 
         val postDateFromNow = (GregorianCalendar().timeInMillis - date)

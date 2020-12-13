@@ -22,9 +22,7 @@ import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout.OnRefreshListener
 import com.bumptech.glide.Glide
 import com.google.firebase.auth.FirebaseAuth
-import com.kratsapps.memedom.CredentialActivity
-import com.kratsapps.memedom.MainActivity
-import com.kratsapps.memedom.R
+import com.kratsapps.memedom.*
 import com.kratsapps.memedom.models.Memes
 import com.kratsapps.memedom.adapters.FeedAdapter
 
@@ -186,19 +184,13 @@ class HomeFragment : Fragment() {
         val loginButton: Button = rootView.findViewById(R.id.loginHomeButton) as Button
 
         signupButton.setOnClickListener{
-            navigateToCredentialView(true)
+            val intent = Intent(mainActivity, SignupActivity::class.java)
+            mainActivity.startActivity(intent)
         }
 
         loginButton.setOnClickListener{
-            navigateToCredentialView(false)
-        }
-    }
-
-    private fun navigateToCredentialView(userSignup: Boolean) {
-        activity?.let{
-            val intent = Intent(it, CredentialActivity::class.java)
-            intent.putExtra("CREDENTIAL_ACTION", userSignup)
-            it.startActivity(intent)
+            val intent = Intent(mainActivity, LoginActivity::class.java)
+            mainActivity.startActivity(intent)
         }
     }
 

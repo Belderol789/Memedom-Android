@@ -218,7 +218,6 @@ class FeedAdapter(private var feedList: MutableList<Memes>, private val activity
                 shareIntent.type = "image/*"
                 activity.startActivity(Intent.createChooser(shareIntent, "Spread my Memedom"))
             }
-
         } else {
             deactivatePoints(holder)
         }

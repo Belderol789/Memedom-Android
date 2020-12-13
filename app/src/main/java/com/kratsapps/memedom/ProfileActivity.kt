@@ -116,7 +116,8 @@ class ProfileActivity : AppCompatActivity() {
             if (matchUser != null) {
                 val data = hashMapOf<String, Any>(
                     "matchStatus" to true,
-                    "matchDate" to System.currentTimeMillis()
+                    "chatDate" to System.currentTimeMillis(),
+                    "onlineDate" to System.currentTimeMillis()
                 )
                 FirestoreHandler().updateMatch(matchUserID, data, this, {})
                 FirestoreHandler().updateUserLiked(matchUserID, this, {

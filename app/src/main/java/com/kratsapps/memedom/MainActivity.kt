@@ -83,6 +83,15 @@ class MainActivity : AppCompatActivity() {
         setupBottomNavigation()
     }
 
+    override fun onStop() {
+        super.onStop()
+        if (mainUser?.uid != null) {
+            FirestoreHandler().addDataToFirestore("Online", mainUser!!.uid, hashMapOf(
+                "online" to false
+            ), {})
+        }
+    }
+
     fun activateNavBottom(active: Boolean) {
         navigationBottom.isEnabled = active
     }
@@ -133,10 +142,11 @@ class MainActivity : AppCompatActivity() {
     //MessagesFragment
     fun getAllMatches(completed: (MutableList<Matches>) -> Unit) {
         FirestoreHandler().checkNewMatch(this, {
-            completed(it)
-            Log.d("MessagesFragment", "GotNewMatches $it for mainUser $mainUser")
+
         })
     }
+
+
 
     private fun setupBottomNavigation() {
         navigationBottom.setOnNavigationItemSelectedListener {
@@ -251,6 +261,8 @@ class MainActivity : AppCompatActivity() {
             tutorialRecycler.smoothScrollToPosition(i)
             if (i < tutorialModel.count()) {
                 i += 1
+            } else if (i == tutorialModel.count()) {
+                tutorialView.visibility = View.GONE
             }
         }
     }
@@ -333,6 +345,16 @@ class MainActivity : AppCompatActivity() {
                 Log.d("Rejected", "Got Position $data")
                 val rejectPosition = data.getIntExtra("Position", 0)
                 msgFragment.matchAdapter.removeRow(rejectPosition)
+            } else if (requestCode == START_CHAT_REQUEST_CODE) {
+                val lastText = data.getStringExtra("matchText")
+                val currentChatUID = data.getStringExtra("currentChatUID")
+
+                val data = hashMapOf<String, Any>(
+                    "matchText" to lastText!!,
+                    "chatDate" to System.currentTimeMillis()
+                )
+
+                FirestoreHandler().updateMatch(currentChatUID!!, data, this, {})
             }
         }
     }

@@ -376,6 +376,20 @@ class FirestoreHandler {
         }
     }
 
+    fun getOnlineStatus(uid: String, completed: (Boolean) -> Unit) {
+        firestoreDB
+            .collection("Online")
+            .document(uid)
+            .get()
+            .addOnSuccessListener {
+                val booleanStatus = it.getDocumentReference("online") as? Boolean
+                if (booleanStatus != null) {
+                    completed(booleanStatus)
+                }
+            }
+
+    }
+
     fun checkNewMatch(context: Context,
                       completed: (MutableList<Matches>) -> Unit) {
 
@@ -413,7 +427,6 @@ class FirestoreHandler {
                                 matchObject.matchText = documentData.get("matchText") as String
                                 matchObject.matchStatus = documentData.get("matchStatus") as Boolean
                                 matchObject.offered = documentData.get("offered") as String
-
 
                                 Log.d("MessagesFragment", "Object to be added $matchObject")
 

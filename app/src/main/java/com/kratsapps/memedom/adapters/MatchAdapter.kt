@@ -107,7 +107,8 @@ class MatchAdapter(
             // Go to Chat
             val data = hashMapOf<String, Any>(
                 "matchStatus" to true,
-                "matchDate" to System.currentTimeMillis()
+                "chatDate" to System.currentTimeMillis(),
+                "onlineDate" to System.currentTimeMillis()
             )
             FirestoreHandler().updateMatch(currentMatch.uid, data, matchAdapterContext, {})
             FirestoreHandler().updateUserLiked(currentMatch.uid, matchAdapterContext, {
