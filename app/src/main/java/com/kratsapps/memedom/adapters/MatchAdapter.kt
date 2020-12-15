@@ -80,6 +80,12 @@ class MatchAdapter(
             holder.chatBtn.visibility = View.GONE
         }
 
+        if (currentMatch.online) {
+            holder.onlineStatus.visibility = View.VISIBLE
+        } else {
+            holder.onlineStatus.visibility = View.INVISIBLE
+        }
+
         Glide.with(activity)
             .load(currentMatch.profilePhoto)
             .circleCrop()
@@ -146,6 +152,7 @@ class MatchAdapter(
         val rejectBtn = itemView.rejectBtn
 
         val matchTextView = itemView.matchTextView
+        val onlineStatus = itemView.onlineStatus
     }
 
     override fun getFilter(): Filter {

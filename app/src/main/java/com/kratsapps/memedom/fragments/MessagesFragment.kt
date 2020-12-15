@@ -46,9 +46,13 @@ class MessagesFragment : Fragment() {
     lateinit var matchedSegment: AppCompatRadioButton
     lateinit var pendingSegment: AppCompatRadioButton
 
+    var currentSegment: Boolean = true
+
     var filteredMatches: MutableList<Matches> = mutableListOf()
     var pending: MutableList<Matches> = mutableListOf()
     var matches: MutableList<Matches> = mutableListOf()
+    var matchesID: MutableList<String> = mutableListOf()
+    var pendingID: MutableList<String> = mutableListOf()
 
     override fun onAttach(context: Context) {
         super.onAttach(context)
@@ -77,28 +81,35 @@ class MessagesFragment : Fragment() {
 
         if (filteredMatches.isEmpty()) {
             mainActivity.getAllMatches {
+                filteredMatches.clear()
+                Log.d("MatchFragment", "Got a match in $it count ${filteredMatches.count()}")
                 if (it != null && mainUser != null) {
-
-                    filteredMatches.clear()
-                    matches.clear()
-                    pending.clear()
-
-                    for(match in it) {
-                        if (!mainUser.rejects.contains(match.uid)) {
-                            if (match.matchStatus.equals(true)) {
-                                matches.add(match)
-                            } else if (match.offered.equals(mainUser.uid)) {
-                                pending.add(match)
+                    if (!mainUser.rejects.contains(it.uid)) {
+                        if (it.matchStatus.equals(true)) {
+                            if (matchesID.contains(it.uid)) {
+                                Log.d("MatchFragment", "Matches count ${matches.count()}")
+                                matches = (matches.filter { s -> s.uid != it.uid }).toMutableList()
+                                matches.add(it)
+                            } else {
+                                pending = (pending.filter { s -> s.uid != it.uid }).toMutableList()
+                                matches.add(it)
+                                matchesID.add(it.uid)
                             }
+                        } else if (it.offered.equals(mainUser.uid)) {
+                            pending.add(it)
                         }
                     }
 
                     pendingSegment.text = "Pending (${pending.count()})"
                     matchedSegment.text = "Matches (${matches.count()})"
-
-                    filteredMatches.addAll(matches)
+                    if (currentSegment) {
+                        filteredMatches.addAll(matches)
+                    } else {
+                        filteredMatches.addAll(pending)
+                    }
+                    Log.d("MatchFragment", "Matches count ${matches.count()}")
                     setupBlankScreen(filteredMatches)
-                    setupMatchRecycler()
+                    matchAdapter.addItems(filteredMatches)
                 }
             }
         }
@@ -180,10 +191,12 @@ class MessagesFragment : Fragment() {
         matchAdapter.clear()
 
         if(type.equals("Matched")) {
+            currentSegment = true
             filteredMatches.addAll(matches)
             matchedSegment.isChecked = true
             pendingSegment.isChecked = false
         } else {
+            currentSegment = false
             filteredMatches.addAll(pending)
             pendingSegment.isChecked = true
             matchedSegment.isChecked = false

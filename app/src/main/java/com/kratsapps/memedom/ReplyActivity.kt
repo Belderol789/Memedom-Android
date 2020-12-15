@@ -168,7 +168,7 @@ class ReplyActivity : AppCompatActivity() {
 
                 val replyID = Utility.generateRandomString(10)
                 Log.d("Comment", "Sending comment hash $commentHash")
-                FirestoreHandler().sendUserReplyToFirestore(commentReply, replyID, replies.count(), commentHash)
+                FirestoreHandler().sendUserReplyToFirestore(commentReply, commentHash)
             }
         }
     }

@@ -2,6 +2,7 @@ package com.kratsapps.memedom.firebaseutils
 
 import android.content.Context
 import android.util.Log
+import com.facebook.internal.Mutable
 import com.google.firebase.firestore.FieldValue
 import com.google.firebase.firestore.Query
 import com.google.firebase.firestore.SetOptions
@@ -43,7 +44,7 @@ class FirestoreHandler {
         firestoreDB
             .collection(path)
             .document(document)
-            .set(hashMap)
+            .set(hashMap, SetOptions.merge())
             .addOnSuccessListener {
                 Log.d("Firestore", "DocumentSnapshot successfully written for $path $hashMap")
                 success(null)
@@ -77,8 +78,6 @@ class FirestoreHandler {
 
     fun sendUserReplyToFirestore(
         comment: Comments,
-        replyID: String,
-        replyCount: Int,
         hashMap: HashMap<String, Any>
     ) {
 
@@ -219,7 +218,6 @@ class FirestoreHandler {
     }
 
     //Getting
-
     fun getAllMemes(
         context: Context,
         mainUser: MemeDomUser?,
@@ -318,6 +316,7 @@ class FirestoreHandler {
             }
     }
 
+    //Matching
     fun checkMatchingStatus(context: Context,
                             uid: String,
                             popUpData: (MemeDomUser) -> Unit) {
@@ -376,18 +375,23 @@ class FirestoreHandler {
         }
     }
 
-    fun getOnlineStatus(uid: String, completed: (Boolean) -> Unit) {
-        firestoreDB
-            .collection("Online")
-            .document(uid)
-            .get()
-            .addOnSuccessListener {
-                val booleanStatus = it.getDocumentReference("online") as? Boolean
-                if (booleanStatus != null) {
-                    completed(booleanStatus)
+    fun getOnlineStatus(matches: MutableList<Matches>, completed: (Matches) -> Unit) {
+        for (match in matches) {
+            Log.d("MessagesFragment", "Getting online status of ${match.uid}")
+            firestoreDB
+                .collection("Online")
+                .document(match.uid)
+                .get()
+                .addOnSuccessListener {
+                    val onlineDate = it.get("onlineDate") as? Long
+                    val onlineStatus = it.get("online") as? Boolean
+                    if (onlineDate != null && onlineStatus != null) {
+                        match.onlineDate = onlineDate
+                        match.online = onlineStatus
+                        completed(match)
+                    }
                 }
-            }
-
+        }
     }
 
     fun checkNewMatch(context: Context,
@@ -417,19 +421,18 @@ class FirestoreHandler {
                             val documentData = document.data
                             if (documentData != null) {
                                 val matchObject = Matches()
-                                val matchData = documentData.get(mainUser.uid) as HashMap<String, Any>
+                                val matchData =
+                                    documentData.get(mainUser.uid) as HashMap<String, Any>
+                                //user date
                                 matchObject.name = matchData.get("name") as String
                                 matchObject.profilePhoto = matchData.get("profilePhoto") as String
                                 matchObject.uid = matchData.get("uid") as String
-
+                                //general data
                                 matchObject.chatDate = documentData.get("chatDate") as Long
-                                matchObject.onlineDate = documentData.get("onlineDate") as Long
                                 matchObject.matchText = documentData.get("matchText") as String
                                 matchObject.matchStatus = documentData.get("matchStatus") as Boolean
                                 matchObject.offered = documentData.get("offered") as String
-
                                 Log.d("MessagesFragment", "Object to be added $matchObject")
-
                                 matches.add(matchObject)
                             }
                         }
@@ -455,12 +458,16 @@ class FirestoreHandler {
                 matchUser.uid to hashMapOf(
                     "name" to mainUser.name,
                     "profilePhoto" to mainUser.profilePhoto,
-                    "uid" to mainUser.uid
+                    "uid" to mainUser.uid,
+                    "online" to true,
+                    "onlineDate" to today
                 ),
                 mainUser.uid to hashMapOf (
                     "name" to matchUser.name,
                     "profilePhoto" to matchUser.profilePhoto,
-                    "uid" to matchUser.uid
+                    "uid" to matchUser.uid,
+                    "online" to true,
+                    "onlineDate" to today
                 ),
                 "onlineDate" to today,
                 "chatDate" to today,

@@ -76,7 +76,7 @@ class MainActivity : AppCompatActivity() {
         mainUser = DatabaseManager(this).retrieveSavedUser()
 
         Log.d("Main Activity", "Main Activity is being created again $mainUser")
-
+        activateOnline(true)
         MobileAds.initialize(this)
         checkLoginStatus()
         activateFacebook()
@@ -85,11 +85,7 @@ class MainActivity : AppCompatActivity() {
 
     override fun onStop() {
         super.onStop()
-        if (mainUser?.uid != null) {
-            FirestoreHandler().addDataToFirestore("Online", mainUser!!.uid, hashMapOf(
-                "online" to false
-            ), {})
-        }
+        activateOnline(false)
     }
 
     fun activateNavBottom(active: Boolean) {
@@ -140,13 +136,22 @@ class MainActivity : AppCompatActivity() {
     }
 
     //MessagesFragment
-    fun getAllMatches(completed: (MutableList<Matches>) -> Unit) {
+    fun getAllMatches(completed: (Matches) -> Unit) {
         FirestoreHandler().checkNewMatch(this, {
-
+            FirestoreHandler().getOnlineStatus(it, {
+                completed(it)
+            })
         })
     }
 
-
+    private fun activateOnline(status: Boolean) {
+        if (mainUser?.uid != null) {
+            FirestoreHandler().addDataToFirestore("Online", mainUser!!.uid, hashMapOf(
+                "online" to status,
+                "onlineDate" to System.currentTimeMillis()
+            ), {})
+        }
+    }
 
     private fun setupBottomNavigation() {
         navigationBottom.setOnNavigationItemSelectedListener {

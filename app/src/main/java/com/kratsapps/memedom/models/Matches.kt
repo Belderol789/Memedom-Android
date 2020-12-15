@@ -9,10 +9,11 @@ class Matches: Serializable {
     var uid: String = ""
     var profilePhoto: String = ""
     var matchText: String = ""
-    var matchStatus: Boolean = false
     var chatDate: Long = 0
     var onlineDate: Long = 0
     var offered: String = ""
+    var matchStatus: Boolean = false
+    var online: Boolean = false
 
     fun postDateString(date: Long): String {
 
