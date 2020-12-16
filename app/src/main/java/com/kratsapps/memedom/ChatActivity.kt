@@ -56,6 +56,8 @@ class ChatActivity : AppCompatActivity() {
     var allChatsID = mutableListOf<String>()
     var mainUser: MemeDomUser? = null
 
+    var lastChatDate: Long = System.currentTimeMillis()
+
     private val IMAGE_GALLERY_REQUEST_CODE: Int = 2001
     private val PERMISSION_CODE = 1000;
     private val IMAGE_CAPTURE_CODE = 1001
@@ -96,6 +98,7 @@ class ChatActivity : AppCompatActivity() {
                     Log.d("ChatUser", "Current Chat Type $chatType")
 
                     val messageItem = MessageItem(chat.chatID, chat.chatUserID, chatType, chat.commentDateString(), chat.chatContent, currentChat.profilePhoto, chat.chatImageURL)
+                    lastChatDate = chat.chatDate
                     allMessageItems.add(messageItem)
                 }
 
@@ -258,6 +261,7 @@ class ChatActivity : AppCompatActivity() {
             val intent = Intent().apply {
                 putExtra("matchText", lastText)
                 putExtra("currentChatUID", currentChat.uid)
+                putExtra("chatDate", lastChatDate)
             }
             setResult(Activity.RESULT_OK, intent)
             onBackPressed()

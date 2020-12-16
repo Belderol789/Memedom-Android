@@ -81,6 +81,7 @@ class SettingsFragment : Fragment() {
             Toast.makeText(settingContext, "Successfully Signed Out", Toast.LENGTH_SHORT).show()
             LoginManager.getInstance().logOut()
             FirebaseAuth.getInstance().signOut()
+            DatabaseManager(settingContext).convertUserObject(MemeDomUser(), "MainUser", {})
             returnToLoggedOutState()
         }
 

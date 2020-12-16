@@ -30,6 +30,7 @@ import com.facebook.internal.Mutable
 import com.kratsapps.memedom.ChatActivity
 import com.kratsapps.memedom.MainActivity
 import com.kratsapps.memedom.firebaseutils.FireStorageHandler
+import com.kratsapps.memedom.models.MemeDomUser
 import com.kratsapps.memedom.utils.AndroidUtils
 
 
@@ -52,7 +53,6 @@ class MessagesFragment : Fragment() {
     var pending: MutableList<Matches> = mutableListOf()
     var matches: MutableList<Matches> = mutableListOf()
     var matchesID: MutableList<String> = mutableListOf()
-    var pendingID: MutableList<String> = mutableListOf()
 
     override fun onAttach(context: Context) {
         super.onAttach(context)
@@ -68,51 +68,65 @@ class MessagesFragment : Fragment() {
         mainActivity = this.activity as MainActivity
         rootView = inflater.inflate(R.layout.fragment_messages, container, false)
         setupUI()
-        getAllMatches()
         setupMatchRecycler()
+        getAllMatches()
         setupSearch()
         return rootView
     }
 
     private fun getAllMatches() {
 
-        blankScreen.visibility = View.GONE
         val mainUser = DatabaseManager(msgContext).retrieveSavedUser()
+        blankScreen.visibility = View.GONE
+        filteredMatches.clear()
 
-        if (filteredMatches.isEmpty()) {
-            mainActivity.getAllMatches {
+        if (mainUser != null) {
+            Log.d("UserMatches", "Load matches ${mainActivity.userMatches.count()}")
+            if (filteredMatches.isEmpty() && mainActivity.userMatches.isEmpty()) {
+                mainActivity.getAllMatches {
+                    filteredMatches.clear()
+                    if (it != null && !mainUser.rejects.contains(it.uid)) {
+                        filterOutMatch(it, mainUser)
+                    }
+                }
+            } else {
                 filteredMatches.clear()
-                Log.d("MatchFragment", "Got a match in $it count ${filteredMatches.count()}")
-                if (it != null && mainUser != null) {
+                for (it in mainActivity.userMatches) {
                     if (!mainUser.rejects.contains(it.uid)) {
-                        if (it.matchStatus.equals(true)) {
-                            if (matchesID.contains(it.uid)) {
-                                Log.d("MatchFragment", "Matches count ${matches.count()}")
-                                matches = (matches.filter { s -> s.uid != it.uid }).toMutableList()
-                                matches.add(it)
-                            } else {
-                                pending = (pending.filter { s -> s.uid != it.uid }).toMutableList()
-                                matches.add(it)
-                                matchesID.add(it.uid)
-                            }
-                        } else if (it.offered.equals(mainUser.uid)) {
-                            pending.add(it)
-                        }
+                        filterOutMatch(it, mainUser)
                     }
-
-                    pendingSegment.text = "Pending (${pending.count()})"
-                    matchedSegment.text = "Matches (${matches.count()})"
-                    if (currentSegment) {
-                        filteredMatches.addAll(matches)
-                    } else {
-                        filteredMatches.addAll(pending)
-                    }
-                    Log.d("MatchFragment", "Matches count ${matches.count()}")
-                    setupBlankScreen(filteredMatches)
-                    matchAdapter.addItems(filteredMatches)
                 }
             }
         }
+    }
+
+    private fun filterOutMatch(match: Matches, mainUser: MemeDomUser) {
+        Log.d("UserMatches", "Filtering out $matchesID for ${match.uid} status ${match.matchStatus}")
+        if (match.matchStatus.equals(true)) {
+            if (matchesID.contains(match.uid)) {
+                matches = (matches.filter { s -> s.uid != match.uid }).toMutableList()
+                Log.d("UserMatches", "Matches count ${matches.count()}")
+                matches.add(match)
+            } else {
+                pending = (pending.filter { s -> s.uid != match.uid }).toMutableList()
+                matches.add(match)
+                matchesID.add(match.uid)
+            }
+        } else if (match.offered.equals(mainUser.uid)) {
+            pending.add(match)
+        }
+
+        pendingSegment.text = "Pending (${pending.count()})"
+        matchedSegment.text = "Matches (${matches.count()})"
+
+        if (currentSegment) {
+            filteredMatches.addAll(matches)
+        } else {
+            filteredMatches.addAll(pending)
+        }
+        Log.d("MatchFragment", "Matches count ${matches.count()}")
+        setupBlankScreen(filteredMatches)
+        matchAdapter.addItems(filteredMatches)
     }
 
     private fun setupBlankScreen(messages: MutableList<Matches>) {
@@ -131,7 +145,6 @@ class MessagesFragment : Fragment() {
         matchedSegment.setOnClickListener{
             Log.d("Segment", "Matches segment tapped ${matches.count()}")
             updateSegments("Matched")
-
         }
         pendingSegment.setOnClickListener{
             Log.d("Segment", "Pending segment tapped ${pending.count()}")

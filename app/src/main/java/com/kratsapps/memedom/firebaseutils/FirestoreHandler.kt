@@ -219,7 +219,6 @@ class FirestoreHandler {
 
     //Getting
     fun getAllMemes(
-        context: Context,
         mainUser: MemeDomUser?,
         dayLimit: Long,
         memeLimit: Long,
@@ -388,6 +387,9 @@ class FirestoreHandler {
                     if (onlineDate != null && onlineStatus != null) {
                         match.onlineDate = onlineDate
                         match.online = onlineStatus
+
+                        Log.d("MessagesFragment", "Got Online Status of ${match.uid}")
+
                         completed(match)
                     }
                 }

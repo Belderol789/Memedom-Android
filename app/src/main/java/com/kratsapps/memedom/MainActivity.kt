@@ -62,6 +62,8 @@ class MainActivity : AppCompatActivity() {
     var allMemes = mutableListOf<Memes>()
     //ProfileFragment
     var profileMemes = mutableListOf<Memes>()
+    //MessagesFragment
+    var userMatches = mutableListOf<Matches>()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -81,6 +83,7 @@ class MainActivity : AppCompatActivity() {
         checkLoginStatus()
         activateFacebook()
         setupBottomNavigation()
+        getAllMatches {}
     }
 
     override fun onStop() {
@@ -95,8 +98,8 @@ class MainActivity : AppCompatActivity() {
     fun setupHomeFragment(completed: () -> Unit) {
         FirestoreHandler().getAppSettings() {points, dayLimit, memeLimit, matchLimit ->
             DatabaseManager(this).saveToPrefsInt("matchLimit", matchLimit.toInt())
-            checkMatchingStatus()
-            FirestoreHandler().getAllMemes(this, mainUser, dayLimit, memeLimit) {
+            checkMatchingStatus(matchLimit)
+            FirestoreHandler().getAllMemes(mainUser, dayLimit, memeLimit) {
 
                 datingMemes.clear()
                 allMemes.clear()
@@ -130,16 +133,41 @@ class MainActivity : AppCompatActivity() {
     }
 
     fun saveProfileEdits(hashMap: HashMap<String, Any>) {
-
         Log.d("Saving", "Updating user data")
         FirestoreHandler().updateDatabaseObject("User", mainUser!!.uid, hashMap)
     }
 
     //MessagesFragment
     fun getAllMatches(completed: (Matches) -> Unit) {
-        FirestoreHandler().checkNewMatch(this, {
-            FirestoreHandler().getOnlineStatus(it, {
-                completed(it)
+        FirestoreHandler().checkNewMatch(this, { matches ->
+            FirestoreHandler().getOnlineStatus(matches, { match ->
+                if (mainUser != null) {
+                    if (!mainUser!!.rejects.contains(match.uid)) {
+                        Log.d("UserMatches", "Adding current match $match")
+
+                        userMatches.add(match)
+                        completed(match)
+
+                        if (match.matchStatus == false && match.offered.equals(mainUser?.uid)) {
+                            // Display Pending view
+                            Log.d("PendingView", "Displaying Pending View")
+
+                            pendingView.visibility = View.VISIBLE
+
+                            niceBtn.setOnClickListener {
+                                pendingView.visibility = View.GONE
+                            }
+
+                            val randomGif =
+                                listOf(R.raw.gif1, R.raw.gif2, R.raw.gif3, R.raw.gif4, R.raw.gif5, R.raw.gif6, R.raw.gif7, R.raw.gif8).random()
+
+                            Glide.with(this)
+                                .asGif()
+                                .load(randomGif)
+                                .into(pendingGif)
+                        }
+                    }
+                }
             })
         })
     }
@@ -176,16 +204,15 @@ class MainActivity : AppCompatActivity() {
         FacebookSdk.fullyInitialize()
     }
 
-    private fun checkMatchingStatus() {
+    private fun checkMatchingStatus(matchLimit: Long) {
         val user = FirebaseAuth.getInstance().currentUser
-        val numberOfTimes = DatabaseManager(this).retrievePrefsInt("matchLimit", 5)
 
         if (user != null) {
             navigationBottom.visibility = View.VISIBLE
             FirestoreHandler().checkMatchingStatus(this, user.uid, {
                 currentMatchUser = it
                 matchView.visibility = View.VISIBLE
-                matchView.infoTextView.text = "You've liked ${it.name} \nmemes 10 times!"
+                matchView.infoTextView.text = "You've liked ${it.name} \nmemes $matchLimit times!"
                 Glide.with(this)
                     .load(it.profilePhoto)
                     .circleCrop()
@@ -351,15 +378,19 @@ class MainActivity : AppCompatActivity() {
                 val rejectPosition = data.getIntExtra("Position", 0)
                 msgFragment.matchAdapter.removeRow(rejectPosition)
             } else if (requestCode == START_CHAT_REQUEST_CODE) {
+
                 val lastText = data.getStringExtra("matchText")
                 val currentChatUID = data.getStringExtra("currentChatUID")
+                val chatDate = data.getLongExtra("chatDate", System.currentTimeMillis())
 
-                val data = hashMapOf<String, Any>(
+                val chatData = hashMapOf<String, Any>(
                     "matchText" to lastText!!,
-                    "chatDate" to System.currentTimeMillis()
+                    "chatDate" to chatDate
                 )
 
-                FirestoreHandler().updateMatch(currentChatUID!!, data, this, {})
+                Log.d("UserChat", "Sending the latest chat $chatData")
+
+                FirestoreHandler().updateMatch(currentChatUID!!, chatData, this, {})
             }
         }
     }
