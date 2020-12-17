@@ -71,7 +71,9 @@ class ImageAdapter(private val imageList: MutableList<String>, private val memeL
                 }
             }
         } else if (activity is MemedomActivity) {
-            (activity as MemedomActivity).didSelectCurrentImage(position)
+            holder.imageCell.setOnClickListener {
+                (activity as MemedomActivity).didSelectCurrentImage(position)
+            }
             holder.deleteBtn.visibility = View.GONE
         } else {
             holder.deleteBtn.visibility = View.GONE

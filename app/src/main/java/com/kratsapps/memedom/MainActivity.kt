@@ -84,6 +84,7 @@ class MainActivity : AppCompatActivity() {
         activateFacebook()
         setupBottomNavigation()
         getAllMatches {}
+        setupProfileFragment {}
     }
 
     override fun onStop() {
@@ -119,13 +120,18 @@ class MainActivity : AppCompatActivity() {
             }
         }
     }
-    //ProfileFragmrny
+    //ProfileFragment
     fun setupProfileFragment(completed: (MutableList<Memes>) -> Unit) {
         if (mainUser?.uid != null) {
             FirestoreHandler().getAllMemesOfMainUser(mainUser!!.uid) {
                 if (it != null) {
                     profileMemes.add(it)
                     Log.d("UserMemes", "Memes ${profileMemes.count()}")
+                    if (!mainUser!!.memes.contains(it.postImageURL)) {
+                        mainUser!!.memes += it.postImageURL
+                        Log.d("Saving New Meme", "Saving ${it.toString()}")
+                        DatabaseManager(this).convertUserObject(mainUser!!, "MainUser", {})
+                    }
                 }
                 completed(profileMemes)
             }

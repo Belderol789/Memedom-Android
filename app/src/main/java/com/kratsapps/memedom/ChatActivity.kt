@@ -254,13 +254,14 @@ class ChatActivity : AppCompatActivity() {
     }
 
     fun updateLastMessage() {
+        Log.d("ChatActivity", "Allmessages ${allMessageItems.count()}")
         if (!allMessageItems.isEmpty()) {
             val lastItem = allMessageItems.last()
 
-            Log.d("ChatAcitivty", "Valid URL ${lastItem.chatContent}")
+            Log.d("ChatActivity", "Valid URL ${lastItem.chatContent}")
 
             var lastText = "Sent a message!"
-            if (URLUtil.isValidUrl(lastItem.chatContent)) {
+            if (URLUtil.isValidUrl(lastItem.chatImageURL)) {
                 lastText = "Sent  an image!"
             } else if (!lastItem.chatContent.isEmpty()) {
                 lastText = lastItem.chatContent

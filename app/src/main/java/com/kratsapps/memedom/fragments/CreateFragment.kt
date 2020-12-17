@@ -156,6 +156,9 @@ class CreateFragment : Fragment() {
             imageViewMeme.drawable,
             createContext,
             {
+
+
+
                 mainActivity.activateNavBottom(true)
                 val memeImageURL = it
                 if (memeImageURL != null && savedUser != null) {
