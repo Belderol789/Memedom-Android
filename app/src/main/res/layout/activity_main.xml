@@ -195,18 +195,31 @@
                         app:layout_constraintStart_toStartOf="parent"
                         app:layout_constraintTop_toTopOf="parent" />
 
-                    <Button
-                        android:id="@+id/niceBtn"
-                        android:layout_width="0dp"
+                    <LinearLayout
+                        android:id="@+id/linearLayout10"
+                        android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:background="@color/transparent"
-                        android:fontFamily="@font/helveticaneu_bold"
-                        android:text="Nice"
-                        android:textColor="@color/whiteColor"
-                        android:textStyle="bold"
+                        android:orientation="horizontal"
                         app:layout_constraintBottom_toBottomOf="parent"
                         app:layout_constraintEnd_toEndOf="parent"
-                        app:layout_constraintStart_toStartOf="parent" />
+                        app:layout_constraintStart_toStartOf="parent">
+
+                        <Button
+                            android:id="@+id/niceBtn"
+                            android:layout_width="match_parent"
+                            android:layout_height="50dp"
+                            android:layout_marginEnd="0dp"
+                            android:layout_marginRight="0dp"
+                            android:background="@color/appFGColor"
+                            android:fontFamily="@font/helveticaneu_bold"
+                            android:text="Nice"
+                            android:textColor="@color/whiteColor"
+                            android:textStyle="bold"
+                            app:layout_constraintBottom_toBottomOf="parent"
+                            app:layout_constraintEnd_toEndOf="parent"
+                            app:layout_constraintStart_toStartOf="parent"
+                            app:layout_constraintTop_toTopOf="parent" />
+                    </LinearLayout>
 
                     <ImageView
                         android:id="@+id/pendingGif"
@@ -216,7 +229,7 @@
                         android:alpha="1"
                         android:background="@color/appBGColor"
                         android:scaleType="centerCrop"
-                        app:layout_constraintBottom_toTopOf="@+id/niceBtn"
+                        app:layout_constraintBottom_toTopOf="@+id/linearLayout10"
                         app:layout_constraintEnd_toEndOf="parent"
                         app:layout_constraintStart_toStartOf="parent"
                         app:layout_constraintTop_toBottomOf="@+id/pendingTextView"

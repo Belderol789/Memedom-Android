@@ -31,6 +31,7 @@ import com.kratsapps.memedom.R
 import com.kratsapps.memedom.adapters.FeedAdapter
 import com.kratsapps.memedom.adapters.ImageAdapter
 import com.kratsapps.memedom.firebaseutils.FireStorageHandler
+import com.kratsapps.memedom.firebaseutils.FirestoreHandler
 import com.kratsapps.memedom.models.MemeDomUser
 import com.kratsapps.memedom.models.Memes
 import com.kratsapps.memedom.utils.*
@@ -134,6 +135,29 @@ class ProfileFragment : Fragment() {
                 profileRecyclerView.layoutManager = galleryManager
                 profileRecyclerView.itemAnimator?.removeDuration
             }
+        } else {
+            val profileMemes = mainActivity.profileMemes
+            var crown: Int = 0
+            for (meme in profileMemes) {
+                crown += meme.getPostLikeCount()
+            }
+
+            matchCount.setText("${mainUser!!.matches.count()}")
+            postCount.setText("${profileMemes.count()}")
+            crownCount.setText("$crown")
+
+            var userMemes = mutableListOf<String>()
+            for (meme in profileMemes) {
+                userMemes.add(meme.postImageURL)
+            }
+
+            val feedAdapter = ImageAdapter(userMemes, profileMemes, mainActivity, this, true)
+            val galleryManager: GridLayoutManager =
+                GridLayoutManager(mainActivity, 3, GridLayoutManager.VERTICAL, false)
+            profileRecyclerView.adapter = feedAdapter
+            profileRecyclerView.layoutManager = galleryManager
+            profileRecyclerView.itemAnimator?.removeDuration
+
         }
     }
 
@@ -243,7 +267,7 @@ class ProfileFragment : Fragment() {
         }
         val galleryManager: GridLayoutManager = GridLayoutManager(activity, 3, GridLayoutManager.VERTICAL, false)
 
-        if (context != null && activity != null && images != null) {
+        if (context != null && activity != null) {
 
             Log.d("UserGallery", "User photos $images")
             galleryItems = images.toMutableList()
@@ -252,6 +276,13 @@ class ProfileFragment : Fragment() {
             galleryRecyclerView.layoutManager = galleryManager
             galleryRecyclerView.itemAnimator?.removeDuration
         }
+    }
+
+    fun removeGalleryItem(position: Int) {
+        val removedURL = galleryItems[position]
+        val mainUser = DatabaseManager(mainActivity).retrieveSavedUser()
+        FirestoreHandler().deleteArrayInFirestore("User", mainUser!!.uid, removedURL)
+        Log.d("URLToRemove", "Removed $removedURL")
     }
 
     @RequiresApi(Build.VERSION_CODES.P)

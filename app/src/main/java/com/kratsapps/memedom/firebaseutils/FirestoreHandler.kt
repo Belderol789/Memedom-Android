@@ -54,6 +54,13 @@ class FirestoreHandler {
             }
     }
 
+    fun deleteArrayInFirestore(path: String, document: String, deleteString: String) {
+        firestoreDB
+            .collection(path)
+            .document(document)
+            .update("gallery", FieldValue.arrayRemove(deleteString))
+    }
+
     fun sendUserCommentToFirestore(
         postID: String,
         commentID: String,
@@ -370,6 +377,9 @@ class FirestoreHandler {
         val memeDomuser = DatabaseManager(context).retrieveSavedUser()
         if (memeDomuser != null && !memeDomuser.rejects.contains(matchUser.uid)) {
             memeDomuser.rejects += matchUser.uid
+            if (memeDomuser.matches.contains(matchUser.uid)) {
+                memeDomuser.matches -= matchUser.uid
+            }
             DatabaseManager(context).convertUserObject(memeDomuser, "MainUser", {})
         }
     }
@@ -497,8 +507,6 @@ class FirestoreHandler {
 
             var fieldValue: FieldValue = FieldValue.arrayUnion(matchUserUID)
             updateDatabaseObject(USERS_PATH, mainUser.uid, hashMapOf("matches" to fieldValue))
-            mainUser.matches += matchUserUID
-            DatabaseManager(context).convertUserObject(mainUser, "MainUser", {})
             updateLikeDatabase(mainUser.uid, matchUserUID, "dating", context, 1)
 
             completed()

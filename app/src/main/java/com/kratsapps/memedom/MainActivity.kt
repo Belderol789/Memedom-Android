@@ -142,6 +142,7 @@ class MainActivity : AppCompatActivity() {
         FirestoreHandler().checkNewMatch(this, { matches ->
             FirestoreHandler().getOnlineStatus(matches, { match ->
                 if (mainUser != null) {
+
                     if (!mainUser!!.rejects.contains(match.uid)) {
                         Log.d("UserMatches", "Adding current match $match")
 
@@ -150,26 +151,33 @@ class MainActivity : AppCompatActivity() {
 
                         if (match.matchStatus == false && match.offered.equals(mainUser?.uid)) {
                             // Display Pending view
-                            Log.d("PendingView", "Displaying Pending View")
-
-                            pendingView.visibility = View.VISIBLE
-
-                            niceBtn.setOnClickListener {
-                                pendingView.visibility = View.GONE
-                            }
-
-                            val randomGif =
-                                listOf(R.raw.gif1, R.raw.gif2, R.raw.gif3, R.raw.gif4, R.raw.gif5, R.raw.gif6, R.raw.gif7, R.raw.gif8).random()
-
-                            Glide.with(this)
-                                .asGif()
-                                .load(randomGif)
-                                .into(pendingGif)
+                            showPendingView("You have PENDING matches!")
+                        } else if (match.matchStatus == true && !mainUser!!.matches.contains(match.uid)) {
+                            mainUser!!.matches += match.uid
+                            DatabaseManager(this).convertUserObject(mainUser!!, "MainUser", {})
+                            showPendingView("You have NEW matches!")
                         }
                     }
                 }
             })
         })
+    }
+
+    private fun showPendingView(text: String) {
+        pendingView.visibility = View.VISIBLE
+        pendingTextView.text = text
+
+        niceBtn.setOnClickListener {
+            pendingView.visibility = View.GONE
+        }
+
+        val randomGif =
+            listOf(R.raw.gif1, R.raw.gif2, R.raw.gif3, R.raw.gif4, R.raw.gif5, R.raw.gif6, R.raw.gif7, R.raw.gif8).random()
+
+        Glide.with(this)
+            .asGif()
+            .load(randomGif)
+            .into(pendingGif)
     }
 
     private fun activateOnline(status: Boolean) {

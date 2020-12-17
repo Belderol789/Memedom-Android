@@ -16,6 +16,7 @@ import android.util.Log
 import android.view.View
 import android.webkit.URLUtil
 import android.widget.Button
+import android.widget.ImageView
 import android.widget.Toast
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.bumptech.glide.Glide
@@ -45,8 +46,6 @@ class ChatActivity : AppCompatActivity() {
     companion object {
         const val START_MEMEDOM_REQUEST_CODE = 0
     }
-
-    lateinit var progressOverlay: View
 
     var chatAdapter: ChatAdapter? = null
     lateinit var currentChat: MemeDomUser
@@ -163,17 +162,22 @@ class ChatActivity : AppCompatActivity() {
             val alert = AlertView("Select an Option", "", AlertStyle.IOS)
             alert.addAction(AlertAction("Unmatch", AlertActionStyle.DEFAULT, {
                 FirestoreHandler().unmatchUser(chatUniqueID)
-                updateLastMessage()
+                onBackPressed()
             }))
             alert.addAction(AlertAction("Report", AlertActionStyle.NEGATIVE, {
                 FirestoreHandler().unmatchUser(chatUniqueID)
                 FirestoreHandler().rejectUser(currentChat, this)
-                updateLastMessage()
+                onBackPressed()
             }))
 
             alert.show(this)
-
         }
+
+        Glide.with(this)
+            .asGif()
+            .load(R.raw.loader)
+            .into(chatLoadingImageView)
+
     }
 
     private fun openMemedom() {
@@ -227,10 +231,10 @@ class ChatActivity : AppCompatActivity() {
 
             if (userID != null) {
                 if (requestCode == IMAGE_GALLERY_REQUEST_CODE && data != null && data.data != null) {
-                    AndroidUtils().animateView(progressOverlay, View.VISIBLE, 0.4f, 200)
+                    progressChatView.visibility = View.VISIBLE
                     val imageData = data.data
                     FireStorageHandler().uploadChatMeme(chatID, chatUniqueID, imageData!!, 0L, userID, this, {
-                        progressOverlay.visibility = View.GONE
+                        progressChatView.visibility = View.GONE
                     })
                 } else if (requestCode == START_MEMEDOM_REQUEST_CODE && data != null) {
                     Log.d("MemedomImage", "Got Image $data")
@@ -239,10 +243,10 @@ class ChatActivity : AppCompatActivity() {
                         FirestoreHandler().sendUserChats(chatID, chatUniqueID, chatImageURL, "", 0L, userID)
                     }
                 } else {
-                    AndroidUtils().animateView(progressOverlay, View.VISIBLE, 0.4f, 200)
+                    progressChatView.visibility = View.VISIBLE
                     val imageData = image_uri
                     FireStorageHandler().uploadChatMeme(chatID, chatUniqueID, imageData!!, 0L, userID, this, {
-                        progressOverlay.visibility = View.GONE
+                        progressChatView.visibility = View.GONE
                     })
                 }
             }
@@ -252,6 +256,9 @@ class ChatActivity : AppCompatActivity() {
     fun updateLastMessage() {
         if (!allMessageItems.isEmpty()) {
             val lastItem = allMessageItems.last()
+
+            Log.d("ChatAcitivty", "Valid URL ${lastItem.chatContent}")
+
             var lastText = "Sent a message!"
             if (URLUtil.isValidUrl(lastItem.chatContent)) {
                 lastText = "Sent  an image!"

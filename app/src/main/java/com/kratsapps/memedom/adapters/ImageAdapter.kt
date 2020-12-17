@@ -12,6 +12,7 @@ import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.kratsapps.memedom.CommentsActivity
+import com.kratsapps.memedom.MainActivity
 import com.kratsapps.memedom.MemedomActivity
 import com.kratsapps.memedom.R
 import com.kratsapps.memedom.fragments.ProfileFragment
@@ -45,39 +46,34 @@ class ImageAdapter(private val imageList: MutableList<String>, private val memeL
             .thumbnail(0.25f)
             .into(holder.imageCell)
 
-        if (activity is MemedomActivity) {
+        if (activity is MainActivity) {
             holder.deleteBtn.visibility = View.GONE
             holder.imageCell.setOnClickListener {
-                (activity as MemedomActivity).didSelectCurrentImage(position)
-            }
-            if (isMeme && memeList != null) {
-                holder.deleteBtn.visibility = View.GONE
-                holder.imageCell.setOnClickListener {
+                Log.d("ProfileActivity", "IsMemes $isMeme")
+                if (isMeme && memeList != null) {
                     navigateToComments(memeList[position])
-                }
-            } else if (position == 0) {
-                holder.deleteBtn.visibility = View.GONE
-                holder.imageCell.setColorFilter(Color.parseColor("#111111"))
-            } else {
-                holder.deleteBtn.visibility = View.VISIBLE
-                holder.deleteBtn.setOnClickListener {
-                    removeAt(position)
-                }
-            }
-            holder.imageCell.setOnClickListener {
-                if (position == 0 && fragment != null) {
+                } else if (isMeme) {
+
+                } else if (position == 0 && fragment != null) {
                     fragment.profilePhotoSelected = false
                     fragment.openImageGallery()
                 }
             }
-        } else {
-            if (isMeme && memeList != null) {
-                Log.d("ProfileActivity", "MemeList $memeList")
-                holder.imageCell.setOnClickListener {
-                    Log.d("ProfileActivity", "Selected MemeList ${memeList[position]}")
-                    navigateToComments(memeList[position])
+            if (!isMeme) {
+                Log.d("ProfileActivity", "Position $position")
+                if (position == 0) {
+                    holder.imageCell.setColorFilter(Color.parseColor("#111111"))
+                } else {
+                    holder.deleteBtn.visibility = View.VISIBLE
+                    holder.deleteBtn.setOnClickListener {
+                        removeAt(position)
+                    }
                 }
             }
+        } else if (activity is MemedomActivity) {
+            (activity as MemedomActivity).didSelectCurrentImage(position)
+            holder.deleteBtn.visibility = View.GONE
+        } else {
             holder.deleteBtn.visibility = View.GONE
         }
     }
@@ -100,12 +96,12 @@ class ImageAdapter(private val imageList: MutableList<String>, private val memeL
     }
 
     fun removeAt(position: Int) {
-        Log.d("ImageList", "Count before ${imageList.count()}")
-        imageList.removeAt(position)
-
-        notifyItemRemoved(position)
-        notifyItemRangeChanged(position, imageList.count())
-        Log.d("ImageList", "Count after ${imageList.count()}")
+        if (fragment != null) {
+            fragment.removeGalleryItem(position)
+            imageList.removeAt(position)
+            notifyItemRemoved(position)
+            notifyItemRangeChanged(position, imageList.count())
+        }
     }
 }
 
