@@ -15,6 +15,7 @@ import android.view.MotionEvent
 import android.view.View
 import android.view.inputmethod.InputMethodManager
 import android.widget.EditText
+import android.widget.Toast
 import androidx.annotation.RequiresApi
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
@@ -177,6 +178,8 @@ class CommentsActivity : AppCompatActivity() {
 
                 Log.d("Comment", "Sending comment hash $commentHash")
                 FirestoreHandler().sendUserCommentToFirestore(postMeme.postID, commentID, comments.count(), commentHash)
+            } else {
+                Toast.makeText(baseContext, "You must be logged in to like", Toast.LENGTH_SHORT).show()
             }
         }
     }

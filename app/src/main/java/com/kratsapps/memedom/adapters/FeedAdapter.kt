@@ -23,6 +23,7 @@ import com.google.android.gms.ads.AdRequest
 import com.google.firebase.firestore.FieldValue
 import com.kratsapps.memedom.Assets
 import com.kratsapps.memedom.CommentsActivity
+import com.kratsapps.memedom.MainActivity
 import com.kratsapps.memedom.R
 import com.kratsapps.memedom.firebaseutils.FirestoreHandler
 import com.kratsapps.memedom.models.MemeDomUser
@@ -32,7 +33,7 @@ import com.kratsapps.memedom.utils.DoubleClickListener
 import kotlinx.android.synthetic.main.feed_item.view.*
 
 
-class FeedAdapter(private var feedList: MutableList<Memes>, private val activity: Activity, val isProfile: Boolean, isMemedom: Boolean): RecyclerView.Adapter<FeedAdapter.FeedViewHolder>() {
+class FeedAdapter(private var feedList: MutableList<Memes>, private val activity: MainActivity, isMemedom: Boolean): RecyclerView.Adapter<FeedAdapter.FeedViewHolder>() {
 
     lateinit var feedAdapterContext: Context
     var filteredFeedList = feedList
@@ -81,7 +82,7 @@ class FeedAdapter(private var feedList: MutableList<Memes>, private val activity
             .error(
                 ContextCompat.getDrawable(
                     activity.applicationContext,
-                    R.drawable.ic_action_name
+                    R.mipmap.ic_launcher_memedom
                 )
             )
             .into(holder.postProfilePic)
@@ -93,6 +94,7 @@ class FeedAdapter(private var feedList: MutableList<Memes>, private val activity
             holder.likeImageView.setColorFilter(
                 ContextCompat.getColor(feedAdapterContext, R.color.appFGColor)
             )
+            holder.postUserInfo.visibility = View.VISIBLE
         } else {
             holder.likeBtn.setImageResource(R.drawable.ic_action_like)
             holder.likeImageView.setImageResource(R.drawable.ic_action_like)
@@ -100,6 +102,7 @@ class FeedAdapter(private var feedList: MutableList<Memes>, private val activity
             holder.likeImageView.setColorFilter(
                 ContextCompat.getColor(feedAdapterContext, R.color.appDateFGColor)
             )
+            holder.postUserInfo.visibility = View.GONE
         }
 
         holder.postUserName.text = currentItem.postUsername
@@ -125,6 +128,8 @@ class FeedAdapter(private var feedList: MutableList<Memes>, private val activity
                 holder.linearReport.visibility = View.GONE
                 mainUser.seenOldMemes += postUID
                 DatabaseManager(feedAdapterContext).convertUserObject(mainUser!!, "MainUser", {})
+            } else {
+                activity.showStrangerAlert()
             }
         }
 
@@ -157,7 +162,9 @@ class FeedAdapter(private var feedList: MutableList<Memes>, private val activity
 
                     DatabaseManager(feedAdapterContext).convertUserObject(mainUser!!, "MainUser", {})
                 }
-            } 
+            } else {
+                activity.showStrangerAlert()
+            }
         }
 
         holder.commentsBtn.setOnClickListener {
@@ -167,10 +174,7 @@ class FeedAdapter(private var feedList: MutableList<Memes>, private val activity
         holder.feedImage.setOnClickListener(object : DoubleClickListener() {
             override fun onSingleClick(v: View?) {
                 Log.d("Gesture", "User has tapped once")
-                if (mainUser?.uid != null && currentItem.postLikers.contains(mainUser.uid)) {
-                    navigateToComments(currentItem)
-                    //make sure when user logs out, all data is destroyed
-                }
+                navigateToComments(currentItem)
             }
 
             override fun onDoubleClick(v: View?) {
@@ -181,6 +185,8 @@ class FeedAdapter(private var feedList: MutableList<Memes>, private val activity
                         currentItem.postLikers += mainUser.uid
                         animateLikeImageView(holder, mainUser, currentItem)
                     }
+                } else {
+                    activity.showStrangerAlert()
                 }
             }
         })
@@ -222,16 +228,12 @@ class FeedAdapter(private var feedList: MutableList<Memes>, private val activity
             deactivatePoints(holder)
         }
 
-        if (isProfile) {
-            holder.mAdView.visibility = View.GONE
-            holder.reportButton.visibility = View.INVISIBLE
+        if (position % 2 == 0) {
+            val adRequest = AdRequest.Builder().build()
+            holder.mAdView.visibility = View.VISIBLE
+            holder.mAdView.loadAd(adRequest)
         } else {
-            if (position % 2 == 0) {
-                val adRequest = AdRequest.Builder().build()
-                holder.mAdView.loadAd(adRequest)
-            } else {
-                holder.mAdView.visibility = View.GONE
-            }
+            holder.mAdView.visibility = View.GONE
         }
     }
 
@@ -255,9 +257,12 @@ class FeedAdapter(private var feedList: MutableList<Memes>, private val activity
     }
 
     private fun deactivatePoints(holder: FeedViewHolder) {
-        holder.pointsLayout.visibility = View.GONE
-        holder.postUserInfo.visibility = View.GONE
-        holder.likeBtn.visibility = View.VISIBLE
+        if (!isMemeDom) {
+            holder.pointsLayout.visibility = View.GONE
+            holder.postUserInfo.visibility = View.GONE
+            holder.likeBtn.visibility = View.VISIBLE
+        }
+
 
         if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.M) {
             holder.shareBtn.setTextColor(Assets().appFGColor)

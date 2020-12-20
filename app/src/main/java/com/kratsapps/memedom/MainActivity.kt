@@ -28,6 +28,10 @@ import com.google.firebase.analytics.ktx.analytics
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseUser
 import com.google.firebase.ktx.Firebase
+import com.irozon.alertview.AlertActionStyle
+import com.irozon.alertview.AlertStyle
+import com.irozon.alertview.AlertView
+import com.irozon.alertview.objects.AlertAction
 import com.kratsapps.memedom.adapters.TutorialAdapter
 import com.kratsapps.memedom.fragments.*
 import com.kratsapps.memedom.models.MemeDomUser
@@ -444,4 +448,9 @@ class MainActivity : AppCompatActivity() {
         }
         return super.dispatchTouchEvent(event)
     }
+
+    fun showStrangerAlert() {
+        Toast.makeText(baseContext, "You must be logged in to like", Toast.LENGTH_SHORT).show()
+    }
+
 }

@@ -6,15 +6,24 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:layout_marginTop="0dp"
-    app:cardBackgroundColor="@color/appBGColorLight"
     android:elevation="20dp"
-    app:cardCornerRadius="8dp"
+    app:cardBackgroundColor="@color/appBGColorLight"
+    app:cardCornerRadius="0dp"
     tools:targetApi="lollipop">
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:padding="0dp">
+
+        <androidx.cardview.widget.CardView
+            android:id="@+id/cardView3"
+            android:layout_width="match_parent"
+            android:layout_height="8dp"
+            app:cardBackgroundColor="@color/appBGColor"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent" />
 
         <ImageButton
             android:id="@+id/feedImage"
@@ -38,6 +47,7 @@
             android:layout_marginTop="10dp"
             android:layout_marginEnd="16dp"
             android:divider="@drawable/divider_vertical"
+            android:showDividers="middle"
             android:orientation="vertical"
             app:layout_constraintEnd_toStartOf="@+id/reportButton"
             app:layout_constraintStart_toStartOf="parent"
@@ -45,7 +55,7 @@
 
             <LinearLayout
                 android:layout_width="wrap_content"
-                android:layout_height="25dp"
+                android:layout_height="wrap_content"
                 android:divider="@drawable/divider_horizontal"
                 android:orientation="horizontal"
                 android:showDividers="middle">
@@ -55,50 +65,52 @@
                     android:layout_width="wrap_content"
                     android:layout_height="match_parent"
                     android:layout_weight="1"
-                    android:text="Post Title"
+                    android:text="Post Title Post Title Post Title Post Title Post Title Post Title Post Title Post Title"
                     android:textAlignment="viewStart"
                     android:textColor="@android:color/white"
                     android:textSize="18sp"
                     android:textStyle="bold" />
-
-                <TextView
-                    android:id="@+id/feedDate"
-                    android:layout_width="wrap_content"
-                    android:layout_height="match_parent"
-                    android:layout_weight="1"
-                    android:gravity="fill_vertical"
-                    android:text="Just now"
-                    android:textColor="@color/appSecondaryColor"
-                    android:textSize="10sp" />
 
             </LinearLayout>
 
             <LinearLayout
                 android:id="@+id/postUserInfo"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
+                android:layout_height="30dp"
                 android:divider="@drawable/divider_horizontal"
                 android:orientation="horizontal"
                 android:showDividers="middle"
-                android:visibility="invisible">
+                android:visibility="visible">
 
-                <ImageView
+                <ImageButton
                     android:id="@+id/postProfilePic"
-                    android:layout_width="25dp"
+                    android:layout_width="30dp"
                     android:layout_height="match_parent"
                     android:layout_weight="0"
+                    android:background="@drawable/round_imageview"
                     android:src="@drawable/ic_action_name"
                     tools:srcCompat="@tools:sample/avatars" />
 
                 <TextView
                     android:id="@+id/postUsername"
                     android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
+                    android:layout_height="match_parent"
                     android:layout_weight="0"
+                    android:gravity="center"
                     android:text="Anonymous"
                     android:textColor="#FFFFFF"
                     android:textSize="12sp"
                     android:textStyle="bold" />
+
+                <TextView
+                    android:id="@+id/feedDate"
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent"
+                    android:layout_weight="0"
+                    android:gravity="fill_vertical"
+                    android:text="Just now"
+                    android:textColor="@color/appSecondaryColor"
+                    android:textSize="10sp" />
 
             </LinearLayout>
 
@@ -109,10 +121,12 @@
             android:layout_width="wrap_content"
             android:layout_height="30dp"
             android:layout_marginTop="8dp"
+            android:layout_marginBottom="8dp"
             android:divider="@drawable/divider_horizontal"
             android:gravity="center|fill_horizontal"
             android:orientation="horizontal"
             android:visibility="visible"
+            app:layout_constraintBottom_toTopOf="@+id/adView"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/feedImage">
@@ -164,7 +178,7 @@
             android:layout_width="30dp"
             android:layout_height="25dp"
             android:layout_marginTop="8dp"
-            android:layout_marginEnd="16dp"
+            android:layout_marginEnd="8dp"
             android:background="@color/transparent"
             android:contentDescription="@string/reporting_resource"
             android:src="@drawable/ic_action_report"
@@ -247,10 +261,10 @@
             android:layout_marginTop="8dp"
             app:adSize="BANNER"
             app:adUnitId="ca-app-pub-3940256099942544/6300978111"
+            app:layout_constraintBottom_toTopOf="@+id/cardView3"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/feedActionLayout">
-        </com.google.android.gms.ads.AdView>
+            app:layout_constraintTop_toBottomOf="@+id/feedActionLayout"></com.google.android.gms.ads.AdView>
 
         <ImageView
             android:id="@+id/likeImageView"

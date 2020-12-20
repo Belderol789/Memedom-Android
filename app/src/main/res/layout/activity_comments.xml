@@ -66,6 +66,15 @@
                         app:layout_constraintStart_toStartOf="parent"
                         app:layout_constraintTop_toTopOf="parent">
 
+                        <TextView
+                            android:id="@+id/commentsTitle"
+                            android:layout_width="match_parent"
+                            android:layout_height="24dp"
+                            android:text="Post Title"
+                            android:textColor="@android:color/white"
+                            android:textSize="18sp"
+                            android:textStyle="bold" />
+
                         <LinearLayout
                             android:id="@+id/commentsUserInfo"
                             android:layout_width="match_parent"
@@ -73,7 +82,7 @@
                             android:divider="@drawable/divider_horizontal"
                             android:orientation="horizontal"
                             android:showDividers="middle"
-                            android:visibility="gone">
+                            android:visibility="visible">
 
                             <ImageView
                                 android:id="@+id/commentsProfilePic"
@@ -104,15 +113,6 @@
                                 android:textColor="@color/appSecondaryColor"
                                 android:textSize="10sp" />
                         </LinearLayout>
-
-                        <TextView
-                            android:id="@+id/commentsTitle"
-                            android:layout_width="match_parent"
-                            android:layout_height="24dp"
-                            android:text="Post Title"
-                            android:textColor="@android:color/white"
-                            android:textSize="18sp"
-                            android:textStyle="bold" />
 
                     </LinearLayout>
 

@@ -171,7 +171,7 @@ class HomeFragment : Fragment() {
 
     private fun setupFeedView() {
         Log.d("MainActivityMemes", "Setting up feed view ${filteredMemems.count()}")
-        feedAdapter = FeedAdapter(filteredMemems, mainActivity, false, isMemedom)
+        feedAdapter = FeedAdapter(filteredMemems, mainActivity, isMemedom)
         feedRecyclerView = rootView.findViewById(R.id.recyclerViewHome) as RecyclerView
         feedRecyclerView.adapter = feedAdapter
         feedRecyclerView.layoutManager = LinearLayoutManager(mainActivity)
