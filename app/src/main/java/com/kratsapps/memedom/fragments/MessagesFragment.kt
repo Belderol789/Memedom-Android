@@ -77,7 +77,6 @@ class MessagesFragment : Fragment() {
     private fun getAllMatches() {
 
         val mainUser = DatabaseManager(msgContext).retrieveSavedUser()
-        blankScreen.visibility = View.GONE
         filteredMatches.clear()
 
         if (mainUser != null) {
@@ -88,6 +87,7 @@ class MessagesFragment : Fragment() {
                     if (it != null && !mainUser.rejects.contains(it.uid)) {
                         filterOutMatch(it, mainUser)
                     }
+                    setupBlankScreen(filteredMatches)
                 }
             } else {
                 filteredMatches.clear()

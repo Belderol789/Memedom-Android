@@ -62,8 +62,10 @@ class MainActivity : AppCompatActivity() {
     var allMemes = mutableListOf<Memes>()
     //ProfileFragment
     var profileMemes = mutableListOf<Memes>()
+    var profileMemeIDs = mutableListOf<String>()
     //MessagesFragment
     var userMatches = mutableListOf<Matches>()
+    var userMatchesID = mutableListOf<String>()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -73,7 +75,6 @@ class MainActivity : AppCompatActivity() {
 
         if (FirebaseApp.getApps(applicationContext).isEmpty()) {
             FirebaseApp.initializeApp(applicationContext);}
-
         firebaseAnalytics = Firebase.analytics
         mainUser = DatabaseManager(this).retrieveSavedUser()
 
@@ -125,13 +126,17 @@ class MainActivity : AppCompatActivity() {
         if (mainUser?.uid != null) {
             FirestoreHandler().getAllMemesOfMainUser(mainUser!!.uid) {
                 if (it != null) {
-                    profileMemes.add(it)
+                    if (!profileMemeIDs.contains(it.postID)) {
+                        profileMemeIDs.contains(it.postID)
+                        profileMemes.add(it)
+                    }
                     Log.d("UserMemes", "Memes ${profileMemes.count()}")
                     if (!mainUser!!.memes.contains(it.postImageURL)) {
                         mainUser!!.memes += it.postImageURL
                         Log.d("Saving New Meme", "Saving ${it.toString()}")
                         DatabaseManager(this).convertUserObject(mainUser!!, "MainUser", {})
                     }
+
                 }
                 completed(profileMemes)
             }

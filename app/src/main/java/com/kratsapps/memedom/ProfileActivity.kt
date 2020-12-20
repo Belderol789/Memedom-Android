@@ -46,8 +46,8 @@ class ProfileActivity : AppCompatActivity() {
         position = intent.extras?.get("Position") as? Int
 
         if (matches != null) {
-            matchUser = matches
             matchUserID = matches.uid
+            matchUser = matches
         }
         if (matchID != null) {
             matchUserID = matchID
@@ -73,7 +73,7 @@ class ProfileActivity : AppCompatActivity() {
 
         FirestoreHandler().getUsersDataWith(matchUserID, {
             memeDomUser = it
-            matchUserID = it.email + it.uid
+            matchUserID = it.uid
             setupUserData()
             getAllUserMemes()
             setupActionButtons(it)

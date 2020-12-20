@@ -157,15 +157,11 @@ class CreateFragment : Fragment() {
             createContext,
             {
 
-
-
                 mainActivity.activateNavBottom(true)
                 val memeImageURL = it
                 if (memeImageURL != null && savedUser != null) {
 
-                    savedUser.memes += it.toString()
                     Log.d("Saving New Meme", "Saving ${it.toString()}")
-                    DatabaseManager(createContext).convertUserObject(savedUser, "MainUser", {})
 
                     val newPost: HashMap<String, Any> = hashMapOf(
                         "userAge" to savedUser.getUserAge().toLong(),

@@ -2,11 +2,11 @@ package com.kratsapps.memedom.firebaseutils
 
 import android.content.Context
 import android.util.Log
-import com.facebook.internal.Mutable
 import com.google.firebase.firestore.FieldValue
 import com.google.firebase.firestore.Query
 import com.google.firebase.firestore.SetOptions
 import com.google.firebase.firestore.ktx.firestore
+import com.google.firebase.firestore.ktx.firestoreSettings
 import com.google.firebase.ktx.Firebase
 import com.kratsapps.memedom.models.*
 import com.kratsapps.memedom.utils.DatabaseManager
@@ -34,6 +34,16 @@ class FirestoreHandler {
     private val DESCENDING = Query.Direction.DESCENDING
     private val ASCENDING = Query.Direction.ASCENDING
 
+
+
+    //Setup
+    fun setupFirestore() {
+        val settings = firestoreSettings {
+            isPersistenceEnabled = false
+        }
+        firestoreDB.firestoreSettings = settings
+    }
+
     //Adding
     fun addDataToFirestore(
         path: String,
@@ -51,6 +61,31 @@ class FirestoreHandler {
             }.addOnFailureListener { e ->
                 Log.w("Firestore", "Error writing document", e)
                 success(e.message)
+            }
+    }
+
+    fun addArrayInFirestore(path: String, document: String, addString: HashMap<String, Any>) {
+        firestoreDB
+            .collection(path)
+            .document(document)
+            .update("gallery", FieldValue.arrayRemove(addString))
+    }
+
+    fun checkUsernameAvailability(username: String, available: (Boolean) -> Unit) {
+        firestoreDB
+            .collection("USERNAME")
+            .whereEqualTo("Username", username)
+            .get()
+            .addOnSuccessListener {
+                Log.d("Usernames", "Isername ${it.documents}")
+                if (it.isEmpty) {
+                    available(true)
+                } else {
+                    available(false)
+                }
+            }
+            .addOnFailureListener {
+                available(true)
             }
     }
 
@@ -134,7 +169,7 @@ class FirestoreHandler {
         return javaClass.kotlin
     }
 
-    fun updateLikeDatabase(mainuserID: String, postUserID: String, matchType: String, context: Context, plus: Long) {
+    fun updateLikeDatabase(mainuserID: String, postUserID: String, matchType: String, context: Context, plus: Long, completed: () -> Unit) {
         val mainUser = DatabaseManager(context).retrieveSavedUser()
 
         if (mainUser != null) {
@@ -147,6 +182,9 @@ class FirestoreHandler {
                     .collection(USERS_PATH)
                     .document(mainuserID)
                     .set(updateLiked, SetOptions.merge())
+                    .addOnSuccessListener {
+                        completed()
+                    }
             })
         }
         Log.d("Firestore-Liked", "Updating $postUserID to $mainuserID")
@@ -506,10 +544,10 @@ class FirestoreHandler {
         if (mainUser != null && !mainUser.matches.contains(matchUserUID)) {
 
             var fieldValue: FieldValue = FieldValue.arrayUnion(matchUserUID)
-            updateDatabaseObject(USERS_PATH, mainUser.uid, hashMapOf("matches" to fieldValue))
-            updateLikeDatabase(mainUser.uid, matchUserUID, "dating", context, 1)
-
-            completed()
+            updateLikeDatabase(mainUser.uid, matchUserUID, "dating", context, 1, {
+                updateDatabaseObject(USERS_PATH, mainUser.uid, hashMapOf("matches" to fieldValue))
+                completed()
+            })
         }
     }
 

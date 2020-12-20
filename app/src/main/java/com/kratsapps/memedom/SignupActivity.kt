@@ -6,7 +6,6 @@ import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.graphics.Color
-import android.net.Uri
 import android.os.Build
 import android.os.Bundle
 import android.provider.MediaStore
@@ -56,6 +55,7 @@ class SignupActivity : AppCompatActivity() {
         setupActionButtons()
         setupFacebookSignup()
     }
+
 
     override fun onRequestPermissionsResult(
         requestCode: Int,
@@ -225,8 +225,15 @@ class SignupActivity : AppCompatActivity() {
         } else if (memeDomuser.getUserAge() <= 13) {
             Toast.makeText(baseContext, "Sorry, you're too young", Toast.LENGTH_SHORT).show()
         } else {
-            memeDomuser.name = username
-            userDidAuthEmail(email, password)
+            FirestoreHandler().checkUsernameAvailability(username, {
+                Log.d("Usernames", "Username is available $it")
+                if (it) {
+                    memeDomuser.name = username
+                    userDidAuthEmail(email, password)
+                } else {
+                    Toast.makeText(baseContext, "Username Taken", Toast.LENGTH_SHORT).show()
+                }
+            })
         }
     }
 
@@ -311,6 +318,7 @@ class SignupActivity : AppCompatActivity() {
                 "rejects" to memeDomuser.rejects,
                 "memes" to memeDomuser.memes,
                 "seenOldMemes" to listOf<String>(),
+                "dateJoined" to System.currentTimeMillis(),
                 "minAge" to 16,
                 "maxAge" to 65
             )
@@ -328,10 +336,22 @@ class SignupActivity : AppCompatActivity() {
                 }
             })
 
+            val randomString = generateRandomString()
+            FirestoreHandler().addArrayInFirestore("USERNAME", randomString, hashMapOf<String, Any>(
+                "Username" to memeDomuser.uid)
+            )
+
         } else {
             signupLoadingView.visibility = View.INVISIBLE
             setupAlertDialog("Missing birthday or too young")
         }
+    }
+
+    private fun generateRandomString(): String {
+        val charset = ('a'..'z') + ('A'..'Z') + ('0'..'9')
+        return (1..10)
+            .map { charset.random() }
+            .joinToString("")
     }
 
     //Facebook~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~

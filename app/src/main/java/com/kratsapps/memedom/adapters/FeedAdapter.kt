@@ -150,14 +150,14 @@ class FeedAdapter(private var feedList: MutableList<Memes>, private val activity
                     )
 
                     if (isMemeDom) {
-                        FirestoreHandler().updateLikeDatabase(mainUserID, currentItem.postUserUID, "liked", feedAdapterContext,1)
+                        FirestoreHandler().updateLikeDatabase(mainUserID, currentItem.postUserUID, "liked", feedAdapterContext,1, {})
                     } else {
-                        FirestoreHandler().updateLikeDatabase(mainUserID, currentItem.postUserUID, "dating", feedAdapterContext,1)
+                        FirestoreHandler().updateLikeDatabase(mainUserID, currentItem.postUserUID, "dating", feedAdapterContext,1, {})
                     }
 
                     DatabaseManager(feedAdapterContext).convertUserObject(mainUser!!, "MainUser", {})
                 }
-            }
+            } 
         }
 
         holder.commentsBtn.setOnClickListener {

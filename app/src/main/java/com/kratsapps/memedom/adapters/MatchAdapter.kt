@@ -92,10 +92,9 @@ class MatchAdapter(
             .into(holder.userImage)
 
         holder.profileBtn.setOnClickListener {
-            val intent: Intent = Intent(matchAdapterContext, ProfileActivity::class.java)
+            val intent: Intent = Intent(activity, ProfileActivity::class.java)
             intent.putExtra("MatchUser", currentMatch)
-            intent.putExtra("Position", position)
-            activity.startActivityForResult(intent, 420)
+            activity.startActivity(intent)
         }
 
         holder.rejectBtn.setOnClickListener {

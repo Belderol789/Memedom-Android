@@ -36,8 +36,8 @@ class FireStorageHandler {
             photoRef.downloadUrl.addOnSuccessListener {
                 val downloadURI = it.toString()
                 Log.d("Storage", "Image saved ${it.toString()}")
-                if (it != null) {
-                    success(it.toString())
+                if (downloadURI != null) {
+                    success(downloadURI)
                 }
             }
         }

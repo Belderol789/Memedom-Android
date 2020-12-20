@@ -113,7 +113,6 @@ class ProfileFragment : Fragment() {
         if (mainActivity != null && mainUser != null && mainActivity.profileMemes.isEmpty()) {
             mainActivity.setupProfileFragment() { profileMemes ->
                 Log.d("UserMemes", "User Profile Memes ${profileMemes.count()}")
-
                 var crown: Int = 0
                 for (meme in profileMemes) {
                     crown += meme.getPostLikeCount()
@@ -281,6 +280,10 @@ class ProfileFragment : Fragment() {
     fun removeGalleryItem(position: Int) {
         val removedURL = galleryItems[position]
         val mainUser = DatabaseManager(mainActivity).retrieveSavedUser()
+        if (mainUser != null && mainUser.gallery.contains(removedURL)) {
+            mainUser.gallery -= removedURL
+            DatabaseManager(mainActivity).convertUserObject(mainUser, "MainUser", {})
+        }
         FirestoreHandler().deleteArrayInFirestore("User", mainUser!!.uid, removedURL)
         Log.d("URLToRemove", "Removed $removedURL")
     }
