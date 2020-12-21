@@ -32,8 +32,8 @@
                 android:id="@+id/statsLayout"
                 android:layout_width="0dp"
                 android:layout_height="60dp"
-                android:layout_marginTop="20dp"
-                android:layout_marginEnd="16dp"
+                android:layout_marginTop="8dp"
+                android:layout_marginEnd="8dp"
                 android:divider="@drawable/divider_horizontal"
                 android:gravity="center"
                 android:orientation="horizontal"
@@ -43,7 +43,7 @@
                 app:layout_constraintTop_toBottomOf="@+id/linearLayout3">
 
                 <LinearLayout
-                    android:layout_width="60dp"
+                    android:layout_width="70dp"
                     android:layout_height="wrap_content"
                     android:divider="@drawable/divider_vertical"
                     android:gravity="center"
@@ -57,7 +57,7 @@
                         android:text="Posts"
                         android:textAlignment="center"
                         android:textColor="@color/appFGColor"
-                        android:textSize="12sp" />
+                        android:textSize="16sp" />
 
                     <TextView
                         android:id="@+id/postCount"
@@ -66,11 +66,12 @@
                         android:text="0"
                         android:textAlignment="center"
                         android:textColor="@color/whiteColor"
+                        android:textSize="16sp"
                         android:textStyle="bold" />
                 </LinearLayout>
 
                 <LinearLayout
-                    android:layout_width="60dp"
+                    android:layout_width="70dp"
                     android:layout_height="wrap_content"
                     android:divider="@drawable/divider_vertical"
                     android:gravity="center"
@@ -84,7 +85,7 @@
                         android:text="Followers"
                         android:textAlignment="center"
                         android:textColor="@color/appFGColor"
-                        android:textSize="12sp" />
+                        android:textSize="16sp" />
 
                     <TextView
                         android:id="@+id/matchCount"
@@ -93,11 +94,12 @@
                         android:text="0"
                         android:textAlignment="center"
                         android:textColor="@color/whiteColor"
+                        android:textSize="16sp"
                         android:textStyle="bold" />
                 </LinearLayout>
 
                 <LinearLayout
-                    android:layout_width="60dp"
+                    android:layout_width="70dp"
                     android:layout_height="wrap_content"
                     android:divider="@drawable/divider_vertical"
                     android:gravity="center"
@@ -111,7 +113,7 @@
                         android:text="Crowns"
                         android:textAlignment="center"
                         android:textColor="@color/appFGColor"
-                        android:textSize="12sp" />
+                        android:textSize="16sp" />
 
                     <TextView
                         android:id="@+id/crownsCount"
@@ -120,6 +122,7 @@
                         android:text="0"
                         android:textAlignment="center"
                         android:textColor="@color/whiteColor"
+                        android:textSize="16sp"
                         android:textStyle="bold" />
                 </LinearLayout>
 
@@ -145,7 +148,7 @@
                     android:text="Username"
                     android:textAlignment="center"
                     android:textColor="@color/whiteColor"
-                    android:textSize="20sp"
+                    android:textSize="24sp"
                     android:textStyle="bold" />
 
                 <TextView
@@ -156,7 +159,7 @@
                     android:text="Gender"
                     android:textAlignment="center"
                     android:textColor="@color/appSecondaryColor"
-                    android:textSize="12sp" />
+                    android:textSize="16sp" />
 
             </LinearLayout>
 
@@ -165,7 +168,7 @@
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="16dp"
-                android:layout_marginTop="16dp"
+                android:layout_marginTop="8dp"
                 android:layout_marginEnd="16dp"
                 android:backgroundTint="@color/appFGColor"
                 android:hint="Write About Yourself"
@@ -175,7 +178,7 @@
                 android:textSize="12sp"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/profilePhoto" />
+                app:layout_constraintTop_toBottomOf="@+id/saveBtn" />
 
             <HorizontalScrollView
                 android:id="@+id/photosScrollView"
@@ -212,7 +215,6 @@
                 android:layout_width="80dp"
                 android:layout_height="80dp"
                 android:layout_marginStart="16dp"
-                android:layout_marginTop="8dp"
                 android:background="@drawable/round_imageview"
                 android:src="@drawable/ic_action_name"
                 app:layout_constraintStart_toStartOf="parent"
@@ -259,6 +261,21 @@
                         android:textColor="@color/appFGColor" />
                 </RadioGroup>
             </LinearLayout>
+
+            <Button
+                android:id="@+id/saveBtn"
+                android:layout_width="0dp"
+                android:layout_height="40dp"
+                android:layout_marginStart="16dp"
+                android:layout_marginTop="8dp"
+                android:layout_marginEnd="16dp"
+                android:background="@drawable/soft_button"
+                android:text="Save Edits"
+                android:textColor="@color/whiteColor"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/profilePhoto"
+                tools:visibility="gone" />
 
         </androidx.constraintlayout.widget.ConstraintLayout>
 

@@ -55,9 +55,9 @@ class FeedAdapter(private var feedList: MutableList<Memes>, private val activity
         val mainUser = DatabaseManager(feedAdapterContext).retrieveSavedUser()
         val mainUserID = mainUser?.uid
 
-        val shareCount = if(currentItem.postShares >= 10) "${currentItem.postShares}" else ""
-        val commentsCount = if(currentItem.postComments >= 10) "${currentItem.postComments}"  else ""
-        var currentPostLikes = currentItem.getPostLikeCount()
+        val shareCount = if(currentItem.postShares >= 10) "${currentItem.postShares}" else "Share"
+        val commentsCount = if(currentItem.postComments >= 10) "${currentItem.postComments}"  else "Comment"
+        var currentPostLikes = if(currentItem.getPostLikeCount() >= 10) "${currentItem.getPostLikeCount()}" else "Like"
 
         Log.d("Scrolling", "Scrolled through meme ${currentItem.postID}")
 
@@ -88,7 +88,7 @@ class FeedAdapter(private var feedList: MutableList<Memes>, private val activity
 
         holder.shareBtn.text = shareCount
         holder.commentsBtn.text = commentsCount
-        holder.likeBtn.text = "$currentPostLikes"
+        holder.likeBtn.text = currentPostLikes
 
         holder.feedTitle.text = currentItem.postTitle
         holder.feedDate.text = currentItem.postDateString()
@@ -165,7 +165,7 @@ class FeedAdapter(private var feedList: MutableList<Memes>, private val activity
         holder.feedImage.setOnClickListener(object : DoubleClickListener() {
             override fun onSingleClick(v: View?) {
                 Log.d("Gesture", "User has tapped once")
-
+                navigateToLargeImage(currentItem.postImageURL)
             }
 
             override fun onDoubleClick(v: View?) {
@@ -191,25 +191,22 @@ class FeedAdapter(private var feedList: MutableList<Memes>, private val activity
                                 FirestoreHandler().updateLikeDatabase(mainUserID, currentItem.postUserUID, "dating", feedAdapterContext,1, {})
                             }
                             DatabaseManager(feedAdapterContext).convertUserObject(mainUser!!, "MainUser", {})
+
+                            val updatedPoints = currentItem.postLikers.count()
+                            val updatedPointsHash = hashMapOf<String, Any>(
+                                "postLikers" to fieldValue,
+                                "postPoints" to updatedPoints.toLong()
+                            )
+
+                            FirestoreHandler().updateArrayDatabaseObject(
+                                "Memes",
+                                currentItem.postID,
+                                updatedPointsHash
+                            )
+                            holder.likeBtn.text = "${currentItem.postLikers.count()}"
                         } else {
-                            fieldValue = FieldValue.arrayRemove(mainUser.uid)
-                            currentItem.postLikers -= mainUserID
-                            didUnlikePost(holder)
-                            Log.d("LikeSystem", "Disliking user")
+                            navigateToComments(currentItem)
                         }
-
-                        val updatedPoints = currentItem.postLikers.count()
-                        val updatedPointsHash = hashMapOf<String, Any>(
-                            "postLikers" to fieldValue,
-                            "postPoints" to updatedPoints.toLong()
-                        )
-
-                        FirestoreHandler().updateArrayDatabaseObject(
-                            "Memes",
-                            currentItem.postID,
-                            updatedPointsHash
-                        )
-                        holder.likeBtn.text = "${currentItem.postLikers.count()}"
                 } else {
                     activity.showStrangerAlert()
                 }
@@ -358,6 +355,16 @@ class FeedAdapter(private var feedList: MutableList<Memes>, private val activity
     private fun navigateToComments(meme: Memes) {
         val intent: Intent = Intent(feedAdapterContext, CommentsActivity::class.java)
         intent.putExtra("CommentMeme", meme)
+        feedAdapterContext.startActivity(intent)
+        activity.overridePendingTransition(
+            R.anim.enter_activity,
+            R.anim.enter_activity
+        )
+    }
+
+    private fun navigateToLargeImage(imageURI: String) {
+        val intent: Intent = Intent(feedAdapterContext, ImageActivity::class.java)
+        intent.putExtra("EnlargeImageURL", imageURI)
         feedAdapterContext.startActivity(intent)
         activity.overridePendingTransition(
             R.anim.enter_activity,

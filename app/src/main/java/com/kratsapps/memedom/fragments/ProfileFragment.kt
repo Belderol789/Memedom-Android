@@ -48,6 +48,7 @@ class ProfileFragment : Fragment() {
     lateinit var profilePhoto: ImageButton
     lateinit var bioText: EditText
     lateinit var photosScrollView: HorizontalScrollView
+    lateinit var saveBtn: Button
 
     lateinit var rootView: View
     lateinit var galleryAdapter: ImageAdapter
@@ -60,7 +61,7 @@ class ProfileFragment : Fragment() {
 
     var galleryItems: MutableList<String> = mutableListOf()
     var profilePhotoSelected: Boolean = true
-    var profileEdited: Boolean = false
+    var updatedProfilePhotoString: String = ""
 
     private val IMAGE_GALLERY_REQUEST_CODE: Int = 2001
 
@@ -88,20 +89,6 @@ class ProfileFragment : Fragment() {
         getAllUserMemes()
         setupGallery()
         return rootView
-    }
-
-    override fun onDestroy() {
-        super.onDestroy()
-        if (bioText.text.toString() != mainUser?.bio) {
-            mainUser?.bio = bioText.text.toString()
-            DatabaseManager(this.context!!).convertUserObject(mainUser!!, "MainUser", {})
-            mainActivity.saveProfileEdits(
-                hashMapOf(
-                    "bio" to bioText.text.toString()
-                )
-            )
-        }
-        Log.d("Destroying", "ProfileFragment getting destroyed")
     }
 
     private fun getAllUserMemes() {
@@ -168,6 +155,9 @@ class ProfileFragment : Fragment() {
         bioText = rootView.findViewById<EditText>(R.id.bioText)
         photosScrollView = rootView.findViewById<HorizontalScrollView>(R.id.photosScrollView)
 
+        saveBtn = rootView.findViewById(R.id.saveBtn)
+        saveBtn.visibility = View.GONE
+
         profileRecyclerView = rootView.findViewById(R.id.profileRecycler)
         galleryRecyclerView = rootView.findViewById(R.id.galleryRecycler)
 
@@ -189,6 +179,7 @@ class ProfileFragment : Fragment() {
         })
 
         if (mainUser != null) {
+            updatedProfilePhotoString = mainUser!!.profilePhoto
             username.setText(mainUser!!.name)
             gender.setText(mainUser!!.gender)
             if (!mainUser!!.bio.equals("")) {
@@ -209,6 +200,47 @@ class ProfileFragment : Fragment() {
         profilePhoto.setOnClickListener {
             profilePhotoSelected = true
             openImageGallery()
+        }
+
+        saveBtn.setOnClickListener {
+            saveProfileEdits()
+        }
+
+        bioText.addTextChangedListener(object : TextWatcher {
+
+            override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
+
+            @RequiresApi(Build.VERSION_CODES.LOLLIPOP)
+            override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
+                saveBtn.visibility = View.VISIBLE
+            }
+
+            override fun afterTextChanged(s: Editable?) {}
+        })
+
+    }
+
+    fun saveProfileEdits() {
+        if (mainUser != null) {
+            val currentBio = mainUser!!.bio
+            val currentProfilePhoto = mainUser!!.profilePhoto
+            val currentGalleryList = mainUser!!.gallery
+
+            if (currentBio != bioText.text.toString() || currentProfilePhoto != updatedProfilePhotoString || currentGalleryList.containsAll(galleryItems)) {
+                mainUser?.bio = bioText.text.toString()
+                mainUser?.profilePhoto = updatedProfilePhotoString
+                mainUser?.gallery = galleryItems
+                DatabaseManager(this.context!!).convertUserObject(mainUser!!, "MainUser", {})
+
+                mainActivity.saveProfileEdits(
+                    hashMapOf(
+                        "bio" to bioText.text.toString(),
+                        "profilePhoto" to updatedProfilePhotoString,
+                        "gallery" to galleryItems
+                    )
+                )
+            }
+            saveBtn.visibility = View.GONE
         }
     }
 
@@ -297,39 +329,23 @@ class ProfileFragment : Fragment() {
 
         if (resultCode == Activity.RESULT_OK && mainUser != null) {
             if (requestCode == IMAGE_GALLERY_REQUEST_CODE && data != null && data.data != null) {
-
-                profileEdited = true
-
+                saveBtn.visibility = View.VISIBLE
                 val imageData = data.data
                 progressCardView.visibility = View.VISIBLE
                 if (profilePhotoSelected && imageData != null) {
                     FireStorageHandler().uploadPhotoData(userID!!, imageData, profileContext, {
+                        updatedProfilePhotoString = it
                         progressCardView.visibility = View.INVISIBLE
-                        mainUser?.profilePhoto = it
                         Glide.with(this)
                             .load(it)
                             .circleCrop()
                             .into(profilePhoto)
-                        mainActivity.saveProfileEdits(
-                            hashMapOf(
-                                "profilePhoto" to it
-                            )
-                        )
-                        DatabaseManager(this.context!!).convertUserObject(mainUser!!, "MainUser", {})
                     })
                 } else if (userID != null && imageData != null) {
                     FireStorageHandler().uploadGallery(userID, imageData, this.context!!, {
                         progressCardView.visibility = View.INVISIBLE
                         galleryItems.add(it)
                         galleryRecyclerView.adapter?.notifyDataSetChanged()
-
-                        mainUser!!.gallery += it
-                        mainActivity.saveProfileEdits(
-                            hashMapOf(
-                                "gallery" to mainUser!!.gallery
-                            )
-                        )
-                        DatabaseManager(this.context!!).convertUserObject(mainUser!!, "MainUser", {})
                     })
                 }
             }
