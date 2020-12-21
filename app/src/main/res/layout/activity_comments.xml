@@ -55,38 +55,75 @@
                     android:layout_height="match_parent"
                     android:padding="0dp">
 
+                    <androidx.cardview.widget.CardView
+                        android:id="@+id/cardView3"
+                        android:layout_width="match_parent"
+                        android:layout_height="8dp"
+                        app:cardBackgroundColor="@color/appBGColor"
+                        app:layout_constraintBottom_toBottomOf="parent"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintStart_toStartOf="parent" />
+
+                    <ImageView
+                        android:id="@+id/commentsImage"
+                        android:layout_width="0dp"
+                        android:layout_height="350dp"
+                        android:layout_marginTop="8dp"
+                        android:background="@color/appBGColor"
+                        android:contentDescription="Feed ImageView"
+                        android:src="@drawable/ic_action_home"
+                        app:layout_constraintBottom_toTopOf="@+id/commentActionLayout"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintHorizontal_bias="1.0"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toBottomOf="@+id/userInfoLinear" />
+
                     <LinearLayout
                         android:id="@+id/userInfoLinear"
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
-                        android:layout_marginStart="16dp"
-                        android:layout_marginTop="8dp"
+                        android:layout_marginStart="20dp"
+                        android:layout_marginTop="10dp"
+                        android:layout_marginEnd="16dp"
                         android:divider="@drawable/divider_vertical"
                         android:orientation="vertical"
+                        android:showDividers="middle"
+                        app:layout_constraintEnd_toStartOf="@+id/reportButton"
                         app:layout_constraintStart_toStartOf="parent"
                         app:layout_constraintTop_toTopOf="parent">
 
-                        <TextView
-                            android:id="@+id/commentsTitle"
-                            android:layout_width="match_parent"
-                            android:layout_height="24dp"
-                            android:text="Post Title"
-                            android:textColor="@android:color/white"
-                            android:textSize="18sp"
-                            android:textStyle="bold" />
+                        <LinearLayout
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:divider="@drawable/divider_horizontal"
+                            android:orientation="horizontal"
+                            android:showDividers="middle">
+
+                            <TextView
+                                android:id="@+id/commentsTitle"
+                                android:layout_width="wrap_content"
+                                android:layout_height="match_parent"
+                                android:layout_weight="1"
+                                android:text="Post Title Post Title Post Title Post Title Post Title Post Title Post Title Post Title"
+                                android:textAlignment="viewStart"
+                                android:textColor="@android:color/white"
+                                android:textSize="18sp"
+                                android:textStyle="bold" />
+
+                        </LinearLayout>
 
                         <LinearLayout
                             android:id="@+id/commentsUserInfo"
                             android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
+                            android:layout_height="30dp"
                             android:divider="@drawable/divider_horizontal"
                             android:orientation="horizontal"
                             android:showDividers="middle"
                             android:visibility="visible">
 
-                            <ImageView
+                            <ImageButton
                                 android:id="@+id/commentsProfilePic"
-                                android:layout_width="25dp"
+                                android:layout_width="30dp"
                                 android:layout_height="match_parent"
                                 android:layout_weight="0"
                                 android:background="@drawable/round_imageview"
@@ -96,8 +133,9 @@
                             <TextView
                                 android:id="@+id/commentsUsername"
                                 android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
+                                android:layout_height="match_parent"
                                 android:layout_weight="0"
+                                android:gravity="center"
                                 android:text="Anonymous"
                                 android:textColor="#FFFFFF"
                                 android:textSize="12sp"
@@ -105,26 +143,153 @@
 
                             <TextView
                                 android:id="@+id/commentsDate"
-                                android:layout_width="match_parent"
-                                android:layout_height="25dp"
-                                android:layout_weight="1"
+                                android:layout_width="wrap_content"
+                                android:layout_height="match_parent"
+                                android:layout_weight="0"
                                 android:gravity="fill_vertical"
                                 android:text="Just now"
                                 android:textColor="@color/appSecondaryColor"
                                 android:textSize="10sp" />
+
                         </LinearLayout>
 
                     </LinearLayout>
 
-                    <ImageView
-                        android:id="@+id/commentsImage"
+                    <LinearLayout
+                        android:id="@+id/commentActionLayout"
                         android:layout_width="0dp"
-                        android:layout_height="320dp"
-                        android:layout_marginTop="8dp"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="16dp"
+                        android:layout_marginEnd="16dp"
+                        android:layout_marginBottom="8dp"
+                        android:divider="@drawable/divider_horizontal"
+                        android:gravity="center|fill_horizontal"
+                        android:orientation="horizontal"
+                        android:visibility="visible"
+                        app:layout_constraintBottom_toTopOf="@+id/commentAdView"
                         app:layout_constraintEnd_toEndOf="parent"
                         app:layout_constraintStart_toStartOf="parent"
-                        app:layout_constraintTop_toBottomOf="@+id/userInfoLinear"
-                        tools:srcCompat="@tools:sample/backgrounds/scenic" />
+                        app:layout_constraintTop_toBottomOf="@+id/commentsImage">
+
+                        <Button
+                            android:id="@+id/commentLikeBtn"
+                            style="@style/Widget.AppCompat.Button.Borderless.Colored"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="1"
+                            android:backgroundTint="@color/transparent"
+                            android:drawableStart="@drawable/ic_action_like"
+                            android:drawableTint="@color/whiteColor"
+                            android:text="0"
+                            android:textAllCaps="false"
+                            android:textColor="@color/whiteColor"
+                            android:textSize="14dip"
+                            tools:targetApi="m" />
+
+                        <Button
+                            android:id="@+id/commentShareBtn"
+                            style="@style/Widget.AppCompat.Button.Borderless.Colored"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="1"
+                            android:backgroundTint="@color/transparent"
+                            android:drawableStart="@drawable/ic_action_share"
+                            android:drawableTint="@color/whiteColor"
+                            android:text="10"
+                            android:textAllCaps="false"
+                            android:textColor="@color/whiteColor"
+                            android:textSize="14dip"
+                            tools:targetApi="m" />
+
+                        <Button
+                            android:id="@+id/commentCommentsBtn"
+                            style="@style/Widget.AppCompat.Button.Borderless.Colored"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="1"
+                            android:drawableStart="@drawable/ic_action_chat"
+                            android:drawableTint="@color/whiteColor"
+                            android:text="10"
+                            android:textAlignment="center"
+                            android:textAllCaps="false"
+                            android:textColor="@color/whiteColor"
+                            android:textSize="14dip"
+                            tools:targetApi="m" />
+
+                    </LinearLayout>
+
+                    <ImageButton
+                        android:id="@+id/reportButton"
+                        android:layout_width="30dp"
+                        android:layout_height="25dp"
+                        android:layout_marginTop="8dp"
+                        android:layout_marginEnd="8dp"
+                        android:background="@color/transparent"
+                        android:contentDescription="@string/reporting_resource"
+                        android:src="@drawable/ic_action_report"
+                        android:tint="@color/whiteColor"
+                        android:visibility="visible"
+                        app:layout_constraintBottom_toTopOf="@+id/commentsImage"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintTop_toTopOf="parent" />
+
+                    <LinearLayout
+                        android:id="@+id/linearReport"
+                        android:layout_width="wrap_content"
+                        android:layout_height="50dp"
+                        android:divider="@drawable/divider_horizontal"
+                        android:orientation="horizontal"
+                        android:showDividers="middle"
+                        android:visibility="gone"
+                        app:layout_constraintBottom_toBottomOf="parent"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toTopOf="parent">
+
+                        <Button
+                            android:id="@+id/reportBtn"
+                            android:layout_width="100dp"
+                            android:layout_height="wrap_content"
+                            android:background="@drawable/soft_button"
+                            android:text="Report"
+                            android:textColor="@color/whiteColor" />
+
+                        <Button
+                            android:id="@+id/cancelBtn"
+                            android:layout_width="100dp"
+                            android:layout_height="wrap_content"
+                            android:background="@drawable/soft_button_disabled"
+                            android:text="Cancel"
+                            android:textColor="@color/whiteColor" />
+
+                    </LinearLayout>
+
+                    <com.google.android.gms.ads.AdView
+                        android:id="@+id/commentAdView"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_alignParentBottom="true"
+                        android:layout_centerHorizontal="true"
+                        android:layout_marginTop="8dp"
+                        app:adSize="BANNER"
+                        app:adUnitId="ca-app-pub-3940256099942544/6300978111"
+                        app:layout_constraintBottom_toTopOf="@+id/cardView3"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toBottomOf="@+id/commentActionLayout"
+                        tools:visibility="gone"></com.google.android.gms.ads.AdView>
+
+                    <ImageView
+                        android:id="@+id/commentLikeImage"
+                        android:layout_width="100dp"
+                        android:layout_height="100dp"
+                        android:alpha="0"
+                        app:layout_constraintBottom_toBottomOf="@+id/commentsImage"
+                        app:layout_constraintEnd_toEndOf="@+id/commentsImage"
+                        app:layout_constraintStart_toStartOf="@id/commentsImage"
+                        app:layout_constraintTop_toTopOf="@+id/commentsImage"
+                        app:srcCompat="@drawable/ic_action_like"
+                        app:tint="@color/appFGColor" />
 
                 </androidx.constraintlayout.widget.ConstraintLayout>
 
@@ -149,7 +314,7 @@
         android:id="@+id/linearLayout2"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:background="@drawable/cornered_card"
+        android:background="@color/appBGColorLight"
         android:orientation="horizontal"
         android:paddingLeft="16dp"
         android:paddingRight="16dp"

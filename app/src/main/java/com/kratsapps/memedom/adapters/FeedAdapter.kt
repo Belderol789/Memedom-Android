@@ -287,8 +287,6 @@ class FeedAdapter(private var feedList: MutableList<Memes>, private val activity
     }
 
     private fun alreadyLiked(holder: FeedViewHolder, color: Int) {
-
-        //val color = if (isMemeDom) Color.parseColor("#58BADC") else Color.parseColor("#FF69B4")
         if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.M) {
             holder.likeBtn.setCompoundDrawableTintList(ColorStateList.valueOf(color))
             holder.shareBtn.setCompoundDrawableTintList(ColorStateList.valueOf(color))
@@ -355,6 +353,7 @@ class FeedAdapter(private var feedList: MutableList<Memes>, private val activity
     private fun navigateToComments(meme: Memes) {
         val intent: Intent = Intent(feedAdapterContext, CommentsActivity::class.java)
         intent.putExtra("CommentMeme", meme)
+        intent.putExtra("isMemeDom", isMemeDom)
         feedAdapterContext.startActivity(intent)
         activity.overridePendingTransition(
             R.anim.enter_activity,

@@ -22,9 +22,12 @@ import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.bumptech.glide.Glide
 import com.facebook.internal.Utility.generateRandomString
+import com.google.android.gms.ads.AdRequest
+import com.google.firebase.firestore.FieldValue
 import com.kratsapps.memedom.models.Comments
 import com.kratsapps.memedom.models.Memes
 import com.kratsapps.memedom.adapters.CommentsAdapter
+import com.kratsapps.memedom.adapters.FeedAdapter
 import com.kratsapps.memedom.utils.DatabaseManager
 import com.kratsapps.memedom.firebaseutils.FirestoreHandler
 import com.kratsapps.memedom.utils.hideKeyboard
@@ -34,12 +37,14 @@ import kotlinx.android.synthetic.main.activity_comments.*
 class CommentsActivity : AppCompatActivity() {
 
     lateinit var postMeme: Memes
+    var isMemeDom: Boolean = true
     var comments: List<Comments> = arrayListOf()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_comments)
         postMeme = intent.extras?.get("CommentMeme") as Memes
+        isMemeDom = intent.extras!!.getBoolean("isMemeDom")
         setupUI()
         setupActionUI()
         FirestoreHandler().checkForComments(postMeme.postID, {
@@ -60,27 +65,25 @@ class CommentsActivity : AppCompatActivity() {
             onBackPressed()
         }
 
+        val mainUser = DatabaseManager(this).retrieveSavedUser()
+
         if (postMeme != null) {
             commentsTitle.text = postMeme.postTitle
             commentsDate.text = postMeme.postDateString()
+
             commentsUsername.text = postMeme.postUsername
-            commentsPointsTextView.text = "${postMeme.getPostLikeCount()}"
             val mainUser = DatabaseManager(this).retrieveSavedUser()
             val mainUserID = mainUser?.uid
 
             if (mainUserID != null && postMeme.postLikers.contains(mainUserID)) {
-                commentsPointsLayout.visibility = View.VISIBLE
                 commentsUserInfo.visibility = View.VISIBLE
                 if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.M) {
                     var itemColor = Color.parseColor("#8FD6EF")
                     if(mainUser.matches.contains(postMeme.postUserUID)) {
                         itemColor = Color.parseColor("#FACE0D")
                     }
-                    commentsPointsTextView.setTextColor(itemColor)
-                    commentsPointsIcon.setColorFilter(itemColor)
                 }
             } else {
-                commentsPointsLayout.visibility = View.GONE
                 commentsUserInfo.visibility = View.GONE
             }
 
@@ -92,7 +95,123 @@ class CommentsActivity : AppCompatActivity() {
                 .load(postMeme.postProfileURL)
                 .circleCrop()
                 .into(commentsProfilePic)
+
+            commentShareBtn.text = if (postMeme.postShares >= 10) "${postMeme.postShares}" else "Share"
+            commentLikeBtn.text = if (postMeme.getPostLikeCount() >= 10) "${postMeme.getPostLikeCount()}" else "Like"
+            commentCommentsBtn.text = if (postMeme.postComments >= 10) "${postMeme.postComments}" else "Comment"
         }
+
+        val adRequest = AdRequest.Builder().build()
+        commentAdView.visibility = View.VISIBLE
+        commentAdView.loadAd(adRequest)
+
+        //Memedom
+        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.LOLLIPOP) {
+             if (isMemeDom) {
+                val crownImage = this.baseContext.resources.getDrawable(R.drawable.ic_action_crown, null)
+                commentLikeBtn.setCompoundDrawablesWithIntrinsicBounds(crownImage, null, null, null)
+                commentLikeImage.setImageResource(R.drawable.ic_action_crown)
+                commentLikeImage.setColorFilter(ContextCompat.getColor(this, R.color.appFGColor))
+                commentsUserInfo.visibility = View.VISIBLE
+            } else {
+                val likeImage = this.baseContext.resources.getDrawable(R.drawable.ic_action_like, null)
+                commentLikeBtn.setCompoundDrawablesWithIntrinsicBounds(likeImage, null, null, null)
+                commentLikeImage.setImageResource(R.drawable.ic_action_like)
+                commentLikeImage.setColorFilter(ContextCompat.getColor(this, R.color.appDateFGColor))
+                commentsUserInfo.visibility = View.GONE
+                if (mainUser != null) {
+                    if (mainUser?.matches.contains(postMeme.postUserUID)) {
+                        commentsUserInfo.visibility = View.VISIBLE
+                    }
+                }
+            }
+        }
+
+        if (mainUser != null) {
+            if (postMeme.postLikers.contains(mainUser!!.uid)) {
+                if ((mainUser.matches.contains(postMeme.postUserUID))) {
+                    alreadyLiked(Color.parseColor("#FACE0D"))
+                } else if (isMemeDom) {
+                    alreadyLiked(Color.parseColor("#58BADC"))
+                } else {
+                    alreadyLiked(Color.parseColor("#FF69B4"))
+                }
+            } else {
+                alreadyLiked(Color.parseColor("#C0C0C0"))
+            }
+        }
+
+        commentLikeBtn.setOnClickListener {
+            if(mainUser != null) {
+
+                var fieldValue: FieldValue? = null
+
+                if(!postMeme.postLikers.contains(mainUser.uid)) {
+                    Log.d("LikeSystem", "Liking user")
+                    //animate in crown
+                    fieldValue = FieldValue.arrayUnion(mainUser.uid)
+                    postMeme.postLikers += mainUser.uid
+                    mainUser.seenOldMemes += postMeme.postID
+
+                    if ((mainUser.matches.contains(postMeme.postUserUID))) {
+                        didLikePost(Color.parseColor("#FACE0D"))
+                    } else if (isMemeDom) {
+                        didLikePost(Color.parseColor("#58BADC"))
+                    } else {
+                        didLikePost(Color.parseColor("#FF69B4"))
+                    }
+
+                    if (!isMemeDom) {
+                        FirestoreHandler().updateLikeDatabase(mainUser.uid, postMeme.postUserUID, "dating", this.applicationContext,1, {})
+                    }
+                    DatabaseManager(this).convertUserObject(mainUser!!, "MainUser", {})
+                } else {
+                    fieldValue = FieldValue.arrayRemove(mainUser.uid)
+                    postMeme.postLikers -= mainUser.uid
+                    alreadyLiked(Color.parseColor("#C0C0C0"))
+                    Log.d("LikeSystem", "Disliking user")
+                }
+
+                val updatedPoints = postMeme.postLikers.count()
+                val updatedPointsHash = hashMapOf<String, Any>(
+                    "postLikers" to fieldValue!!,
+                    "postPoints" to updatedPoints.toLong()
+                )
+
+                FirestoreHandler().updateArrayDatabaseObject(
+                    "Memes",
+                    postMeme.postID,
+                    updatedPointsHash
+                )
+                commentLikeBtn.text = "${postMeme.postLikers.count()}"
+            } else {
+                Toast.makeText(baseContext, "You must be logged in to like", Toast.LENGTH_SHORT).show()
+            }
+        }
+
+    }
+
+    private fun didLikePost(color: Int) {
+        commentLikeImage
+            .animate()
+            .alpha(1.0f)
+            .setDuration(750)
+            .withEndAction {
+                commentLikeImage.animate().alpha(0.0f)
+            }
+        alreadyLiked(color)
+    }
+
+    private fun alreadyLiked(color: Int) {
+        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.M) {
+            commentLikeBtn.setCompoundDrawableTintList(ColorStateList.valueOf(color))
+            commentShareBtn.setCompoundDrawableTintList(ColorStateList.valueOf(color))
+            commentCommentsBtn.setCompoundDrawableTintList(ColorStateList.valueOf(color))
+        }
+
+        commentLikeBtn.setTextColor(color)
+        commentShareBtn.setTextColor(color)
+        commentCommentsBtn.setTextColor(color)
     }
 
     @RequiresApi(Build.VERSION_CODES.LOLLIPOP)
