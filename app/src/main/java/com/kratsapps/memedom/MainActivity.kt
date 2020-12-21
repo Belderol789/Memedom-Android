@@ -325,6 +325,7 @@ class MainActivity : AppCompatActivity() {
     private fun proceedToProfile() {
         val intent: Intent = Intent(this@MainActivity, ProfileActivity::class.java)
         intent.putExtra("MatchID", currentMatchUser!!.uid)
+        intent.putExtra("isMatching", true)
         startActivity(intent)
     }
 

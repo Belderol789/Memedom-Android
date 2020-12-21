@@ -21,10 +21,7 @@ import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.google.android.gms.ads.AdRequest
 import com.google.firebase.firestore.FieldValue
-import com.kratsapps.memedom.Assets
-import com.kratsapps.memedom.CommentsActivity
-import com.kratsapps.memedom.MainActivity
-import com.kratsapps.memedom.R
+import com.kratsapps.memedom.*
 import com.kratsapps.memedom.firebaseutils.FirestoreHandler
 import com.kratsapps.memedom.models.MemeDomUser
 import com.kratsapps.memedom.models.Memes
@@ -129,6 +126,22 @@ class FeedAdapter(private var feedList: MutableList<Memes>, private val activity
             holder.likeImageView.setImageResource(R.drawable.ic_action_like)
             holder.likeImageView.setColorFilter(ContextCompat.getColor(feedAdapterContext, R.color.appDateFGColor))
             holder.postUserInfo.visibility = View.GONE
+            if (mainUser != null) {
+                if (mainUser?.matches.contains(currentItem.postUserUID)) {
+                    holder.postUserInfo.visibility = View.VISIBLE
+                }
+            }
+        }
+
+        holder.postProfilePic.setOnClickListener {
+            if (isMemeDom && mainUser != null) {
+                val intent: Intent = Intent(activity, ProfileActivity::class.java)
+                intent.putExtra("MatchID", currentItem.postUserUID)
+                intent.putExtra("isMatching", false)
+                activity.startActivity(intent)
+            } else {
+                activity.showStrangerAlert()
+            }
         }
 
         holder.commentsBtn.setOnClickListener {
@@ -152,16 +165,51 @@ class FeedAdapter(private var feedList: MutableList<Memes>, private val activity
         holder.feedImage.setOnClickListener(object : DoubleClickListener() {
             override fun onSingleClick(v: View?) {
                 Log.d("Gesture", "User has tapped once")
-                navigateToComments(currentItem)
+
             }
 
             override fun onDoubleClick(v: View?) {
                 Log.d("Gesture", "User has tapped twice")
-                if (mainUser?.uid != null) {
-                    if (!currentItem.postLikers.contains(mainUser.uid)) {
-                        //animate in crown
-                        currentItem.postLikers += mainUser.uid
-                    }
+                if (mainUser?.uid != null && mainUserID != null) {
+                        var fieldValue: FieldValue? = null
+                        if(!currentItem.postLikers.contains(mainUserID)) {
+                            Log.d("LikeSystem", "Liking user")
+                            //animate in crown
+                            fieldValue = FieldValue.arrayUnion(mainUser.uid)
+                            currentItem.postLikers += mainUserID
+                            mainUser.seenOldMemes += postUID
+
+                            if ((mainUser.matches.contains(currentItem.postUserUID))) {
+                                didLikePost(holder, Color.parseColor("#FACE0D"))
+                            } else if (isMemeDom) {
+                                didLikePost(holder, Color.parseColor("#58BADC"))
+                            } else {
+                                didLikePost(holder, Color.parseColor("#FF69B4"))
+                            }
+
+                            if (!isMemeDom) {
+                                FirestoreHandler().updateLikeDatabase(mainUserID, currentItem.postUserUID, "dating", feedAdapterContext,1, {})
+                            }
+                            DatabaseManager(feedAdapterContext).convertUserObject(mainUser!!, "MainUser", {})
+                        } else {
+                            fieldValue = FieldValue.arrayRemove(mainUser.uid)
+                            currentItem.postLikers -= mainUserID
+                            didUnlikePost(holder)
+                            Log.d("LikeSystem", "Disliking user")
+                        }
+
+                        val updatedPoints = currentItem.postLikers.count()
+                        val updatedPointsHash = hashMapOf<String, Any>(
+                            "postLikers" to fieldValue,
+                            "postPoints" to updatedPoints.toLong()
+                        )
+
+                        FirestoreHandler().updateArrayDatabaseObject(
+                            "Memes",
+                            currentItem.postID,
+                            updatedPointsHash
+                        )
+                        holder.likeBtn.text = "${currentItem.postLikers.count()}"
                 } else {
                     activity.showStrangerAlert()
                 }
@@ -188,12 +236,9 @@ class FeedAdapter(private var feedList: MutableList<Memes>, private val activity
                         didLikePost(holder, Color.parseColor("#FF69B4"))
                     }
 
-                    if (isMemeDom) {
-                        FirestoreHandler().updateLikeDatabase(mainUserID, currentItem.postUserUID, "liked", feedAdapterContext,1, {})
-                    } else {
+                    if (!isMemeDom) {
                         FirestoreHandler().updateLikeDatabase(mainUserID, currentItem.postUserUID, "dating", feedAdapterContext,1, {})
                     }
-
                     DatabaseManager(feedAdapterContext).convertUserObject(mainUser!!, "MainUser", {})
                 } else {
                     fieldValue = FieldValue.arrayRemove(mainUser.uid)
@@ -204,7 +249,7 @@ class FeedAdapter(private var feedList: MutableList<Memes>, private val activity
 
                 val updatedPoints = currentItem.postLikers.count()
                 val updatedPointsHash = hashMapOf<String, Any>(
-                    "postLikers" to fieldValue,
+                    "postLikers" to fieldValue!!,
                     "postPoints" to updatedPoints.toLong()
                 )
 

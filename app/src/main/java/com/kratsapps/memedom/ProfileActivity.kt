@@ -43,6 +43,7 @@ class ProfileActivity : AppCompatActivity() {
 
         val matches = intent.extras?.get("MatchUser") as? Matches
         val matchID = intent.extras?.get("MatchID") as? String
+        val willMatch = intent.extras?.getBoolean("isMatching")
         position = intent.extras?.get("Position") as? Int
 
         if (matches != null) {
@@ -52,6 +53,8 @@ class ProfileActivity : AppCompatActivity() {
         if (matchID != null) {
             matchUserID = matchID
         }
+
+        choicesLayout.visibility = if (willMatch!!) View.VISIBLE else View.GONE
         setupUI()
     }
 

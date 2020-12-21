@@ -23,7 +23,6 @@ class MemeDomUser: Serializable {
 
     var rejects: List<String> = listOf() //13
     var matches: List<String> = listOf() //14
-    var liked: HashMap<String, Any> = hashMapOf() //15
     var dating: HashMap<String, Any> = hashMapOf() // 16
 
     var seenOldMemes: List<String> = listOf()
