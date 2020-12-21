@@ -51,6 +51,7 @@ class FeedAdapter(private var feedList: MutableList<Memes>, private val activity
 
     @RequiresApi(Build.VERSION_CODES.M)
     override fun onBindViewHolder(holder: FeedViewHolder, position: Int) {
+        //General
         val currentItem = filteredFeedList[position]
         val postUID: String = currentItem.postID
 
@@ -59,13 +60,12 @@ class FeedAdapter(private var feedList: MutableList<Memes>, private val activity
 
         val shareCount = if(currentItem.postShares >= 10) "${currentItem.postShares}" else ""
         val commentsCount = if(currentItem.postComments >= 10) "${currentItem.postComments}"  else ""
-
         var currentPostLikes = currentItem.getPostLikeCount()
 
         Log.d("Scrolling", "Scrolled through meme ${currentItem.postID}")
 
         val lp: ConstraintLayout.LayoutParams = holder.feedImage.getLayoutParams() as ConstraintLayout.LayoutParams
-        lp.height = (currentItem.postHeight * 1.5).toInt()
+        lp.height = (currentItem.postHeight * 1.25).toInt()
         holder.feedImage.setLayoutParams(lp)
 
         Glide.with(feedAdapterContext)
@@ -74,44 +74,26 @@ class FeedAdapter(private var feedList: MutableList<Memes>, private val activity
             .fitCenter()
             .into(holder.feedImage)
 
-        Log.d("ProfileURL", "ProfilePhotoItem ${currentItem.postProfileURL}")
-
+        val iconURL = "https://firebasestorage.googleapis.com/v0/b/memedom-fb37b.appspot.com/o/AppSettings%2Fmemedom%20icon.png?alt=media&token=e29c4cae-3a13-47fb-b3c0-0136445a45cf"
+        val profilePic = if (currentItem.postProfileURL.isEmpty()) iconURL else currentItem.postProfileURL
         Glide.with(feedAdapterContext)
-            .load(currentItem.postProfileURL)
+            .load(profilePic)
             .circleCrop()
-            .error(
-                ContextCompat.getDrawable(
-                    activity.applicationContext,
-                    R.mipmap.ic_launcher_memedom
-                )
-            )
             .into(holder.postProfilePic)
 
-        if (isMemeDom) {
-            holder.likeBtn.setImageResource(R.drawable.ic_action_crown)
-            holder.likeImageView.setImageResource(R.drawable.ic_action_crown)
-            holder.pointsIcon.setImageResource(R.drawable.ic_action_crown)
-            holder.likeImageView.setColorFilter(
-                ContextCompat.getColor(feedAdapterContext, R.color.appFGColor)
-            )
-            holder.postUserInfo.visibility = View.VISIBLE
+        if (currentItem.postTitle.isEmpty()) {
+            holder.feedTitle.visibility = View.GONE
         } else {
-            holder.likeBtn.setImageResource(R.drawable.ic_action_like)
-            holder.likeImageView.setImageResource(R.drawable.ic_action_like)
-            holder.pointsIcon.setImageResource(R.drawable.ic_action_like)
-            holder.likeImageView.setColorFilter(
-                ContextCompat.getColor(feedAdapterContext, R.color.appDateFGColor)
-            )
-            holder.postUserInfo.visibility = View.GONE
+            holder.feedTitle.visibility = View.VISIBLE
         }
-
         holder.postUserName.text = currentItem.postUsername
         holder.likeImageView.alpha = 0f
 
         holder.shareBtn.text = shareCount
         holder.commentsBtn.text = commentsCount
-        holder.feedTitle.text = currentItem.postTitle
+        holder.likeBtn.text = "$currentPostLikes"
 
+        holder.feedTitle.text = currentItem.postTitle
         holder.feedDate.text = currentItem.postDateString()
 
         holder.reportButton.setOnClickListener {
@@ -133,42 +115,38 @@ class FeedAdapter(private var feedList: MutableList<Memes>, private val activity
             }
         }
 
-        holder.likeBtn.setOnClickListener {
-            if(mainUserID != null) {
-                if(!currentItem.postLikers.contains(mainUserID)) {
-                    //animate in crown
-                    currentItem.postLikers += mainUserID
-                    animateLikeImageView(holder, mainUser, currentItem)
-                    mainUser.seenOldMemes += postUID
-
-                    val updatedPoints = currentItem.postLikers.count() + 1
-                    val fieldValue: FieldValue = FieldValue.arrayUnion(mainUser.uid)
-                    val updatedPointsHash = hashMapOf<String, Any>(
-                        "postLikers" to fieldValue,
-                        "postPoints" to updatedPoints.toLong()
-                    )
-
-                    FirestoreHandler().updateArrayDatabaseObject(
-                        "Memes",
-                        currentItem.postID,
-                        updatedPointsHash
-                    )
-
-                    if (isMemeDom) {
-                        FirestoreHandler().updateLikeDatabase(mainUserID, currentItem.postUserUID, "liked", feedAdapterContext,1, {})
-                    } else {
-                        FirestoreHandler().updateLikeDatabase(mainUserID, currentItem.postUserUID, "dating", feedAdapterContext,1, {})
-                    }
-
-                    DatabaseManager(feedAdapterContext).convertUserObject(mainUser!!, "MainUser", {})
-                }
-            } else {
-                activity.showStrangerAlert()
-            }
+        //Memedom
+        if (isMemeDom) {
+            val crownImage = feedAdapterContext.resources.getDrawable(R.drawable.ic_action_crown, null)
+            holder.likeBtn.setCompoundDrawablesWithIntrinsicBounds(crownImage, null, null, null)
+            holder.likeImageView.setImageResource(R.drawable.ic_action_crown)
+            holder.likeImageView.setColorFilter(ContextCompat.getColor(feedAdapterContext, R.color.appFGColor))
+            holder.postUserInfo.visibility = View.VISIBLE
+        } //Dating
+        else {
+            val likeImage = feedAdapterContext.resources.getDrawable(R.drawable.ic_action_like, null)
+            holder.likeBtn.setCompoundDrawablesWithIntrinsicBounds(likeImage, null, null, null)
+            holder.likeImageView.setImageResource(R.drawable.ic_action_like)
+            holder.likeImageView.setColorFilter(ContextCompat.getColor(feedAdapterContext, R.color.appDateFGColor))
+            holder.postUserInfo.visibility = View.GONE
         }
 
         holder.commentsBtn.setOnClickListener {
             navigateToComments(currentItem)
+        }
+
+        if (mainUser != null) {
+            if (currentItem.postLikers.contains(mainUserID)) {
+                if ((mainUser.matches.contains(currentItem.postUserUID))) {
+                    alreadyLiked(holder, Color.parseColor("#FACE0D"))
+                } else if (isMemeDom) {
+                    alreadyLiked(holder, Color.parseColor("#58BADC"))
+                } else {
+                    alreadyLiked(holder, Color.parseColor("#FF69B4"))
+                }
+            } else {
+                didUnlikePost(holder)
+            }
         }
 
         holder.feedImage.setOnClickListener(object : DoubleClickListener() {
@@ -183,7 +161,6 @@ class FeedAdapter(private var feedList: MutableList<Memes>, private val activity
                     if (!currentItem.postLikers.contains(mainUser.uid)) {
                         //animate in crown
                         currentItem.postLikers += mainUser.uid
-                        animateLikeImageView(holder, mainUser, currentItem)
                     }
                 } else {
                     activity.showStrangerAlert()
@@ -191,43 +168,73 @@ class FeedAdapter(private var feedList: MutableList<Memes>, private val activity
             }
         })
 
-        if(mainUser != null) {
+        holder.likeBtn.setOnClickListener {
+            if(mainUserID != null) {
 
-            Log.d(
-                "Matches",
-                "Current matches ${mainUser.matches} currentItem ${currentItem.postLikers}"
-            )
+                var fieldValue: FieldValue? = null
 
-            if (mainUser.matches.contains(currentItem.postUserUID)) {
-                activatePoints(holder, currentPostLikes, Assets().specialColor, R.color.specialColor)
-            } else if(currentItem.postLikers.contains(mainUser.uid)) {
-                if (isMemeDom) {
-                    activatePoints(holder, currentPostLikes, Assets().appFGColor, R.color.appFGColor)
-                } else  {
-                    activatePoints(holder, currentPostLikes, Assets().appDateFGColor, R.color.appDateFGColor)
+                if(!currentItem.postLikers.contains(mainUserID)) {
+                    Log.d("LikeSystem", "Liking user")
+                    //animate in crown
+                    fieldValue = FieldValue.arrayUnion(mainUser.uid)
+                    currentItem.postLikers += mainUserID
+                    mainUser.seenOldMemes += postUID
+
+                    if ((mainUser.matches.contains(currentItem.postUserUID))) {
+                        didLikePost(holder, Color.parseColor("#FACE0D"))
+                    } else if (isMemeDom) {
+                        didLikePost(holder, Color.parseColor("#58BADC"))
+                    } else {
+                        didLikePost(holder, Color.parseColor("#FF69B4"))
+                    }
+
+                    if (isMemeDom) {
+                        FirestoreHandler().updateLikeDatabase(mainUserID, currentItem.postUserUID, "liked", feedAdapterContext,1, {})
+                    } else {
+                        FirestoreHandler().updateLikeDatabase(mainUserID, currentItem.postUserUID, "dating", feedAdapterContext,1, {})
+                    }
+
+                    DatabaseManager(feedAdapterContext).convertUserObject(mainUser!!, "MainUser", {})
+                } else {
+                    fieldValue = FieldValue.arrayRemove(mainUser.uid)
+                    currentItem.postLikers -= mainUserID
+                    didUnlikePost(holder)
+                    Log.d("LikeSystem", "Disliking user")
                 }
-            } else {
-                deactivatePoints(holder)
-            }
 
-            holder.shareBtn.setOnClickListener {
-                val memeImage = (holder.feedImage.drawable as BitmapDrawable).bitmap
-                val shareIntent = Intent(Intent.ACTION_SEND)
-                val path = MediaStore.Images.Media.insertImage(
-                    activity.contentResolver,
-                    memeImage,
-                    "Memedom",
-                    null
+                val updatedPoints = currentItem.postLikers.count()
+                val updatedPointsHash = hashMapOf<String, Any>(
+                    "postLikers" to fieldValue,
+                    "postPoints" to updatedPoints.toLong()
                 )
-                val uri = Uri.parse(path)
-                shareIntent.putExtra(Intent.EXTRA_STREAM, uri)
-                shareIntent.type = "image/*"
-                activity.startActivity(Intent.createChooser(shareIntent, "Spread my Memedom"))
+
+                FirestoreHandler().updateArrayDatabaseObject(
+                    "Memes",
+                    currentItem.postID,
+                    updatedPointsHash
+                )
+                holder.likeBtn.text = "${currentItem.postLikers.count()}"
+            } else {
+                activity.showStrangerAlert()
             }
-        } else {
-            deactivatePoints(holder)
         }
 
+        holder.shareBtn.setOnClickListener {
+            val memeImage = (holder.feedImage.drawable as BitmapDrawable).bitmap
+            val shareIntent = Intent(Intent.ACTION_SEND)
+            val path = MediaStore.Images.Media.insertImage(
+                activity.contentResolver,
+                memeImage,
+                "Memedom",
+                null
+            )
+            val uri = Uri.parse(path)
+            shareIntent.putExtra(Intent.EXTRA_STREAM, uri)
+            shareIntent.type = "image/*"
+            activity.startActivity(Intent.createChooser(shareIntent, "Spread my Memedom"))
+        }
+
+        //Ads
         if (position % 2 == 0) {
             val adRequest = AdRequest.Builder().build()
             holder.mAdView.visibility = View.VISIBLE
@@ -237,58 +244,44 @@ class FeedAdapter(private var feedList: MutableList<Memes>, private val activity
         }
     }
 
-    private fun animateLikeImageView(holder: FeedViewHolder, mainUser: MemeDomUser, meme: Memes) {
-        holder.likeImageView.animate()
-            .alpha(1.0f)
-            .setDuration(750)
-            .withEndAction {
-                holder.likeImageView.animate()
-                    .alpha(0f)
-                    .setDuration(600)
-                holder.pointsLayout.visibility = View.VISIBLE
-                holder.postUserInfo.visibility = View.VISIBLE
-                val updatedPoints = meme.postLikers.count() + 1
-                if (isMemeDom) {
-                    activatePoints(holder, updatedPoints, Assets().appFGColor, R.color.appFGColor)
-                } else {
-                    activatePoints(holder, updatedPoints, Assets().appDateFGColor, R.color.appDateFGColor)
-                }
-            }
-    }
+    private fun alreadyLiked(holder: FeedViewHolder, color: Int) {
 
-    private fun deactivatePoints(holder: FeedViewHolder) {
-        if (!isMemeDom) {
-            holder.pointsLayout.visibility = View.GONE
-            holder.postUserInfo.visibility = View.GONE
-            holder.likeBtn.visibility = View.VISIBLE
-        }
-
-
+        //val color = if (isMemeDom) Color.parseColor("#58BADC") else Color.parseColor("#FF69B4")
         if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.M) {
-            holder.shareBtn.setTextColor(Assets().appFGColor)
-            holder.commentsBtn.setTextColor(Assets().appFGColor)
-            holder.shareBtn.setCompoundDrawableTintList(ColorStateList.valueOf(Color.parseColor("#C0C0C0")))
-            holder.commentsBtn.setCompoundDrawableTintList(ColorStateList.valueOf(Color.parseColor("#C0C0C0")))
-        }
-    }
-
-    private fun activatePoints(holder: FeedViewHolder, updatedPoints: Int, color: Int, rColor: Int) {
-        holder.pointsLayout.visibility = View.VISIBLE
-        holder.postUserInfo.visibility = View.VISIBLE
-        holder.likeBtn.visibility = View.GONE
-        holder.pointsTextView.text = "${updatedPoints}"
-        holder.pointsTextView.setTextColor(color)
-
-        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.M) {
-            holder.shareBtn.setTextColor(color)
-            holder.commentsBtn.setTextColor(color)
+            holder.likeBtn.setCompoundDrawableTintList(ColorStateList.valueOf(color))
             holder.shareBtn.setCompoundDrawableTintList(ColorStateList.valueOf(color))
             holder.commentsBtn.setCompoundDrawableTintList(ColorStateList.valueOf(color))
         }
-        holder.pointsTextView.setTextColor(color)
-        holder.pointsIcon.setColorFilter(
-            ContextCompat.getColor(feedAdapterContext, rColor)
-        )
+
+        holder.likeBtn.setTextColor(color)
+        holder.shareBtn.setTextColor(color)
+        holder.commentsBtn.setTextColor(color)
+    }
+
+    @RequiresApi(Build.VERSION_CODES.M)
+    private fun didLikePost(holder: FeedViewHolder, color: Int) {
+        holder
+            .likeImageView
+            .animate()
+            .alpha(1.0f)
+            .setDuration(750)
+            .withEndAction {
+                holder.likeImageView.animate().alpha(0.0f)
+            }
+        alreadyLiked(holder, color)
+    }
+
+    private fun didUnlikePost(holder: FeedViewHolder) {
+        val color = Color.parseColor("#C0C0C0")
+        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.M) {
+            holder.likeBtn.setCompoundDrawableTintList(ColorStateList.valueOf(color))
+            holder.shareBtn.setCompoundDrawableTintList(ColorStateList.valueOf(color))
+            holder.commentsBtn.setCompoundDrawableTintList(ColorStateList.valueOf(color))
+        }
+
+        holder.likeBtn.setTextColor(color)
+        holder.shareBtn.setTextColor(color)
+        holder.commentsBtn.setTextColor(color)
     }
 
     override fun getItemCount() = filteredFeedList.size
@@ -300,11 +293,7 @@ class FeedAdapter(private var feedList: MutableList<Memes>, private val activity
 
         val shareBtn: Button = itemView.postShareBtn
         val commentsBtn: Button = itemView.postCommentsBtn
-        val likeBtn: ImageButton = itemView.postLikeBtn
-
-        val pointsTextView: TextView = itemView.pointsTextView
-        val pointsIcon: ImageView = itemView.pointsIcon
-        val pointsLayout: LinearLayout = itemView.pointsLayout
+        val likeBtn: Button = itemView.postLikeBtn
 
         val postUserInfo = itemView.postUserInfo
         val postProfilePic = itemView.postProfilePic

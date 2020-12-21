@@ -131,16 +131,18 @@
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/feedImage">
 
-            <ImageButton
+            <Button
                 android:id="@+id/postLikeBtn"
+                style="@style/Widget.AppCompat.Button.Borderless.Colored"
                 android:layout_width="70dp"
                 android:layout_height="match_parent"
                 android:layout_weight="1"
                 android:backgroundTint="@color/transparent"
-                android:gravity="center"
-                android:scaleType="center"
-                android:src="@drawable/ic_action_like"
-                android:tint="@color/whiteColor"
+                android:drawableStart="@drawable/ic_action_like"
+                android:drawableTint="@color/whiteColor"
+                android:text="10"
+                android:textColor="@color/whiteColor"
+                android:textSize="10dip"
                 tools:targetApi="m" />
 
             <Button
@@ -187,39 +189,6 @@
             app:layout_constraintBottom_toTopOf="@+id/feedImage"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
-
-        <LinearLayout
-            android:id="@+id/pointsLayout"
-            android:layout_width="100dp"
-            android:layout_height="30dp"
-            android:layout_marginTop="16dp"
-            android:background="@drawable/cornered_layer"
-            android:divider="@drawable/divider_horizontal"
-            android:orientation="horizontal"
-            android:showDividers="middle"
-            app:layout_constraintStart_toStartOf="@+id/feedImage"
-            app:layout_constraintTop_toBottomOf="@+id/userInfoLinear">
-
-            <ImageView
-                android:id="@+id/pointsIcon"
-                android:layout_width="25dp"
-                android:layout_height="25dp"
-                android:layout_weight="1"
-                android:paddingLeft="16dp"
-                app:srcCompat="@drawable/ic_action_crown"
-                app:tint="@color/appFGColor" />
-
-            <TextView
-                android:id="@+id/pointsTextView"
-                android:layout_width="wrap_content"
-                android:layout_height="match_parent"
-                android:layout_weight="1"
-                android:gravity="center"
-                android:text="2.4k likes"
-                android:textAlignment="textStart"
-                android:textColor="@color/appFGColor"
-                android:textStyle="bold" />
-        </LinearLayout>
 
         <LinearLayout
             android:id="@+id/linearReport"
