@@ -131,9 +131,9 @@ class SettingsFragment : Fragment() {
             lookingOtherFilter.setOnClickListener {
                 activateFilter(lookingOtherFilter, null, "Other", listOf(lookingMaleFilter, lookingFemaleFilter))
             }
-        }
 
-        setupSeekBar()
+            setupSeekBar()
+        }
     }
 
     private fun sendEmail() {

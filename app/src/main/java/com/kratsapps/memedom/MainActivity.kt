@@ -157,13 +157,10 @@ class MainActivity : AppCompatActivity() {
         FirestoreHandler().checkNewMatch(this, { matches ->
             FirestoreHandler().getOnlineStatus(matches, { match ->
                 if (mainUser != null) {
-
                     if (!mainUser!!.rejects.contains(match.uid)) {
                         Log.d("UserMatches", "Adding current match $match")
-
                         userMatches.add(match)
                         completed(match)
-
                         if (match.matchStatus == false && match.offered.equals(mainUser?.uid)) {
                             // Display Pending view
                             showPendingView("You have PENDING matches!")

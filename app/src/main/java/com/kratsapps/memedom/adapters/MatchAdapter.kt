@@ -70,7 +70,7 @@ class MatchAdapter(
             holder.onlineDate.setText(onlineDateString)
         }
 
-        if (currentMatch.matchStatus == true || mainUser.matches.contains(currentMatch.uid)) {
+        if (currentMatch.matchStatus == true) {
             holder.actionLayout.visibility = View.GONE
             holder.matchTextView.visibility = View.VISIBLE
             holder.chatBtn.visibility = View.VISIBLE
@@ -94,6 +94,7 @@ class MatchAdapter(
         holder.profileBtn.setOnClickListener {
             val intent: Intent = Intent(activity, ProfileActivity::class.java)
             intent.putExtra("MatchUser", currentMatch)
+            intent.putExtra("isMatching", true)
             activity.startActivity(intent)
         }
 

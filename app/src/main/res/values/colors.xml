@@ -10,8 +10,9 @@
     <color name="appSecondaryColor">#C0C0C0</color>
     <color name="whiteColor">#FFFFFF</color>
     <color name="transparent">#00ff0000</color>
-    <color name="clearerBlack">#40000000</color>
-    <color name="clearBlack">#80000000</color>
+    <color name="clearestBlack">#40000000</color>
+    <color name="clearerBlack">#80000000</color>
+    <color name="clearBlack">#99000000</color>
     <color name="errorColor">#FF0000</color>
     <color name="specialColor">#FACE0D</color>
 

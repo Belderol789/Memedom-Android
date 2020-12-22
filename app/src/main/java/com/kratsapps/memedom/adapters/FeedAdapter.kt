@@ -93,6 +93,16 @@ class FeedAdapter(private var feedList: MutableList<Memes>, private val activity
         holder.feedTitle.text = currentItem.postTitle
         holder.feedDate.text = currentItem.postDateString()
 
+        if (currentItem.postNSFW) {
+            holder.nsfwView.visibility = View.VISIBLE
+        } else {
+            holder.nsfwView.visibility = View.GONE
+        }
+
+        holder.nsfwBtn.setOnClickListener {
+            holder.nsfwView.visibility = View.GONE
+        }
+
         holder.reportButton.setOnClickListener {
             if(mainUser != null) { holder.linearReport.visibility = View.VISIBLE }
         }
@@ -348,6 +358,9 @@ class FeedAdapter(private var feedList: MutableList<Memes>, private val activity
 
         val card_view = itemView.card_view
         val mAdView = itemView.adView
+
+        val nsfwView = itemView.nsfwCover
+        val nsfwBtn = itemView.removeNSFWBtn
     }
 
     private fun navigateToComments(meme: Memes) {

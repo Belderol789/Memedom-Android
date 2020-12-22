@@ -51,6 +51,7 @@ class CreateFragment : Fragment() {
 
     lateinit var mainActivity: MainActivity
 
+    var postNSFW: Boolean = false
     var postType: String = "Friends"
     var imageHeight: Int = 0
 
@@ -119,6 +120,18 @@ class CreateFragment : Fragment() {
         }
 
         setupTypeSelection()
+        setupNSFWSelection()
+    }
+
+    fun setupNSFWSelection() {
+        val nsfw = rootView.findViewById<SwitchCompat>(R.id.nsfwSwitch)
+        nsfw.setOnCheckedChangeListener { _, isChecked ->
+            if (isChecked) {
+                postNSFW = true
+            } else {
+                postNSFW = false
+            }
+        }
     }
 
     fun setupTypeSelection() {
@@ -183,7 +196,8 @@ class CreateFragment : Fragment() {
                         "postUserEmail" to savedUser.email,
                         "postPoints" to 1,
                         "postHeight" to imageHeight.toLong(),
-                        "postType" to postType
+                        "postType" to postType,
+                        "postNSFW" to postNSFW
                     )
 
                     FirestoreHandler().addDataToFirestore("Memes", postID, newPost, {
@@ -258,12 +272,14 @@ class CreateFragment : Fragment() {
         val buttonPost = rootView.findViewById(R.id.buttonPost) as Button
         val postTitle = rootView.findViewById(R.id.editTextTitle) as EditText
         val switchDating = rootView.findViewById(R.id.datingSwitch) as SwitchCompat
+        val switchNSFW = rootView.findViewById(R.id.nsfwSwitch) as SwitchCompat
 
         addImageButton.visibility = View.VISIBLE
         removeImageBtn.visibility = View.INVISIBLE
 
         buttonPost.alpha = 0.25f
         switchDating.isChecked = false
+        switchNSFW.isChecked = false
         imageViewMeme.setImageDrawable(null)
         postTitle.setText(null)
     }

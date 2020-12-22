@@ -541,8 +541,7 @@ class FirestoreHandler {
                         completed: () -> Unit) {
 
         val mainUser = DatabaseManager(context).retrieveSavedUser()
-        if (mainUser != null && !mainUser.matches.contains(matchUserUID)) {
-
+        if (mainUser != null) {
             var fieldValue: FieldValue = FieldValue.arrayUnion(matchUserUID)
             updateLikeDatabase(mainUser.uid, matchUserUID, "dating", context, 1, {
                 updateDatabaseObject(USERS_PATH, mainUser.uid, hashMapOf("matches" to fieldValue))

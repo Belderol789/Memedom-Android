@@ -80,21 +80,12 @@ class MessagesFragment : Fragment() {
         filteredMatches.clear()
 
         if (mainUser != null) {
-            Log.d("UserMatches", "Load matches ${mainActivity.userMatches.count()}")
-            if (filteredMatches.isEmpty() && mainActivity.userMatches.isEmpty()) {
-                mainActivity.getAllMatches {
-                    filteredMatches.clear()
-                    if (it != null && !mainUser.rejects.contains(it.uid)) {
-                        filterOutMatch(it, mainUser)
-                    }
-                    setupBlankScreen(filteredMatches)
-                }
-            } else {
+            mainActivity.getAllMatches {
                 filteredMatches.clear()
-                for (it in mainActivity.userMatches) {
-                    if (!mainUser.rejects.contains(it.uid)) {
-                        filterOutMatch(it, mainUser)
-                    }
+                if (it != null && !mainUser.rejects.contains(it.uid)) {
+                    filterOutMatch(it, mainUser)
+                } else {
+                    setupBlankScreen(filteredMatches)
                 }
             }
         }
@@ -104,6 +95,7 @@ class MessagesFragment : Fragment() {
         Log.d("UserMatches", "Filtering out $matchesID for ${match.uid} status ${match.matchStatus}")
         if (match.matchStatus.equals(true)) {
             if (matchesID.contains(match.uid)) {
+                pending = (pending.filter { s -> s.uid != match.uid }).toMutableList()
                 matches = (matches.filter { s -> s.uid != match.uid }).toMutableList()
                 Log.d("UserMatches", "Matches count ${matches.count()}")
                 matches.add(match)
