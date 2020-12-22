@@ -2,6 +2,7 @@ package com.kratsapps.memedom
 
 import DefaultItemDecorator
 import android.content.Context
+import android.content.Intent
 import android.content.res.ColorStateList
 import android.graphics.Color
 import android.graphics.PorterDuff
@@ -60,9 +61,19 @@ class CommentsActivity : AppCompatActivity() {
         overridePendingTransition(R.anim.exit_activity, R.anim.exit_activity)
     }
 
+    private fun navigateToLargeImage(imageURI: String) {
+        val intent: Intent = Intent(this, ImageActivity::class.java)
+        intent.putExtra("EnlargeImageURL", imageURI)
+        this.startActivity(intent)
+    }
+
     private fun setupUI() {
         commentBackButton.setOnClickListener {
             onBackPressed()
+        }
+
+        commentsImage.setOnClickListener {
+            navigateToLargeImage(postMeme.postImageURL)
         }
 
         val mainUser = DatabaseManager(this).retrieveSavedUser()
@@ -96,9 +107,9 @@ class CommentsActivity : AppCompatActivity() {
                 .circleCrop()
                 .into(commentsProfilePic)
 
-            commentShareBtn.text = if (postMeme.postShares >= 10) "${postMeme.postShares}" else "Share"
-            commentLikeBtn.text = if (postMeme.getPostLikeCount() >= 10) "${postMeme.getPostLikeCount()}" else "Like"
-            commentCommentsBtn.text = if (postMeme.postComments >= 10) "${postMeme.postComments}" else "Comment"
+            commentShareBtn.text = "${postMeme.postShares}"
+            commentLikeBtn.text = "${postMeme.getPostLikeCount()}"
+            commentCommentsBtn.text = "${postMeme.postComments}"
         }
 
         val adRequest = AdRequest.Builder().build()

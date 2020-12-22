@@ -89,6 +89,7 @@ class SignupActivity : AppCompatActivity() {
     private fun setupUI() {
         otherDetailsCard.visibility = View.INVISIBLE
         privacyView.visibility = View.INVISIBLE
+        datePickerContainer.visibility = View.INVISIBLE
 
         editTextSignupBirthday.setRawInputType(InputType.TYPE_NULL)
         Glide.with(this)
@@ -100,11 +101,14 @@ class SignupActivity : AppCompatActivity() {
     private fun setupActionButtons() {
         // Authentication
         editTextSignupBirthday.setText("")
-
         var cal = Calendar.getInstance()
 
-        val dateSetListener =
-            DatePickerDialog.OnDateSetListener { view, year, monthOfYear, dayOfMonth ->
+        closeBirthBtn.setOnClickListener {
+            datePickerContainer.visibility = View.INVISIBLE
+        }
+
+        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.O) {
+            birthdayPicker.setOnDateChangedListener { view, year, monthOfYear, dayOfMonth ->
                 cal.set(Calendar.YEAR, year)
                 cal.set(Calendar.MONTH, monthOfYear)
                 cal.set(Calendar.DAY_OF_MONTH, dayOfMonth)
@@ -113,14 +117,10 @@ class SignupActivity : AppCompatActivity() {
                 val sdf = SimpleDateFormat(myFormat, Locale.US)
                 editTextSignupBirthday.setText(sdf.format(cal.time))
             }
+        }
 
         editTextSignupBirthday.setOnClickListener {
-            DatePickerDialog(
-                this, dateSetListener,
-                cal.get(Calendar.YEAR),
-                cal.get(Calendar.MONTH),
-                cal.get(Calendar.DAY_OF_MONTH)
-            ).show()
+            datePickerContainer.visibility = View.VISIBLE
         }
 
         privacyBtn.setOnClickListener {
@@ -195,6 +195,7 @@ class SignupActivity : AppCompatActivity() {
     private fun navigateToMain() {
         val intent: Intent = Intent(this, MainActivity::class.java)
         startActivity(intent)
+        finish()
     }
 
     private fun prepOpenImageGallery() {

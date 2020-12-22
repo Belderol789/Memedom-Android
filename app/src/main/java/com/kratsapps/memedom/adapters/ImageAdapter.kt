@@ -11,10 +11,7 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
-import com.kratsapps.memedom.CommentsActivity
-import com.kratsapps.memedom.MainActivity
-import com.kratsapps.memedom.MemedomActivity
-import com.kratsapps.memedom.R
+import com.kratsapps.memedom.*
 import com.kratsapps.memedom.fragments.ProfileFragment
 import com.kratsapps.memedom.models.MemeDomUser
 import com.kratsapps.memedom.models.Memes
@@ -52,8 +49,8 @@ class ImageAdapter(private val imageList: MutableList<String>, private val memeL
                 Log.d("ProfileActivity", "IsMemes $isMeme")
                 if (isMeme && memeList != null) {
                     navigateToComments(memeList[position])
-                } else if (isMeme) {
-
+                } else if (!isMeme && position != 0) {
+                    navigateToLargeImage(imageList[position])
                 } else if (position == 0 && fragment != null) {
                     fragment.profilePhotoSelected = false
                     fragment.openImageGallery()
@@ -90,6 +87,16 @@ class ImageAdapter(private val imageList: MutableList<String>, private val memeL
     private fun navigateToComments(meme: Memes) {
         val intent: Intent = Intent(activity, CommentsActivity::class.java)
         intent.putExtra("CommentMeme", meme)
+        activity.startActivity(intent)
+        activity.overridePendingTransition(
+            R.anim.enter_activity,
+            R.anim.enter_activity
+        )
+    }
+
+    private fun navigateToLargeImage(imageURI: String) {
+        val intent: Intent = Intent(activity, ImageActivity::class.java)
+        intent.putExtra("EnlargeImageURL", imageURI)
         activity.startActivity(intent)
         activity.overridePendingTransition(
             R.anim.enter_activity,

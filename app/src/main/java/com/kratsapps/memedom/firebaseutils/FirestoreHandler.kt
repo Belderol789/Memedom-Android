@@ -567,26 +567,6 @@ class FirestoreHandler {
         }
     }
 
-    fun getAllReplies(comment: Comments,
-                      success: (List<Comments>) -> Unit) {
-        firestoreDB
-            .collection(REPLIES_PATH)
-            .document(comment.commentID)
-            .collection(REPLIES_PATH)
-            .get()
-            .addOnSuccessListener { documents ->
-
-                var replies: List<Comments> = listOf()
-
-                for (reply in documents) {
-                    val newReply = reply.toObject(Comments::class.java)
-                    Log.d("Replies", "Reply ${newReply.showActions}")
-                    replies += newReply
-                }
-                success(replies)
-            }
-    }
-
     fun getAllMemesOfMainUser(uid: String,
                               memes: (Memes?) -> Unit) {
 

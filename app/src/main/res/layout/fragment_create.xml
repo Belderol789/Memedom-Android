@@ -30,10 +30,8 @@
         android:id="@+id/imageViewMeme"
         android:layout_width="0dp"
         android:layout_height="350dp"
-        android:layout_marginStart="16dp"
         android:layout_marginTop="16dp"
-        android:layout_marginEnd="16dp"
-        android:background="@drawable/cornered_card"
+        android:background="@color/appBGColorLight"
         android:contentDescription="TODO"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
@@ -69,7 +67,7 @@
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginStart="16dp"
-        android:layout_marginTop="8dp"
+        android:layout_marginTop="16dp"
         android:layout_marginEnd="16dp"
         android:orientation="horizontal"
         app:layout_constraintEnd_toEndOf="parent"
@@ -84,8 +82,8 @@
             android:text="Post also in dating"
             android:textColor="#FFFFFF"
             android:textSize="18sp"
-            android:theme="@style/SCBSwitch"
-            android:textStyle="bold" />
+            android:textStyle="bold"
+            android:theme="@style/SCBSwitch" />
     </LinearLayout>
 
     <androidx.cardview.widget.CardView

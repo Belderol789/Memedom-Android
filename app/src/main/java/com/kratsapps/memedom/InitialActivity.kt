@@ -16,22 +16,26 @@ class InitialActivity : AppCompatActivity() {
         signupBtn.setOnClickListener {
             val intent = Intent(this, SignupActivity::class.java)
             this.startActivity(intent)
+            finish()
         }
 
         loginBtn.setOnClickListener {
             val intent = Intent(this, LoginActivity::class.java)
             this.startActivity(intent)
+            finish()
         }
 
         guestBtn.setOnClickListener {
             val intent = Intent(this, MainActivity::class.java)
             this.startActivity(intent)
+            finish()
         }
 
         val user = FirebaseAuth.getInstance().getCurrentUser()
         if (user != null) {
             val intent: Intent = Intent(this, MainActivity::class.java)
             startActivity(intent)
+            finish()
         }
     }
 }

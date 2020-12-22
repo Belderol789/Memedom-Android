@@ -125,6 +125,7 @@ class LoginActivity : AppCompatActivity() {
                 DatabaseManager(this).convertUserObject(it, "MainUser", {
                     val intent: Intent = Intent(this, MainActivity::class.java)
                     startActivity(intent)
+                    finish()
                 })
             })
         }

@@ -49,6 +49,8 @@ class CreateFragment : Fragment() {
     lateinit var createContext: Context
     lateinit var createLoadingView: CardView
 
+    lateinit var mainActivity: MainActivity
+
     var postType: String = "Friends"
     var imageHeight: Int = 0
 
@@ -56,6 +58,7 @@ class CreateFragment : Fragment() {
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
+        mainActivity = this.activity as MainActivity
         rootView = inflater.inflate(R.layout.fragment_create, container, false)
         setupUI()
         return rootView
@@ -189,7 +192,12 @@ class CreateFragment : Fragment() {
                         if (it != null) {
                             setupAlertDialog(it)
                         } else {
+
                             resetValues()
+                            mainActivity.allMemes.clear()
+                            mainActivity.datingMemes.clear()
+                            mainActivity.profileMemes.isEmpty()
+
                             val meme = Memes()
                             meme.postID = postID
                             meme.postTitle = title

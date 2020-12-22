@@ -90,6 +90,8 @@ class SettingsFragment : Fragment() {
             val mainUserGender = mainUser!!.gender
             val mainLookingFor = mainUser!!.lookingFor
 
+            Log.d("UserGender", "Gender $mainUserGender LookingFor $mainLookingFor")
+
             if (mainUserGender == "Male") {
                 activateFilter(maleFilter, "Male", null, listOf(femaleFilter, otherFilter))
             } else if (mainUserGender == "Female") {
@@ -101,7 +103,7 @@ class SettingsFragment : Fragment() {
             if (mainLookingFor == "Male") {
                 activateFilter(lookingMaleFilter, null, "Male", listOf(lookingFemaleFilter, lookingOtherFilter))
             } else if (mainLookingFor == "Female") {
-                activateFilter(lookingFemaleFilter, null, "Male", listOf(lookingMaleFilter, lookingOtherFilter))
+                activateFilter(lookingFemaleFilter, null, "Female", listOf(lookingMaleFilter, lookingOtherFilter))
             } else {
                 activateFilter(lookingOtherFilter, null, "Other", listOf(lookingMaleFilter, lookingFemaleFilter))
             }

@@ -310,7 +310,9 @@ class MainActivity : AppCompatActivity() {
 
         skipBtn.setOnClickListener {
             tutorialView.visibility = View.GONE
+            DatabaseManager(this).saveToPrefsBoolean("TutorialKey", true)
         }
+
         var i = 1
         nextBtn.setOnClickListener {
             tutorialRecycler.smoothScrollToPosition(i)
@@ -318,6 +320,7 @@ class MainActivity : AppCompatActivity() {
                 i += 1
             } else if (i == tutorialModel.count()) {
                 tutorialView.visibility = View.GONE
+                DatabaseManager(this).saveToPrefsBoolean("TutorialKey", true)
             }
         }
     }
@@ -369,13 +372,12 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun setUIForUser(user: FirebaseUser?) {
-
         Log.d("UserCredential", "Current user $user")
-
+        val  tutorialStatus = DatabaseManager(this).retrievePrefsBoolean("TutorialKey", false)
         if (user != null) {
             tutorialView.visibility = View.GONE
             navigationBottom.visibility = View.VISIBLE
-        } else {
+        } else if (tutorialStatus == false) {
             setupTutorialView()
             navigationBottom.visibility = View.GONE
         }

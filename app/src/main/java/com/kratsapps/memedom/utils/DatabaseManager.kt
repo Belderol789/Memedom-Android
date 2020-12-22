@@ -65,6 +65,21 @@ class DatabaseManager(context: Context) {
         editor.apply()
     }
 
+    fun saveToPrefsBoolean(key: String, value: Boolean) {
+        val sharedPreference = dbContext.getSharedPreferences(key, Context.MODE_PRIVATE)
+        var editor = sharedPreference.edit()
+        editor.putBoolean(key, value)
+        editor.apply()
+    }
+
+    fun retrievePrefsBoolean(key: String, defValue: Boolean): Boolean{
+        val savedBoolean = dbContext.getSharedPreferences(key, Context.MODE_PRIVATE).getBoolean(
+            key,
+            defValue
+        )
+        return savedBoolean
+    }
+
     fun retrievePrefsInt(key: String, defValue: Int): Int {
         val savedInt = dbContext.getSharedPreferences(key, Context.MODE_PRIVATE).getInt(
             key,
