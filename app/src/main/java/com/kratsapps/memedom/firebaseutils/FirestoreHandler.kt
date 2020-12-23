@@ -34,8 +34,6 @@ class FirestoreHandler {
     private val DESCENDING = Query.Direction.DESCENDING
     private val ASCENDING = Query.Direction.ASCENDING
 
-
-
     //Setup
     fun setupFirestore() {
         val settings = firestoreSettings {
@@ -313,9 +311,7 @@ class FirestoreHandler {
                     )
                     //!mainUser.seenOldMemes.contains(newMeme.postID)
                     if (mainUser != null) {
-                        if (!mainUser.rejects.contains(newMeme.postUserUID)
-                            && newMeme.userAge.toInt() >= minValue && newMeme.userAge.toInt() <= maxValue
-                        ) {
+                        if (!mainUser.rejects.contains(newMeme.postUserUID)) {
                             Log.d("Memes", "User is not null")
                             memes.add(newMeme)
                         }

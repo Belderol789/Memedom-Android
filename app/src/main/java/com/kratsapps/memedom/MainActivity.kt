@@ -69,7 +69,6 @@ class MainActivity : AppCompatActivity() {
     var profileMemeIDs = mutableListOf<String>()
     //MessagesFragment
     var userMatches = mutableListOf<Matches>()
-    var userMatchesID = mutableListOf<String>()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -114,7 +113,9 @@ class MainActivity : AppCompatActivity() {
                     if (mainUser != null) {
                         if (!(mainUser!!.seenOldMemes).contains(it.postID)) {
                             Log.d("MainActivityHome", "SeenOldMemes ${mainUser!!.seenOldMemes} this meme ${it.postID}")
-                            if (mainUser?.lookingFor == it.userGender && it.postType == "Dating") {
+                            val minAge = mainUser!!.minAge
+                            val maxAge = mainUser!!.maxAge
+                            if (mainUser?.lookingFor == it.userGender && it.postType == "Dating" && it.userAge >= minAge && it.userAge <= maxAge) {
                                 datingMemes.add(it)
                             }
                         }

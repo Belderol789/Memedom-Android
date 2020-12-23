@@ -69,6 +69,7 @@ class HomeFragment : Fragment() {
 
                 datingMemes = mainActivity.datingMemes
                 allMemes = mainActivity.allMemes
+
                 if (isMemedom) {
                     filteredMemems.addAll(allMemes)
                 } else {
