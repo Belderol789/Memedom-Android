@@ -1,7 +1,6 @@
 package com.kratsapps.memedom
 
 import android.app.Activity
-import android.app.DatePickerDialog
 import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
@@ -20,20 +19,26 @@ import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.AppCompatRadioButton
 import androidx.core.app.ActivityCompat
+import androidx.core.content.ContextCompat
 import com.bumptech.glide.Glide
-import com.facebook.*
+import com.facebook.AccessToken
+import com.facebook.CallbackManager
+import com.facebook.FacebookCallback
+import com.facebook.FacebookException
+import com.facebook.GraphRequest
 import com.facebook.login.LoginResult
 import com.google.firebase.auth.FacebookAuthProvider
 import com.google.firebase.auth.FirebaseAuth
 import com.kratsapps.memedom.firebaseutils.FireStorageHandler
 import com.kratsapps.memedom.firebaseutils.FirestoreHandler
 import com.kratsapps.memedom.models.MemeDomUser
-import com.kratsapps.memedom.utils.*
+import com.kratsapps.memedom.utils.DatabaseManager
+import com.kratsapps.memedom.utils.hideKeyboard
 import kotlinx.android.synthetic.main.activity_signup.*
-import kotlinx.android.synthetic.main.activity_signup.loadingImageView
 import org.json.JSONException
 import java.text.SimpleDateFormat
 import java.util.*
+
 
 class SignupActivity : AppCompatActivity() {
 
@@ -55,7 +60,6 @@ class SignupActivity : AppCompatActivity() {
         setupActionButtons()
         setupFacebookSignup()
     }
-
 
     override fun onRequestPermissionsResult(
         requestCode: Int,
@@ -103,7 +107,8 @@ class SignupActivity : AppCompatActivity() {
         editTextSignupBirthday.setText("")
         var cal = Calendar.getInstance()
 
-        closeBirthBtn.setOnClickListener {
+        birthDoneBtn.visibility = View.INVISIBLE
+        birthDoneBtn.setOnClickListener {
             datePickerContainer.visibility = View.INVISIBLE
         }
 
@@ -116,6 +121,15 @@ class SignupActivity : AppCompatActivity() {
                 val myFormat = "MM/dd/yyyy" // mention the format you need
                 val sdf = SimpleDateFormat(myFormat, Locale.US)
                 editTextSignupBirthday.setText(sdf.format(cal.time))
+
+                val birthday = editTextSignupBirthday.text.toString()
+                memeDomuser.birthday = birthday
+
+                if (memeDomuser.getUserAge() >= 16) {
+                    birthDoneBtn.visibility = View.VISIBLE
+                } else {
+                    birthDoneBtn.visibility = View.INVISIBLE
+                }
             }
         }
 
@@ -155,20 +169,49 @@ class SignupActivity : AppCompatActivity() {
             activateFilter(genderOther, "Other", null, listOf(genderFemale, genderMale))
         }
 
-        signupMaleGender.setOnClickListener {
-            activateFilter(signupMaleGender, null, "Male", listOf(lookingFemaleFilter, lookingOtherFilter))
+        lookingMaleGender.setOnClickListener {
+            activateFilter(
+                lookingMaleGender, null, "Male", listOf(
+                    lookingFemaleFilter,
+                    lookingOtherFilter
+                )
+            )
         }
 
         lookingFemaleFilter.setOnClickListener {
-            activateFilter(lookingFemaleFilter, null, "Female", listOf(signupMaleGender, lookingOtherFilter))
+            activateFilter(
+                lookingFemaleFilter, null, "Female", listOf(
+                    lookingMaleGender,
+                    lookingOtherFilter
+                )
+            )
         }
 
         lookingOtherFilter.setOnClickListener {
-            activateFilter(lookingOtherFilter, null, "Other", listOf(signupMaleGender, lookingFemaleFilter))
+            activateFilter(
+                lookingOtherFilter, null, "Other", listOf(
+                    lookingMaleGender,
+                    lookingFemaleFilter
+                )
+            )
         }
 
         signupFinishBtn.setOnClickListener {
-            saveUserImage()
+            val username = editTextSignupUsername.text.toString()
+            FirestoreHandler().checkUsernameAvailability(username, {
+                Log.d("Usernames", "Username is available $it")
+                if (it) {
+                    memeDomuser.name = username
+                    if (memeDomuser.getUserAge() <= 13) {
+                        Toast.makeText(baseContext, "Sorry, you're too young", Toast.LENGTH_SHORT)
+                            .show()
+                    } else {
+                        saveUserImage()
+                    }
+                } else {
+                    Toast.makeText(baseContext, "Username Taken", Toast.LENGTH_SHORT).show()
+                }
+            })
         }
     }
 
@@ -176,7 +219,12 @@ class SignupActivity : AppCompatActivity() {
         privacyView.visibility = View.VISIBLE
     }
 
-    private fun activateFilter(active: AppCompatRadioButton, gender: String?, lookingFor: String?, deactives: List<AppCompatRadioButton>) {
+    private fun activateFilter(
+        active: AppCompatRadioButton,
+        gender: String?,
+        lookingFor: String?,
+        deactives: List<AppCompatRadioButton>
+    ) {
         for (segment in deactives) {
             segment.isChecked = false
         }
@@ -207,34 +255,20 @@ class SignupActivity : AppCompatActivity() {
 
     private fun checkIfFieldsHaveValues() {
         hideKeyboard()
-
-        val username = editTextSignupUsername.text.toString()
+        val checkBox = privacyCheckBox.isChecked
         val email = editTextSignupEmail.text.toString()
         val password = editTextSignupnPassword.text.toString()
         val birthday = editTextSignupBirthday.text.toString()
-
-        val checkBox = privacyCheckBox.isChecked
-
         memeDomuser.birthday = birthday
 
         if (!checkBox) {
             Toast.makeText(baseContext, "Kindly agree to the Privacy Policy", Toast.LENGTH_SHORT).show()
         } else if (password.length < 6 ) {
             Toast.makeText(baseContext, "Password is too short", Toast.LENGTH_SHORT).show()
-        } else if (email.isEmpty() || password.isEmpty() || username.isEmpty()) {
+        } else if (email.isEmpty() || password.isEmpty()) {
             Toast.makeText(baseContext, "Some fields are missing", Toast.LENGTH_SHORT).show()
-        } else if (memeDomuser.getUserAge() <= 13) {
-            Toast.makeText(baseContext, "Sorry, you're too young", Toast.LENGTH_SHORT).show()
         } else {
-            FirestoreHandler().checkUsernameAvailability(username, {
-                Log.d("Usernames", "Username is available $it")
-                if (it) {
-                    memeDomuser.name = username
-                    userDidAuthEmail(email, password)
-                } else {
-                    Toast.makeText(baseContext, "Username Taken", Toast.LENGTH_SHORT).show()
-                }
-            })
+            userDidAuthEmail(email, password)
         }
     }
 
@@ -284,10 +318,13 @@ class SignupActivity : AppCompatActivity() {
     private fun saveUserImage() {
         signupLoadingView.visibility = View.VISIBLE
         if (hasProfilePhoto) {
-            FireStorageHandler().uploadPhotoWith(memeDomuser.uid, profilePhotoBtn.drawable, { profilePhotoURL ->
-                memeDomuser.profilePhoto = profilePhotoURL
-                signupUser()
-            })
+            FireStorageHandler().uploadPhotoWith(
+                memeDomuser.uid,
+                profilePhotoBtn.drawable,
+                { profilePhotoURL ->
+                    memeDomuser.profilePhoto = profilePhotoURL
+                    signupUser()
+                })
         } else {
             signupUser()
         }
@@ -338,9 +375,11 @@ class SignupActivity : AppCompatActivity() {
             })
 
             val randomString = generateRandomString()
-            FirestoreHandler().addArrayInFirestore("USERNAME", randomString, hashMapOf<String, Any>(
-                "Username" to memeDomuser.uid)
-            )
+            FirestoreHandler().addDataToFirestore(
+                "Username",
+                randomString,
+                hashMapOf("Username" to memeDomuser.uid),
+                {})
 
         } else {
             signupLoadingView.visibility = View.INVISIBLE
@@ -364,6 +403,7 @@ class SignupActivity : AppCompatActivity() {
             FacebookCallback<LoginResult> {
             override fun onSuccess(loginResult: LoginResult) {
                 Log.d("Authentication", "facebook:onSuccess:$loginResult")
+                signupLoadingView.visibility = View.VISIBLE
                 getFbInfo {
                     handleFacebookAccessToken(loginResult.accessToken)
                 }
@@ -384,10 +424,10 @@ class SignupActivity : AppCompatActivity() {
                 ).show()
                 // ...
             }
+
         })
 
         facebookSignupBtn.setOnClickListener {
-            signupLoadingView.visibility = View.VISIBLE
             fbSignupBtn.performClick()
         }
     }
@@ -398,12 +438,14 @@ class SignupActivity : AppCompatActivity() {
         ) { `object`, response ->
             try {
                 Log.d("Facebook", "Facebook Object $`object`")
-                memeDomuser.birthday = `object`.getString("birthday")
                 memeDomuser.name = `object`.getString("first_name")
+                Log.d("Facebook", "Facebook username ${memeDomuser.name}")
+                Log.d("Facebook", "Facebook username ${editTextSignupUsername.text.toString()}")
 
                 val picture = `object`.getJSONObject("picture")
                 val data = picture.getJSONObject("data")
                 val url = data.getString("url")
+
                 memeDomuser.profilePhoto = url.replace("\\/", "", false)
 
                 Log.d("Facebook", "Facebook profile photo ${memeDomuser.profilePhoto}")
@@ -412,6 +454,7 @@ class SignupActivity : AppCompatActivity() {
                 if (`object`.has("email")) {
                     memeDomuser.email = `object`.getString("email")
                 }
+                memeDomuser.birthday = `object`.getString("birthday")
             } catch (e: JSONException) {
                 e.printStackTrace()
             }
@@ -425,6 +468,7 @@ class SignupActivity : AppCompatActivity() {
         request.executeAsync()
         callback.invoke()
         Log.d("Facebook", "fb parameters ${parameters}")
+        signupLoadingView.visibility = View.INVISIBLE
     }
 
     private fun handleFacebookAccessToken(token: AccessToken) {
@@ -435,14 +479,15 @@ class SignupActivity : AppCompatActivity() {
                 if (task.isSuccessful) {
                     // Sign in success, update UI with the signed-in user's information
                     Log.d("Authentication", "signInWithCredential:success")
+                    signupLoadingView.visibility = View.INVISIBLE
                     val user = auth.currentUser
                     if (user != null) {
                         showCardView()
                         memeDomuser.uid = user.uid
-                        profilePhotoBtn.background = null
-                        profilePhotoBtn.setColorFilter(Color.parseColor("#00ff0000"))
+                        editTextSignupUsername.setText(memeDomuser.name)
                         Glide.with(this)
                             .load(memeDomuser.profilePhoto)
+                            .error(ContextCompat.getDrawable(this, R.drawable.ic_action_name))
                             .circleCrop()
                             .into(profilePhotoBtn)
                     }
@@ -456,6 +501,15 @@ class SignupActivity : AppCompatActivity() {
                     ).show()
                 }
                 // ...
+            }
+            .addOnFailureListener {
+                signupLoadingView.visibility = View.INVISIBLE
+            }
+            .addOnCanceledListener {
+                signupLoadingView.visibility = View.INVISIBLE
+            }
+            .addOnSuccessListener {
+                signupLoadingView.visibility = View.INVISIBLE
             }
     }
 

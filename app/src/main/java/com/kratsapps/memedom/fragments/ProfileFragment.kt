@@ -122,7 +122,7 @@ class ProfileFragment : Fragment() {
                 profileRecyclerView.layoutManager = galleryManager
                 profileRecyclerView.itemAnimator?.removeDuration
             }
-        } else {
+        } else if (mainUser != null) {
             val profileMemes = mainActivity.profileMemes
             var crown: Int = 0
             for (meme in profileMemes) {

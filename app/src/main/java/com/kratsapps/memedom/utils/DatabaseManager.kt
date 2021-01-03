@@ -88,7 +88,7 @@ class DatabaseManager(context: Context) {
         return savedInt
     }
 
-    fun convertUserObject(user: MemeDomUser, key: String, completed: () -> Unit) {
+    fun convertUserObject(user: MemeDomUser?, key: String, completed: () -> Unit) {
         Log.d("Database", "Main Activity Saving Json $user")
         var jsonString = gson.toJson(user)
         val sharedPreference = dbContext.getSharedPreferences(key, Context.MODE_PRIVATE)

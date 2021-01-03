@@ -71,7 +71,7 @@ class FirestoreHandler {
 
     fun checkUsernameAvailability(username: String, available: (Boolean) -> Unit) {
         firestoreDB
-            .collection("USERNAME")
+            .collection("Username")
             .whereEqualTo("Username", username)
             .get()
             .addOnSuccessListener {

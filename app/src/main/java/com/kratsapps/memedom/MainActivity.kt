@@ -80,13 +80,13 @@ class MainActivity : AppCompatActivity() {
             FirebaseApp.initializeApp(applicationContext);}
         firebaseAnalytics = Firebase.analytics
         mainUser = DatabaseManager(this).retrieveSavedUser()
-
         Log.d("Main Activity", "Main Activity is being created again $mainUser")
+        setupBottomNavigation()
+        setupTutorialView()
+        checkLoginStatus()
         activateOnline(true)
         MobileAds.initialize(this)
-        checkLoginStatus()
         activateFacebook()
-        setupBottomNavigation()
         getAllMatches {}
         setupProfileFragment {}
     }
@@ -194,11 +194,14 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun activateOnline(status: Boolean) {
+        Log.d("OnlineStatus", "User uid ${mainUser?.uid}")
         if (mainUser?.uid != null) {
-            FirestoreHandler().addDataToFirestore("Online", mainUser!!.uid, hashMapOf(
-                "online" to status,
-                "onlineDate" to System.currentTimeMillis()
-            ), {})
+            if (!mainUser!!.uid.isEmpty()) {
+                FirestoreHandler().addDataToFirestore("Online", mainUser!!.uid, hashMapOf(
+                    "online" to status,
+                    "onlineDate" to System.currentTimeMillis()
+                ), {})
+            }
         }
     }
 
@@ -229,7 +232,6 @@ class MainActivity : AppCompatActivity() {
         val user = FirebaseAuth.getInstance().currentUser
 
         if (user != null) {
-            navigationBottom.visibility = View.VISIBLE
             FirestoreHandler().checkMatchingStatus(this, user.uid, {
                 currentMatchUser = it
                 matchView.visibility = View.VISIBLE
@@ -279,7 +281,7 @@ class MainActivity : AppCompatActivity() {
 
     private fun setupTutorialView() {
 
-        tutorialView.visibility = View.VISIBLE
+        val user = FirebaseAuth.getInstance().currentUser
 
         val firstTutorial = TutorialModel()
         firstTutorial.tutorialImage = R.mipmap.tutorial_1
@@ -288,18 +290,24 @@ class MainActivity : AppCompatActivity() {
 
         val secondTutorial = TutorialModel()
         secondTutorial.tutorialImage = R.mipmap.tutorial_2
-        secondTutorial.titleText = "Find your Match!"
-        secondTutorial.subtitleText = "You match with people whose memes you like"
+        secondTutorial.titleText = "Find Connections"
+        secondTutorial.subtitleText = "Like enough memes and make connections!"
 
         val thirdTutorial = TutorialModel()
         thirdTutorial.tutorialImage = R.mipmap.tutorial_3
-        thirdTutorial.titleText = "Chat and Share Memes"
-        thirdTutorial.subtitleText = "Have fun chatting and sharing memes"
+        thirdTutorial.titleText = "Match!"
+        thirdTutorial.subtitleText = "Find someone who matches your humor"
+
+        val fourthTutorial = TutorialModel()
+        fourthTutorial.tutorialImage = R.mipmap.tutorial_4
+        fourthTutorial.titleText = "Chat and Share Memes"
+        fourthTutorial.subtitleText = "Have fun chatting and sharing memes"
 
         val tutorialModel = mutableListOf<TutorialModel>(
             firstTutorial,
             secondTutorial,
-            thirdTutorial
+            thirdTutorial,
+            fourthTutorial
         )
         val tutorialAdapter = TutorialAdapter(tutorialModel)
         val tutorialManager: GridLayoutManager = GridLayoutManager(this, 1, GridLayoutManager.HORIZONTAL, false)
@@ -308,7 +316,10 @@ class MainActivity : AppCompatActivity() {
 
         skipBtn.setOnClickListener {
             tutorialView.visibility = View.GONE
-            DatabaseManager(this).saveToPrefsBoolean("TutorialKey", true)
+            if (user != null) {
+                navigationBottom.visibility = View.VISIBLE
+                DatabaseManager(this).saveToPrefsBoolean("TutorialKey", true)
+            }
         }
 
         var i = 1
@@ -318,7 +329,10 @@ class MainActivity : AppCompatActivity() {
                 i += 1
             } else if (i == tutorialModel.count()) {
                 tutorialView.visibility = View.GONE
-                DatabaseManager(this).saveToPrefsBoolean("TutorialKey", true)
+                if (user != null) {
+                    navigationBottom.visibility = View.VISIBLE
+                    DatabaseManager(this).saveToPrefsBoolean("TutorialKey", true)
+                }
             }
         }
     }
@@ -364,19 +378,25 @@ class MainActivity : AppCompatActivity() {
 
         FirebaseAuth.AuthStateListener {
             fun onAuthStateChanged(@NonNull firebaseAuth: FirebaseAuth) {
-                setUIForUser(FirebaseAuth.getInstance().currentUser)
+                if (firebaseAuth.currentUser != null) {
+                    setUIForUser(firebaseAuth.currentUser)
+                } else {
+                    DatabaseManager(this).saveToPrefsBoolean("TutorialKey", false)
+                }
             }
         }
     }
 
     private fun setUIForUser(user: FirebaseUser?) {
         Log.d("UserCredential", "Current user $user")
-        val  tutorialStatus = DatabaseManager(this).retrievePrefsBoolean("TutorialKey", false)
-        if (user != null) {
+        val tutorialStatus = DatabaseManager(this).retrievePrefsBoolean("TutorialKey", false)
+        val user = FirebaseAuth.getInstance().currentUser
+        Log.d("TutorialStatus", "Status $tutorialStatus")
+        if (tutorialStatus && user != null) {
             tutorialView.visibility = View.GONE
             navigationBottom.visibility = View.VISIBLE
-        } else if (tutorialStatus == false) {
-            setupTutorialView()
+        } else {
+            tutorialView.visibility = View.VISIBLE
             navigationBottom.visibility = View.GONE
         }
         makeCurrentFragment(homeFragment)
