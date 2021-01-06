@@ -130,11 +130,9 @@ class ProfileActivity : AppCompatActivity() {
                     setResult(Activity.RESULT_OK, intent)
                     onBackPressed()
                 })
-
             } else {
                 congratsView.visibility = View.VISIBLE
             }
-
         }
 
         okBtn.setOnClickListener {

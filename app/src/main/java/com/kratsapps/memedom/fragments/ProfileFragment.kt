@@ -231,7 +231,7 @@ class ProfileFragment : Fragment() {
                 mainUser?.bio = bioText.text.toString()
                 mainUser?.profilePhoto = updatedProfilePhotoString
                 mainUser?.gallery = galleryItems
-                DatabaseManager(this.context!!).convertUserObject(mainUser!!, "MainUser", {})
+                DatabaseManager(this.context!!).convertUserObject(mainUser!!,  {})
 
                 mainActivity.saveProfileEdits(
                     hashMapOf(
@@ -293,7 +293,9 @@ class ProfileFragment : Fragment() {
         val activity = this.activity
 
         var savedImages = DatabaseManager(profileContext).retrieveSavedUser()?.gallery
-        var images = listOf<String>("https://firebasestorage.googleapis.com/v0/b/memedom-fb37b.appspot.com/o/AppSettings%2Fplus.png?alt=media&token=c4e6af5c-d0ea-4570-ab19-655997bfac29")
+        val addImageURL = "https://firebasestorage.googleapis.com/v0/b/memedom-fb37b.appspot.com/o/AppSettings%2FImage%20with%20button.png?alt=media&token=3e5b2b01-c555-4f16-b871-8f7b3a8c9082"
+        //"https://firebasestorage.googleapis.com/v0/b/memedom-fb37b.appspot.com/o/AppSettings%2Fplus.png?alt=media&token=c4e6af5c-d0ea-4570-ab19-655997bfac29"
+        var images = listOf<String>(addImageURL)
         if (savedImages != null) {
             images += savedImages
         }
@@ -315,7 +317,7 @@ class ProfileFragment : Fragment() {
         val mainUser = DatabaseManager(mainActivity).retrieveSavedUser()
         if (mainUser != null && mainUser.gallery.contains(removedURL)) {
             mainUser.gallery -= removedURL
-            DatabaseManager(mainActivity).convertUserObject(mainUser, "MainUser", {})
+            DatabaseManager(mainActivity).convertUserObject(mainUser,  {})
         }
         FirestoreHandler().deleteArrayInFirestore("User", mainUser!!.uid, removedURL)
         Log.d("URLToRemove", "Removed $removedURL")

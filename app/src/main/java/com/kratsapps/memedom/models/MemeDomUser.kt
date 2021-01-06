@@ -8,24 +8,25 @@ import java.util.*
 import kotlin.collections.HashMap
 
 class MemeDomUser: Serializable {
-    var name: String = "" //1
-    var gender: String = "Male" //2
-    var lookingFor: String = "Female" //3
-    var birthday: String = "" //4
-    var profilePhoto: String = "" //5
-    var uid: String = "" //6
-    var email: String = "" //7
     var bio: String = "" //8
-    var minAge: Int = 16 //9
-    var maxAge: Int = 65 //10
-    var gallery: List<String> = listOf() //11
-    var memes: List<String> = listOf() //12
-
-    var rejects: List<String> = listOf() //13
-    var matches: List<String> = listOf() //14
+    var birthday: String = "" //4
+    var dateJoined: Long = 0
     var dating: HashMap<String, Any> = hashMapOf() // 16
-
+    var email: String = "" //7
+    var gallery: List<String> = listOf() //11
+    var gender: String = "Male" //2
+    var lookingFor: String = "Male" //3
+    var matches: List<String> = listOf() //14
+    var maxAge: Int = 65 //10
+    var memes: List<String> = listOf()
+    var minAge: Int = 16 //9
+    var name: String = "" //1
+    var profilePhoto: String = "" //5
+    var rejects: List<String> = listOf() //13
     var seenOldMemes: List<String> = listOf()
+    var uid: String = "" //6
+
+    var pendingMatches: List<String> = listOf()
 
     fun getUserAge(): Int {
         val sdf = SimpleDateFormat("MM/dd/yyyy")

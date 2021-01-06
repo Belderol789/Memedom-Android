@@ -81,8 +81,6 @@ class LoginActivity : AppCompatActivity() {
         Log.d("Firestore Login", "Logging in as $email")
 
         loginLoadingView.visibility = View.VISIBLE
-        DatabaseManager(this).clearPostIDs()
-
         auth.signInWithEmailAndPassword(email, password)
             .addOnCompleteListener(this) { task ->
                 if (task.isSuccessful) {
@@ -122,7 +120,7 @@ class LoginActivity : AppCompatActivity() {
             FirestoreHandler().getUsersDataWith(firebaseUser.uid, {
                 Log.d("Firestore Login", "Logged in as $it")
                 loginLoadingView.visibility = View.INVISIBLE
-                DatabaseManager(this).convertUserObject(it, "MainUser", {
+                DatabaseManager(this).convertUserObject(it,  {
                     val intent: Intent = Intent(this, MainActivity::class.java)
                     startActivity(intent)
                     finish()

@@ -59,7 +59,7 @@ class ImageAdapter(private val imageList: MutableList<String>, private val memeL
             if (!isMeme) {
                 Log.d("ProfileActivity", "Position $position")
                 if (position == 0) {
-                    holder.imageCell.setColorFilter(Color.parseColor("#111111"))
+                    holder.imageCell.setColorFilter(Color.parseColor("#58BADC"))
                 } else {
                     holder.deleteBtn.visibility = View.VISIBLE
                     holder.deleteBtn.setOnClickListener {

@@ -31,7 +31,7 @@ class HomeFragment : Fragment() {
     lateinit var rootView: View
     lateinit var datingSegment: AppCompatRadioButton
     lateinit var friendsSegment: AppCompatRadioButton
-    lateinit var feedAdapter: FeedAdapter
+    var feedAdapter: FeedAdapter? = null
     lateinit var feedRecyclerView: RecyclerView
     lateinit var homeSwipe: SwipeRefreshLayout
     //lateinit var loadingView: CardView
@@ -45,6 +45,73 @@ class HomeFragment : Fragment() {
 
     var firebaseAuth: FirebaseAuth? = null
     var mAuthListener: FirebaseAuth.AuthStateListener? = null
+
+    override fun onCreateView(
+        inflater: LayoutInflater, container: ViewGroup?,
+        savedInstanceState: Bundle?
+    ): View? {
+        mainActivity = this.activity as MainActivity
+        Log.d("OnCreateView", "Called with Main Activity $mainActivity")
+        rootView = inflater.inflate(R.layout.fragment_home, container, false)
+        setupUI()
+        checkLoginStatus()
+        getAllMemes()
+        return rootView
+    }
+
+    private fun setupUI() {
+
+        friendsSegment = rootView.findViewById(R.id.friendsSegment)
+        datingSegment = rootView.findViewById(R.id.datingSegment)
+
+        val loadingImageView = rootView.findViewById<ImageView>(R.id.loadingImageView)
+
+        Glide.with(this)
+            .asGif()
+            .load(R.raw.loader)
+            .into(loadingImageView)
+
+        Log.d("HomeContext", "Views initialized $friendsSegment")
+
+        datingSegment.setOnClickListener{
+            Log.d("Segment-Matched", "Link segment tapped ${datingMemes.count()}")
+            updateSegments(true)
+        }
+        friendsSegment.setOnClickListener{
+            Log.d("Segment-Memedom", "Popular segment tapped ${allMemes.count()}")
+            updateSegments(false)
+        }
+        homeSwipe = rootView.findViewById<SwipeRefreshLayout>(R.id.homeSwipe)
+        homeSwipe.setOnRefreshListener(OnRefreshListener {
+            mainActivity.allMemes.clear()
+            mainActivity.datingMemes.clear()
+            feedAdapter?.clear()
+            getAllMemes()
+        })
+        homeSwipe.setColorSchemeResources(android.R.color.holo_blue_bright, android.R.color.holo_orange_light)
+    }
+
+    private fun checkLoginStatus() {
+
+        val user = FirebaseAuth.getInstance().getCurrentUser()
+        if (user != null) {
+            val credentialView = rootView.findViewById(R.id.credentialViewHome) as LinearLayout
+            (credentialView.parent as? ViewGroup)?.removeView(credentialView)
+        } else {
+            setupCrentialView()
+        }
+
+        firebaseAuth = FirebaseAuth.getInstance()
+        mAuthListener = FirebaseAuth.AuthStateListener() {
+            fun onAuthStateChanged(@NonNull firebaseAuth: FirebaseAuth) {
+                val user = FirebaseAuth.getInstance().getCurrentUser()
+                if (user != null) {
+                    val credentialView = rootView.findViewById(R.id.credentialViewHome) as LinearLayout
+                    (credentialView.parent as? ViewGroup)?.removeView(credentialView)
+                }
+            }
+        }
+    }
 
     private fun getAllMemes() {
 
@@ -102,74 +169,6 @@ class HomeFragment : Fragment() {
         }
     }
 
-    override fun onCreateView(
-        inflater: LayoutInflater, container: ViewGroup?,
-        savedInstanceState: Bundle?
-    ): View? {
-        mainActivity = this.activity as MainActivity
-
-        Log.d("OnCreateView", "Called with Main Activity $mainActivity")
-
-        rootView = inflater.inflate(R.layout.fragment_home, container, false)
-        setupUI()
-        checkLoginStatus()
-        getAllMemes()
-        return rootView
-    }
-
-    private fun checkLoginStatus() {
-
-        val user = FirebaseAuth.getInstance().getCurrentUser()
-        if (user != null) {
-            val credentialView = rootView.findViewById(R.id.credentialViewHome) as LinearLayout
-            (credentialView.parent as? ViewGroup)?.removeView(credentialView)
-        } else {
-            setupCrentialView()
-        }
-
-        firebaseAuth = FirebaseAuth.getInstance()
-        mAuthListener = FirebaseAuth.AuthStateListener() {
-            fun onAuthStateChanged(@NonNull firebaseAuth: FirebaseAuth) {
-                val user = FirebaseAuth.getInstance().getCurrentUser()
-                if (user != null) {
-                    val credentialView = rootView.findViewById(R.id.credentialViewHome) as LinearLayout
-                    (credentialView.parent as? ViewGroup)?.removeView(credentialView)
-                }
-            }
-        }
-    }
-
-    private fun setupUI() {
-
-        friendsSegment = rootView.findViewById(R.id.friendsSegment)
-        datingSegment = rootView.findViewById(R.id.datingSegment)
-
-        val loadingImageView = rootView.findViewById<ImageView>(R.id.loadingImageView)
-
-        Glide.with(this)
-            .asGif()
-            .load(R.raw.loader)
-            .into(loadingImageView)
-
-        Log.d("HomeContext", "Views initialized $friendsSegment")
-
-        datingSegment.setOnClickListener{
-            Log.d("Segment-Matched", "Link segment tapped ${datingMemes.count()}")
-            updateSegments(true)
-        }
-        friendsSegment.setOnClickListener{
-            Log.d("Segment-Memedom", "Popular segment tapped ${allMemes.count()}")
-            updateSegments(false)
-        }
-        homeSwipe = rootView.findViewById<SwipeRefreshLayout>(R.id.homeSwipe)
-        homeSwipe.setOnRefreshListener(OnRefreshListener {
-            mainActivity.allMemes.clear()
-            mainActivity.datingMemes.clear()
-            getAllMemes()
-        })
-        homeSwipe.setColorSchemeResources(android.R.color.holo_blue_bright, android.R.color.holo_orange_light)
-    }
-
     private fun setupFeedView() {
         Log.d("MainActivityMemes", "Setting up feed view ${filteredMemems.count()}")
         feedAdapter = FeedAdapter(filteredMemems, mainActivity, isMemedom)
@@ -196,7 +195,9 @@ class HomeFragment : Fragment() {
     }
 
     private fun updateSegments(isDating: Boolean) {
-        feedAdapter.clear()
+        if (feedAdapter != null) {
+            feedAdapter!!.clear()
+        }
 
         Log.d("Filtereing", "Current memes ${datingMemes.count()} ${allMemes.count()}")
 
@@ -217,6 +218,8 @@ class HomeFragment : Fragment() {
         }
 
         Log.d("Filtering", "Filtered Memes ${filteredMemems.count()}")
-        feedAdapter.addItems(filteredMemems, isMemedom)
+        if (feedAdapter != null) {
+            feedAdapter!!.addItems(filteredMemems, isMemedom)
+        }
     }
 }

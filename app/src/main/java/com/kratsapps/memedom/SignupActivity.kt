@@ -61,19 +61,6 @@ class SignupActivity : AppCompatActivity() {
         setupFacebookSignup()
     }
 
-    override fun onRequestPermissionsResult(
-        requestCode: Int,
-        permissions: Array<out String>,
-        grantResults: IntArray
-    ) {
-        super.onRequestPermissionsResult(requestCode, permissions, grantResults)
-        if (requestCode == 121 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-            profilePhotoBtn.isClickable = true
-        } else {
-            profilePhotoBtn.isClickable = false
-        }
-    }
-
     private fun requestPermissionToPhotos() {
         if (ActivityCompat.checkSelfPermission(
                 this,
@@ -157,41 +144,49 @@ class SignupActivity : AppCompatActivity() {
             onBackPressed()
         }
 
-        genderMale.setOnClickListener {
-            activateFilter(genderMale, "Male", null, listOf(genderFemale, genderOther))
+        signupGenderMale.setOnClickListener {
+            activateFilter(signupGenderMale, "Male", null,
+                listOf(
+                    signupGenderFemale,
+                    signupGenderOther))
         }
 
-        genderFemale.setOnClickListener {
-            activateFilter(genderFemale, "Female", null, listOf(genderMale, genderOther))
+        signupGenderFemale.setOnClickListener {
+            activateFilter(signupGenderFemale, "Female", null,
+                listOf(signupGenderMale,
+                    signupGenderOther))
         }
 
-        genderOther.setOnClickListener {
-            activateFilter(genderOther, "Other", null, listOf(genderFemale, genderMale))
+        signupGenderOther.setOnClickListener {
+            activateFilter(signupGenderOther, "Other", null,
+                listOf(
+                    signupGenderFemale,
+                    signupGenderMale))
         }
 
-        lookingMaleGender.setOnClickListener {
+        signupLookingMale.setOnClickListener {
             activateFilter(
-                lookingMaleGender, null, "Male", listOf(
-                    lookingFemaleFilter,
-                    lookingOtherFilter
+                signupLookingMale, null, "Male", listOf(
+                    signupLookingFemale,
+                    signupLookingOther
                 )
             )
         }
 
-        lookingFemaleFilter.setOnClickListener {
+        signupLookingFemale.setOnClickListener {
             activateFilter(
-                lookingFemaleFilter, null, "Female", listOf(
-                    lookingMaleGender,
-                    lookingOtherFilter
+                signupLookingFemale, null, "Female", listOf(
+                    signupLookingMale,
+                    signupLookingOther
                 )
             )
         }
 
-        lookingOtherFilter.setOnClickListener {
+        signupLookingOther.setOnClickListener {
             activateFilter(
-                lookingOtherFilter, null, "Other", listOf(
-                    lookingMaleGender,
-                    lookingFemaleFilter
+                signupLookingOther, null, "Other", listOf(
+                    signupLookingMale,
+                    signupLookingFemale
                 )
             )
         }
@@ -332,13 +327,13 @@ class SignupActivity : AppCompatActivity() {
 
     private fun signupUser() {
         if (!memeDomuser.birthday.isEmpty()) {
-
-            DatabaseManager(this).clearPostIDs()
             memeDomuser.bio = ""
             memeDomuser.gallery = listOf()
             memeDomuser.rejects = listOf()
-            memeDomuser.memes = listOf()
             memeDomuser.matches = listOf(memeDomuser.uid)
+            memeDomuser.seenOldMemes = listOf()
+            memeDomuser.dateJoined = System.currentTimeMillis()
+            memeDomuser.pendingMatches = listOf()
 
             val newUser: HashMap<String, Any> = hashMapOf(
                 "name" to memeDomuser.name,
@@ -348,15 +343,14 @@ class SignupActivity : AppCompatActivity() {
                 "gender" to memeDomuser.gender,
                 "lookingFor" to memeDomuser.lookingFor,
                 "email" to memeDomuser.email,
-                "liked" to hashMapOf(memeDomuser.uid to 0),
                 "dating" to hashMapOf(memeDomuser.uid to 0),
                 "gallery" to memeDomuser.gallery,
                 "bio" to memeDomuser.bio,
                 "matches" to memeDomuser.matches,
                 "rejects" to memeDomuser.rejects,
-                "memes" to memeDomuser.memes,
-                "seenOldMemes" to listOf<String>(),
-                "dateJoined" to System.currentTimeMillis(),
+                "seenOldMemes" to memeDomuser.seenOldMemes,
+                "dateJoined" to memeDomuser.dateJoined,
+                "pendingMatches" to memeDomuser.pendingMatches,
                 "minAge" to 16,
                 "maxAge" to 65
             )
@@ -368,7 +362,7 @@ class SignupActivity : AppCompatActivity() {
                     setupAlertDialog(it)
                 } else {
                     signupLoadingView.visibility = View.INVISIBLE
-                    DatabaseManager(this).convertUserObject(memeDomuser, "MainUser", {
+                    DatabaseManager(this).convertUserObject(memeDomuser, {
                         navigateToMain()
                     })
                 }
@@ -484,6 +478,7 @@ class SignupActivity : AppCompatActivity() {
                     if (user != null) {
                         showCardView()
                         memeDomuser.uid = user.uid
+
                         editTextSignupUsername.setText(memeDomuser.name)
                         Glide.with(this)
                             .load(memeDomuser.profilePhoto)
@@ -513,6 +508,8 @@ class SignupActivity : AppCompatActivity() {
             }
     }
 
+
+
     private fun showCardView() {
         signupBackBtn.visibility = View.GONE
         signupLoadingView.visibility = View.INVISIBLE
@@ -540,44 +537,3 @@ class SignupActivity : AppCompatActivity() {
         }
     }
 }
-
-/*
-    override fun onRequestPermissionsResult(
-        requestCode: Int,
-        permissions: Array<out String>,
-        grantResults: IntArray
-    ) {
-        super.onRequestPermissionsResult(requestCode, permissions, grantResults)
-        if (requestCode == 121 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-            imageButtonProfile.isClickable = true
-        }
-    }
-
-    private fun requestPermissionToPhotos() {
-        if (ActivityCompat.checkSelfPermission(
-                this,
-                android.Manifest.permission.READ_EXTERNAL_STORAGE
-            ) != PackageManager.PERMISSION_GRANTED
-        ) {
-            ActivityCompat.requestPermissions(
-                this,
-                Array(1) { android.Manifest.permission.READ_EXTERNAL_STORAGE },
-                121
-            )
-        } else {
-            imageButtonProfile.isClickable = true
-        }
-    }
-
-editTextPassword.addTextChangedListener(object : TextWatcher {
-
-            override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
-
-            @RequiresApi(Build.VERSION_CODES.LOLLIPOP)
-            override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
-                buttonNextAuth.setBackgroundResource(R.drawable.soft_button)
-            }
-
-            override fun afterTextChanged(s: Editable?) {}
-        })
- */

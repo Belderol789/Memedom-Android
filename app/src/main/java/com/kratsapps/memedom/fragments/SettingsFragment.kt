@@ -82,7 +82,7 @@ class SettingsFragment : Fragment() {
             Toast.makeText(settingContext, "Successfully Signed Out", Toast.LENGTH_SHORT).show()
             LoginManager.getInstance().logOut()
             FirebaseAuth.getInstance().signOut()
-            DatabaseManager(settingContext).convertUserObject(null, "MainUser", {})
+            DatabaseManager(settingContext).convertUserObject(null,  {})
             returnToLoggedOutState()
         }
 
@@ -93,20 +93,28 @@ class SettingsFragment : Fragment() {
 
             Log.d("UserGender", "Gender $mainUserGender LookingFor $mainLookingFor")
 
-            if (mainUserGender == "Male") {
-                activateFilter(maleFilter, "Male", null, listOf(femaleFilter, otherFilter))
-            } else if (mainUserGender == "Female") {
-                activateFilter(femaleFilter, "Female", null, listOf(otherFilter, maleFilter))
-            } else {
-                activateFilter(otherFilter, "Other", null, listOf(maleFilter, femaleFilter))
+            when (mainUserGender) {
+                "Male" -> {
+                    activateFilter(maleFilter, "Male", null, listOf(femaleFilter, otherFilter))
+                }
+                "Female" -> {
+                    activateFilter(femaleFilter, "Female", null, listOf(otherFilter, maleFilter))
+                }
+                else -> {
+                    activateFilter(otherFilter, "Other", null, listOf(maleFilter, femaleFilter))
+                }
             }
 
-            if (mainLookingFor == "Male") {
-                activateFilter(lookingMaleFilter, null, "Male", listOf(lookingFemaleFilter, lookingOtherFilter))
-            } else if (mainLookingFor == "Female") {
-                activateFilter(lookingFemaleFilter, null, "Female", listOf(lookingMaleFilter, lookingOtherFilter))
-            } else {
-                activateFilter(lookingOtherFilter, null, "Other", listOf(lookingMaleFilter, lookingFemaleFilter))
+            when (mainLookingFor) {
+                "Male" -> {
+                    activateFilter(lookingMaleFilter, null, "Male", listOf(lookingFemaleFilter, lookingOtherFilter))
+                }
+                "Female" -> {
+                    activateFilter(lookingFemaleFilter, null, "Female", listOf(lookingMaleFilter, lookingOtherFilter))
+                }
+                else -> {
+                    activateFilter(lookingOtherFilter, null, "Other", listOf(lookingMaleFilter, lookingFemaleFilter))
+                }
             }
 
             maleFilter.setOnClickListener {
@@ -191,7 +199,7 @@ class SettingsFragment : Fragment() {
                     mainUser?.minAge = ageSeekbar.getMinThumbValue()
                 }
                 mainUser?.maxAge = ageSeekbar.getMaxThumbValue()
-                DatabaseManager(settingContext).convertUserObject(mainUser!!, "MainUser", {})
+                DatabaseManager(settingContext).convertUserObject(mainUser!!, {})
             }
 
             override fun onValueChanged(minThumbValue: Int, maxThumbValue: Int) {
@@ -222,7 +230,7 @@ class SettingsFragment : Fragment() {
             mainUser?.lookingFor = lookingFor
         }
 
-        DatabaseManager(settingContext).convertUserObject(mainUser!!, "MainUser", {})
+        DatabaseManager(settingContext).convertUserObject(mainUser!!, {})
     }
 
     fun getOpenFacebookIntent(){

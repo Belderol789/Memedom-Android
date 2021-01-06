@@ -162,7 +162,6 @@ class CommentsActivity : AppCompatActivity() {
                     //animate in crown
                     fieldValue = FieldValue.arrayUnion(mainUser.uid)
                     postMeme.postLikers += mainUser.uid
-                    mainUser.seenOldMemes += postMeme.postID
 
                     if ((mainUser.matches.contains(postMeme.postUserUID))) {
                         didLikePost(Color.parseColor("#FACE0D"))
@@ -173,9 +172,9 @@ class CommentsActivity : AppCompatActivity() {
                     }
 
                     if (!isMemeDom) {
-                        FirestoreHandler().updateLikeDatabase(mainUser.uid, postMeme.postUserUID, "dating", this.applicationContext,1, {})
+                        FirestoreHandler().updateLikeDatabase(mainUser.uid, postMeme.postUserUID, this.applicationContext,1, {})
                     }
-                    DatabaseManager(this).convertUserObject(mainUser!!, "MainUser", {})
+                    DatabaseManager(this).convertUserObject(mainUser!!, {})
                 } else {
                     fieldValue = FieldValue.arrayRemove(mainUser.uid)
                     postMeme.postLikers -= mainUser.uid
@@ -214,6 +213,7 @@ class CommentsActivity : AppCompatActivity() {
     }
 
     private fun alreadyLiked(color: Int) {
+
         if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.M) {
             commentLikeBtn.setCompoundDrawableTintList(ColorStateList.valueOf(color))
             commentShareBtn.setCompoundDrawableTintList(ColorStateList.valueOf(color))
@@ -259,22 +259,20 @@ class CommentsActivity : AppCompatActivity() {
 
         sendButton.setOnClickListener {
 
-            val mainUserUID = DatabaseManager(this).getMainUserID()
+            val mainUser = DatabaseManager(this).retrieveSavedUser()
             val commentText = editTextTextMultiLine.text.toString()
             val today = System.currentTimeMillis()
 
-            if (!commentText.isEmpty() && mainUserUID != null && postMeme.postID != null) {
-
-                Log.d("Comment", "Comment text $commentText")
-
+            if (!commentText.isEmpty() && mainUser != null && postMeme.postID != null) {
+                val mainUserUID = mainUser.uid
                 val commentID = generateRandomString(10)
 
                 val commentHash: HashMap<String, Any> = hashMapOf(
                     "commentID" to commentID,
                     "commentText" to commentText,
                     "postID" to postMeme.postID,
-                    "userName" to postMeme.postUsername,
-                    "userPhotoURL" to postMeme.postProfileURL,
+                    "userName" to mainUser.name,
+                    "userPhotoURL" to mainUser.profilePhoto,
                     "commentDate" to today,
                     "commentLikers" to arrayListOf<String>(mainUserUID),
                     "commentRepliesCount" to 0,
@@ -285,8 +283,8 @@ class CommentsActivity : AppCompatActivity() {
                 newComment.commentID = commentID
                 newComment.commentText = commentText
                 newComment.postID = postMeme.postID
-                newComment.userName = postMeme.postUsername
-                newComment.userPhotoURL = postMeme.postProfileURL
+                newComment.userName = mainUser.name
+                newComment.userPhotoURL = mainUser.profilePhoto
                 newComment.commentDate = today
                 newComment.replies = listOf()
                 newComment.commentLikers = arrayListOf<String>(mainUserUID)

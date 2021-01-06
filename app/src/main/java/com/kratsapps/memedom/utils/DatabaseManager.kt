@@ -15,49 +15,6 @@ class DatabaseManager(context: Context) {
     private val dbContext = context
     private val gson = Gson()
 
-    fun savePostID(id: String) {
-        var savedPostIDs = retrieveSavedPostIDs()
-        savedPostIDs.add(id)
-        var jsonString = gson.toJson(savedPostIDs)
-
-        Log.d("Database", "Saved Json $jsonString")
-
-        val sharedPreference = dbContext.getSharedPreferences(POST_IDS, Context.MODE_PRIVATE)
-        var editor = sharedPreference.edit()
-        editor.putString(POST_IDS, jsonString)
-        editor.apply()
-    }
-
-    fun clearPostIDs() {
-        var savedPostIDs = listOf<String>()
-        var jsonString = gson.toJson(savedPostIDs)
-
-        Log.d("Database", "Saved Json $jsonString")
-
-        val sharedPreference = dbContext.getSharedPreferences(POST_IDS, Context.MODE_PRIVATE)
-        var editor = sharedPreference.edit()
-        editor.putString(POST_IDS, jsonString)
-        editor.apply()
-    }
-
-
-    fun retrieveSavedPostIDs(): MutableList<String> {
-        val savedJson = dbContext.getSharedPreferences(POST_IDS, Context.MODE_PRIVATE).getString(
-            POST_IDS,
-            null
-        )
-
-        Log.d("Database", "Loaded Json savedPostIDs $savedJson")
-
-        if (savedJson != null) {
-            val type: Type = object : TypeToken<List<String?>?>() {}.getType()
-            var savedPostIDs = gson.fromJson<MutableList<String>>(savedJson, type)
-            return savedPostIDs
-        }
-        return mutableListOf<String>()
-    }
-
-
     fun saveToPrefsInt(key: String, value: Int) {
         val sharedPreference = dbContext.getSharedPreferences(key, Context.MODE_PRIVATE)
         var editor = sharedPreference.edit()
@@ -88,12 +45,12 @@ class DatabaseManager(context: Context) {
         return savedInt
     }
 
-    fun convertUserObject(user: MemeDomUser?, key: String, completed: () -> Unit) {
+    fun convertUserObject(user: MemeDomUser?, completed: () -> Unit) {
         Log.d("Database", "Main Activity Saving Json $user")
         var jsonString = gson.toJson(user)
-        val sharedPreference = dbContext.getSharedPreferences(key, Context.MODE_PRIVATE)
+        val sharedPreference = dbContext.getSharedPreferences("MainUser", Context.MODE_PRIVATE)
         var editor = sharedPreference.edit()
-        editor.putString(key, jsonString)
+        editor.putString("MainUser", jsonString)
         editor.apply()
         Log.d("Database", "Main Activity Saved Json $jsonString")
         completed()

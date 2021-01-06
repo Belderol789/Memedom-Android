@@ -247,26 +247,6 @@
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/linearLayout8" />
 
-            <androidx.cardview.widget.CardView
-                android:id="@+id/profileCard"
-                android:layout_width="120dp"
-                android:layout_height="120dp"
-                android:layout_marginBottom="16dp"
-                app:cardBackgroundColor="@color/appBGColorLight"
-                app:cardCornerRadius="60dp"
-                app:layout_constraintBottom_toTopOf="@+id/linearLayout8"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent">
-
-                <ImageButton
-                    android:id="@+id/profilePhotoBtn"
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                    android:background="@color/transparent"
-                    app:srcCompat="@drawable/ic_action_plus" />
-            </androidx.cardview.widget.CardView>
-
             <LinearLayout
                 android:id="@+id/linearLayout8"
                 android:layout_width="match_parent"
@@ -341,7 +321,7 @@
                         android:orientation="horizontal">
 
                         <androidx.appcompat.widget.AppCompatRadioButton
-                            android:id="@+id/genderMale"
+                            android:id="@+id/signupGenderMale"
                             android:layout_width="0dp"
                             android:layout_height="50dp"
                             android:layout_weight="1"
@@ -353,7 +333,7 @@
                             android:textColor="@android:color/white" />
 
                         <androidx.appcompat.widget.AppCompatRadioButton
-                            android:id="@+id/genderFemale"
+                            android:id="@+id/signupGenderFemale"
                             android:layout_width="0dp"
                             android:layout_height="50dp"
                             android:layout_weight="1"
@@ -365,7 +345,7 @@
                             android:textColor="@android:color/white" />
 
                         <androidx.appcompat.widget.AppCompatRadioButton
-                            android:id="@+id/genderOther"
+                            android:id="@+id/signupGenderOther"
                             android:layout_width="0dp"
                             android:layout_height="50dp"
                             android:layout_weight="1"
@@ -401,7 +381,7 @@
                         android:orientation="horizontal">
 
                         <androidx.appcompat.widget.AppCompatRadioButton
-                            android:id="@+id/lookingMaleGender"
+                            android:id="@+id/signupLookingMale"
                             android:layout_width="0dp"
                             android:layout_height="50dp"
                             android:layout_weight="1"
@@ -413,7 +393,7 @@
                             android:textColor="@android:color/white" />
 
                         <androidx.appcompat.widget.AppCompatRadioButton
-                            android:id="@+id/lookingFemaleFilter"
+                            android:id="@+id/signupLookingFemale"
                             android:layout_width="0dp"
                             android:layout_height="50dp"
                             android:layout_weight="1"
@@ -425,7 +405,7 @@
                             android:textColor="@android:color/white" />
 
                         <androidx.appcompat.widget.AppCompatRadioButton
-                            android:id="@+id/lookingOtherFilter"
+                            android:id="@+id/signupLookingOther"
                             android:layout_width="0dp"
                             android:layout_height="50dp"
                             android:layout_weight="1"
@@ -439,6 +419,26 @@
                 </LinearLayout>
 
             </LinearLayout>
+
+            <androidx.cardview.widget.CardView
+                android:id="@+id/profileCard"
+                android:layout_width="120dp"
+                android:layout_height="120dp"
+                android:layout_marginBottom="16dp"
+                app:cardBackgroundColor="@color/appBGColorLight"
+                app:cardCornerRadius="60dp"
+                app:layout_constraintBottom_toTopOf="@+id/linearLayout8"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent">
+
+                <ImageButton
+                    android:id="@+id/profilePhotoBtn"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:background="@color/transparent"
+                    app:srcCompat="@drawable/ic_action_plus" />
+            </androidx.cardview.widget.CardView>
 
         </androidx.constraintlayout.widget.ConstraintLayout>
 

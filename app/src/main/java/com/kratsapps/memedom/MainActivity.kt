@@ -111,13 +111,11 @@ class MainActivity : AppCompatActivity() {
 
                 it.forEach {
                     if (mainUser != null) {
-                        if (!(mainUser!!.seenOldMemes).contains(it.postID)) {
-                            Log.d("MainActivityHome", "SeenOldMemes ${mainUser!!.seenOldMemes} this meme ${it.postID}")
-                            val minAge = mainUser!!.minAge
-                            val maxAge = mainUser!!.maxAge
-                            if (mainUser?.lookingFor == it.userGender && it.postType == "Dating" && it.userAge >= minAge && it.userAge <= maxAge) {
-                                datingMemes.add(it)
-                            }
+                        Log.d("MainActivityHome", "SeenOldMemes ${mainUser!!.seenOldMemes} this meme ${it.postID}")
+                        val minAge = mainUser!!.minAge
+                        val maxAge = mainUser!!.maxAge
+                        if (mainUser?.lookingFor == it.userGender && it.postType == "Dating" && it.userAge >= minAge && it.userAge <= maxAge) {
+                            datingMemes.add(it)
                         }
                     }
                     allMemes.add(it)
@@ -139,7 +137,7 @@ class MainActivity : AppCompatActivity() {
                     if (!mainUser!!.memes.contains(it.postImageURL)) {
                         mainUser!!.memes += it.postImageURL
                         Log.d("Saving New Meme", "Saving ${it.toString()}")
-                        DatabaseManager(this).convertUserObject(mainUser!!, "MainUser", {})
+                        DatabaseManager(this).convertUserObject(mainUser!!, {})
                     }
 
                 }
@@ -167,7 +165,7 @@ class MainActivity : AppCompatActivity() {
                             showPendingView("You have PENDING matches!")
                         } else if (match.matchStatus == true && !mainUser!!.matches.contains(match.uid)) {
                             mainUser!!.matches += match.uid
-                            DatabaseManager(this).convertUserObject(mainUser!!, "MainUser", {})
+                            DatabaseManager(this).convertUserObject(mainUser!!, {})
                             showPendingView("You have NEW matches!")
                         }
                     }
@@ -265,7 +263,6 @@ class MainActivity : AppCompatActivity() {
 
         matchView.cancelBtn.setOnClickListener {
             if (currentMatchUser != null) {
-                FirestoreHandler().rejectUser(currentMatchUser!!, this.applicationContext)
                 restartMatchView()
             }
         }

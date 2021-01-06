@@ -42,6 +42,24 @@ class FirestoreHandler {
         firestoreDB.firestoreSettings = settings
     }
 
+    //Checking
+    fun checkIfUserExist(uid: String, exist: (Boolean) -> Unit) {
+        firestoreDB
+            .collection(USERS_PATH)
+            .whereEqualTo("uid", uid)
+            .get()
+            .addOnSuccessListener {
+                if (it.isEmpty) {
+                    exist(false)
+                } else {
+                    exist(true)
+                }
+            }
+            .addOnFailureListener {
+                exist(false)
+            }
+    }
+
     //Adding
     fun addDataToFirestore(
         path: String,
@@ -167,14 +185,14 @@ class FirestoreHandler {
         return javaClass.kotlin
     }
 
-    fun updateLikeDatabase(mainuserID: String, postUserID: String, matchType: String, context: Context, plus: Long, completed: () -> Unit) {
+    fun updateLikeDatabase(mainuserID: String, postUserID: String, context: Context, plus: Long, completed: () -> Unit) {
         val mainUser = DatabaseManager(context).retrieveSavedUser()
 
         if (mainUser != null) {
-            getCurrentNumberOfLikes(mainuserID, postUserID, matchType, {
+            getCurrentNumberOfLikes(mainuserID, postUserID, "dating", {
                 val updatedCount = it?.plus(plus)
                 val updatedLike = hashMapOf(postUserID to updatedCount)
-                val updateLiked: HashMap<String, Any> = hashMapOf(matchType to updatedLike)
+                val updateLiked: HashMap<String, Any> = hashMapOf("dating" to updatedLike)
 
                 firestoreDB
                     .collection(USERS_PATH)
@@ -385,10 +403,11 @@ class FirestoreHandler {
 
                         Log.d("Firestore-matching", "Current users $key and $value")
 
-                        if (value == matchLimit.toLong() &&
+                        if (value >= matchLimit.toLong() &&
                             memeDomuser != null &&
                             !memeDomuser.matches.contains(key)
                             && !memeDomuser.rejects.contains(key)
+                            && !memeDomuser.pendingMatches.contains(key)
                         ) {
                             getUsersDataWith(key, {
                                 popUpData(it)
@@ -414,7 +433,7 @@ class FirestoreHandler {
             if (memeDomuser.matches.contains(matchUser.uid)) {
                 memeDomuser.matches -= matchUser.uid
             }
-            DatabaseManager(context).convertUserObject(memeDomuser, "MainUser", {})
+            DatabaseManager(context).convertUserObject(memeDomuser, {})
         }
     }
 
@@ -497,8 +516,11 @@ class FirestoreHandler {
 
         val userIDs = matchUser.uid + mainUser!!.uid
         val messageUniqueID = userIDs.toCharArray().sorted().joinToString("")
-
+        //What if na like na
         if (mainUser != null) {
+            mainUser.pendingMatches += matchUser.uid
+
+            DatabaseManager(context).convertUserObject(mainUser, {})
 
             val data: HashMap<String, Any> = hashMapOf(
                 matchUser.uid to hashMapOf(
@@ -539,7 +561,7 @@ class FirestoreHandler {
         val mainUser = DatabaseManager(context).retrieveSavedUser()
         if (mainUser != null) {
             var fieldValue: FieldValue = FieldValue.arrayUnion(matchUserUID)
-            updateLikeDatabase(mainUser.uid, matchUserUID, "dating", context, 1, {
+            updateLikeDatabase(mainUser.uid, matchUserUID, context, 1, {
                 updateDatabaseObject(USERS_PATH, mainUser.uid, hashMapOf("matches" to fieldValue))
                 completed()
             })
