@@ -22,6 +22,7 @@ import android.widget.TextView
 import androidx.annotation.RequiresApi
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.core.content.ContextCompat
+import androidx.core.content.FileProvider
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.google.android.gms.ads.AdRequest
@@ -281,6 +282,7 @@ class FeedAdapter(private var feedList: MutableList<Memes>, private val activity
                 null
             )
             if (path != null) {
+                Log.d("ShareMeme", "Bout the share dog meme")
                 val uri = Uri.parse(path)
                 shareIntent.putExtra(Intent.EXTRA_STREAM, uri)
                 shareIntent.type = "image/*"
@@ -306,8 +308,7 @@ class FeedAdapter(private var feedList: MutableList<Memes>, private val activity
 
         val bytes = ByteArrayOutputStream()
         icon.compress(Bitmap.CompressFormat.JPEG, 100, bytes)
-        val f: File = File(
-            Environment.getExternalStorageDirectory().toString() + File.separator + "temporary_file.jpg")
+        val f: File = File(feedAdapterContext.externalCacheDir?.toString() + File.separator + "temporary_file.jpg")
         try {
             f.createNewFile()
             val fo = FileOutputStream(f)
@@ -315,10 +316,16 @@ class FeedAdapter(private var feedList: MutableList<Memes>, private val activity
         } catch (e: IOException) {
             e.printStackTrace()
         }
+
+        val imageURI = FileProvider.getUriForFile(activity, "com.kratsapps.memedom.provider", f)
+
         share.putExtra(
             Intent.EXTRA_STREAM,
-            Uri.parse("file:///sdcard/temporary_file.jpg")
+            imageURI
         )
+
+        Log.d("ShareMeme", "Bout the share dope meme")
+
         activity.startActivity(Intent.createChooser(share, "Expand Memedom"))
     }
 
@@ -439,6 +446,4 @@ class FeedAdapter(private var feedList: MutableList<Memes>, private val activity
     }
 
 }
-
-
 

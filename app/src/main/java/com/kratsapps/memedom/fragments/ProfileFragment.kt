@@ -50,6 +50,7 @@ class ProfileFragment : Fragment() {
     lateinit var bioText: EditText
     lateinit var photosScrollView: HorizontalScrollView
     lateinit var saveBtn: Button
+    lateinit var cameraBtn: ImageButton
 
     lateinit var rootView: View
     lateinit var galleryAdapter: ImageAdapter
@@ -165,6 +166,9 @@ class ProfileFragment : Fragment() {
         profileView = rootView.findViewById<CardView>(R.id.profile_cardView)
         progressCardView = rootView.findViewById<CardView>(R.id.profileLoadingView)
         progressCardView.visibility = View.INVISIBLE
+
+        cameraBtn = rootView.findViewById(R.id.cameraBtn)
+
         val loadingImageView = rootView.findViewById(R.id.loadingImageView) as ImageView
         Glide.with(this)
             .asGif()
@@ -205,6 +209,11 @@ class ProfileFragment : Fragment() {
 
         saveBtn.setOnClickListener {
             saveProfileEdits()
+        }
+
+        cameraBtn.setOnClickListener {
+            profilePhotoSelected = true
+            openImageGallery()
         }
 
         bioText.addTextChangedListener(object : TextWatcher {

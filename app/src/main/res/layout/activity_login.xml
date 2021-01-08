@@ -98,6 +98,7 @@
                 android:layout_height="match_parent"
                 android:layout_marginLeft="8dp"
                 android:hint="@string/hint_password"
+                android:inputType="textPassword"
                 android:textAppearance="@style/TextAppearance.AppCompat.Body1"
                 android:textColor="@color/appBGColor" />
         </com.google.android.material.textfield.TextInputLayout>
