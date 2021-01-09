@@ -31,6 +31,7 @@ import com.kratsapps.memedom.MainActivity
 import com.kratsapps.memedom.R
 import com.kratsapps.memedom.adapters.FeedAdapter
 import com.kratsapps.memedom.adapters.ImageAdapter
+import com.kratsapps.memedom.adapters.MatchAdapter
 import com.kratsapps.memedom.firebaseutils.FireStorageHandler
 import com.kratsapps.memedom.firebaseutils.FirestoreHandler
 import com.kratsapps.memedom.models.MemeDomUser
@@ -52,6 +53,8 @@ class ProfileFragment : Fragment() {
     lateinit var saveBtn: Button
     lateinit var cameraBtn: ImageButton
 
+    var feedAdapter: ImageAdapter? = null
+
     lateinit var rootView: View
     lateinit var galleryAdapter: ImageAdapter
     lateinit var galleryRecyclerView: RecyclerView
@@ -60,6 +63,10 @@ class ProfileFragment : Fragment() {
 
     private var mainUser: MemeDomUser? = null
     private var mainUserID: String? = null
+
+    var memeItemIDs: MutableList<String> = mutableListOf()
+    var userMemes: MutableList<String> = mutableListOf()
+    var profileMemes: MutableList<Memes> = mutableListOf()
 
     var galleryItems: MutableList<String> = mutableListOf()
     var profilePhotoSelected: Boolean = true
@@ -97,11 +104,18 @@ class ProfileFragment : Fragment() {
         val crownCount = rootView.findViewById<TextView>(R.id.crownsCount)
         val postCount = rootView.findViewById<TextView>(R.id.postCount)
         val matchCount = rootView.findViewById<TextView>(R.id.matchCount)
-        Log.d("UserMemes", "We getting the memes of $mainUser inside $mainActivity")
 
-        if (mainActivity != null && mainUser != null && mainActivity.profileMemes.isEmpty()) {
-            mainActivity.setupProfileFragment() { profileMemes ->
-                Log.d("UserMemes", "User Profile Memes ${profileMemes.count()}")
+        if (mainActivity != null && mainUser != null) {
+            mainActivity.setupProfileFragment() { profileMeme ->
+
+                Log.d("ProfileFragment", "MemeIDs $memeItemIDs, incoming meme ${profileMeme.postID}")
+
+                if (!memeItemIDs.contains(profileMeme.postID)) {
+                    memeItemIDs.add(profileMeme.postID)
+                    profileMemes.add(profileMeme)
+                    userMemes.add(profileMeme.postImageURL)
+                }
+
                 var crown: Int = 0
                 for (meme in profileMemes) {
                     crown += meme.getPostLikeCount()
@@ -111,41 +125,13 @@ class ProfileFragment : Fragment() {
                 postCount.setText("${profileMemes.count()}")
                 crownCount.setText("$crown")
 
-                var userMemes = mutableListOf<String>()
-                for (meme in profileMemes) {
-                    userMemes.add(meme.postImageURL)
-                }
-
-                val feedAdapter = ImageAdapter(userMemes, profileMemes, mainActivity, this, true)
+                feedAdapter = ImageAdapter(userMemes, profileMemes, mainActivity, this, true)
                 val galleryManager: GridLayoutManager =
                     GridLayoutManager(mainActivity, 3, GridLayoutManager.VERTICAL, false)
                 profileRecyclerView.adapter = feedAdapter
                 profileRecyclerView.layoutManager = galleryManager
                 profileRecyclerView.itemAnimator?.removeDuration
             }
-        } else if (mainUser != null) {
-            val profileMemes = mainActivity.profileMemes
-            var crown: Int = 0
-            for (meme in profileMemes) {
-                crown += meme.getPostLikeCount()
-            }
-
-            matchCount.setText("${mainUser!!.matches.count()}")
-            postCount.setText("${profileMemes.count()}")
-            crownCount.setText("$crown")
-
-            var userMemes = mutableListOf<String>()
-            for (meme in profileMemes) {
-                userMemes.add(meme.postImageURL)
-            }
-
-            val feedAdapter = ImageAdapter(userMemes, profileMemes, mainActivity, this, true)
-            val galleryManager: GridLayoutManager =
-                GridLayoutManager(mainActivity, 3, GridLayoutManager.VERTICAL, false)
-            profileRecyclerView.adapter = feedAdapter
-            profileRecyclerView.layoutManager = galleryManager
-            profileRecyclerView.itemAnimator?.removeDuration
-
         }
     }
 
@@ -311,7 +297,6 @@ class ProfileFragment : Fragment() {
         val galleryManager: GridLayoutManager = GridLayoutManager(activity, 3, GridLayoutManager.VERTICAL, false)
 
         if (context != null && activity != null) {
-
             Log.d("UserGallery", "User photos $images")
             galleryItems = images.toMutableList()
             galleryAdapter = ImageAdapter(galleryItems, null, activity, this, false)

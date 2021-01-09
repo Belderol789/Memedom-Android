@@ -125,15 +125,11 @@ class MainActivity : AppCompatActivity() {
         }
     }
     //ProfileFragment
-    fun setupProfileFragment(completed: (MutableList<Memes>) -> Unit) {
+    fun setupProfileFragment(completed: (Memes) -> Unit) {
         if (mainUser?.uid != null) {
             FirestoreHandler().getAllMemesOfMainUser(mainUser!!.uid) {
                 if (it != null) {
-                    if (!profileMemeIDs.contains(it.postID)) {
-                        profileMemeIDs.contains(it.postID)
-                        profileMemes.add(it)
-                    }
-                    Log.d("UserMemes", "Memes ${profileMemes.count()}")
+                    completed(it)
                     if (!mainUser!!.memes.contains(it.postImageURL)) {
                         mainUser!!.memes += it.postImageURL
                         Log.d("Saving New Meme", "Saving ${it.toString()}")
@@ -141,7 +137,6 @@ class MainActivity : AppCompatActivity() {
                     }
 
                 }
-                completed(profileMemes)
             }
         }
     }

@@ -13,14 +13,14 @@ import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.kratsapps.memedom.*
 import com.kratsapps.memedom.fragments.ProfileFragment
+import com.kratsapps.memedom.models.Matches
 import com.kratsapps.memedom.models.MemeDomUser
 import com.kratsapps.memedom.models.Memes
 import kotlinx.android.synthetic.main.image_cell.view.*
 
 
-class ImageAdapter(private val imageList: MutableList<String>, private val memeList: MutableList<Memes>?, private val activity: Activity, private val fragment: ProfileFragment?, isMemes: Boolean): RecyclerView.Adapter<ImageAdapter.ImageViewHolder>() {
+class ImageAdapter(private var imageList: MutableList<String>, private var memeList: MutableList<Memes>?, private val activity: Activity, private val fragment: ProfileFragment?, isMemes: Boolean): RecyclerView.Adapter<ImageAdapter.ImageViewHolder>() {
 
-    lateinit var adapterContext: Context
     val isMeme = isMemes
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ImageViewHolder {
@@ -37,6 +37,9 @@ class ImageAdapter(private val imageList: MutableList<String>, private val memeL
     }
 
     override fun onBindViewHolder(holder: ImageViewHolder, position: Int) {
+
+        Log.d("ProfileFragment", "images ${imageList.count()} memes $memeList")
+
         Glide.with(activity)
             .load(imageList[position])
             .centerCrop()
@@ -48,7 +51,7 @@ class ImageAdapter(private val imageList: MutableList<String>, private val memeL
             holder.imageCell.setOnClickListener {
                 Log.d("ProfileActivity", "IsMemes $isMeme")
                 if (isMeme && memeList != null) {
-                    navigateToComments(memeList[position])
+                    navigateToComments(memeList!![position])
                 } else if (!isMeme && position != 0) {
                     navigateToLargeImage(imageList[position])
                 } else if (position == 0 && fragment != null) {
@@ -112,6 +115,19 @@ class ImageAdapter(private val imageList: MutableList<String>, private val memeL
             notifyItemRangeChanged(position, imageList.count())
         }
     }
+
+    fun clear() {
+        imageList.clear()
+        memeList?.clear()
+        notifyDataSetChanged()
+    }
+
+    fun addItems(memes: MutableList<String>, userMemes: MutableList<Memes>?) {
+        imageList = memes
+        memeList = userMemes
+        notifyDataSetChanged()
+    }
+
 }
 
 
