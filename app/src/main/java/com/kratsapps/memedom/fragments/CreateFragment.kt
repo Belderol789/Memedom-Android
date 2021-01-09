@@ -177,6 +177,9 @@ class CreateFragment : Fragment() {
                 val memeImageURL = it
                 if (memeImageURL != null && savedUser != null) {
 
+                    savedUser.memes += it
+                    DatabaseManager(createContext).convertUserObject(savedUser, {})
+
                     Log.d("Saving New Meme", "Saving ${it.toString()}")
 
                     val newPost: HashMap<String, Any> = hashMapOf(

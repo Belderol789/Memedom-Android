@@ -5,6 +5,7 @@ import android.util.Log
 import com.google.common.reflect.TypeToken
 import com.google.gson.Gson
 import com.kratsapps.memedom.models.MemeDomUser
+import com.kratsapps.memedom.models.Memes
 import java.lang.reflect.Type
 
 
@@ -43,6 +44,11 @@ class DatabaseManager(context: Context) {
             defValue
         )
         return savedInt
+    }
+
+    fun converMemeObject(meme: Memes, completed: (String) -> Unit) {
+        var jsonString = gson.toJson(meme)
+        completed(jsonString)
     }
 
     fun convertUserObject(user: MemeDomUser?, completed: () -> Unit) {

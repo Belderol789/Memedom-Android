@@ -418,6 +418,19 @@ class FirestoreHandler {
             }
     }
 
+    fun unmatchUserWithID(matchUserID: String, mainuserID: String, completed: () -> Unit) {
+        val userIDs = matchUserID + mainuserID
+        val messageUniqueID = userIDs.toCharArray().sorted().joinToString("")
+
+        firestoreDB
+            .collection(MATCHED)
+            .document(messageUniqueID)
+            .delete()
+            .addOnSuccessListener {
+                completed()
+            }
+    }
+
     fun unmatchUser(matchID: String) {
         firestoreDB
             .collection(MATCHED)

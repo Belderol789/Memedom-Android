@@ -48,7 +48,7 @@
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="@+id/feedImage"
-            tools:visibility="visible">
+            tools:visibility="invisible">
 
             <androidx.constraintlayout.widget.ConstraintLayout
                 android:layout_width="match_parent"
@@ -99,7 +99,7 @@
             android:divider="@drawable/divider_vertical"
             android:orientation="vertical"
             android:showDividers="middle"
-            app:layout_constraintEnd_toStartOf="@+id/reportButton"
+            app:layout_constraintEnd_toStartOf="@+id/optionButton"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent">
 
@@ -231,7 +231,7 @@
         </LinearLayout>
 
         <ImageButton
-            android:id="@+id/reportButton"
+            android:id="@+id/optionButton"
             android:layout_width="30dp"
             android:layout_height="25dp"
             android:layout_marginTop="8dp"
@@ -244,37 +244,6 @@
             app:layout_constraintBottom_toTopOf="@+id/feedImage"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
-
-        <LinearLayout
-            android:id="@+id/linearReport"
-            android:layout_width="wrap_content"
-            android:layout_height="50dp"
-            android:divider="@drawable/divider_horizontal"
-            android:orientation="horizontal"
-            android:showDividers="middle"
-            android:visibility="gone"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent">
-
-            <Button
-                android:id="@+id/reportBtn"
-                android:layout_width="100dp"
-                android:layout_height="wrap_content"
-                android:background="@drawable/soft_button"
-                android:text="Report"
-                android:textColor="@color/whiteColor" />
-
-            <Button
-                android:id="@+id/cancelBtn"
-                android:layout_width="100dp"
-                android:layout_height="wrap_content"
-                android:background="@drawable/soft_button_disabled"
-                android:text="Cancel"
-                android:textColor="@color/whiteColor" />
-
-        </LinearLayout>
 
         <com.google.android.gms.ads.AdView
             android:id="@+id/adView"
@@ -310,6 +279,106 @@
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/feedImage" />
+
+        <androidx.cardview.widget.CardView
+            android:id="@+id/optionsView"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            android:visibility="invisible"
+            app:cardBackgroundColor="@color/clearBlack"
+            app:layout_constraintBottom_toBottomOf="@+id/adView"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent">
+
+            <androidx.constraintlayout.widget.ConstraintLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent">
+
+                <androidx.cardview.widget.CardView
+                    android:id="@+id/optionsContainer"
+                    android:layout_width="225dp"
+                    android:layout_height="wrap_content"
+                    app:cardBackgroundColor="@color/appBGColorLight"
+                    app:cardCornerRadius="16dp"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent">
+
+                    <androidx.constraintlayout.widget.ConstraintLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent">
+
+                        <TextView
+                            android:id="@+id/textView19"
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_marginStart="8dp"
+                            android:layout_marginTop="16dp"
+                            android:layout_marginEnd="8dp"
+                            android:fontFamily="@font/helveticaneu_bold"
+                            android:text="Post Options"
+                            android:textAlignment="center"
+                            android:textColor="#FFFFFF"
+                            app:layout_constraintEnd_toEndOf="parent"
+                            app:layout_constraintStart_toStartOf="parent"
+                            app:layout_constraintTop_toTopOf="parent" />
+
+                        <LinearLayout
+                            android:id="@+id/optionsLinear"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="20dp"
+                            android:divider="@drawable/divider_vertical"
+                            android:orientation="vertical"
+                            android:showDividers="middle"
+                            app:layout_constraintBottom_toBottomOf="parent"
+                            app:layout_constraintEnd_toEndOf="parent"
+                            app:layout_constraintStart_toStartOf="parent"
+                            app:layout_constraintTop_toBottomOf="@+id/textView19">
+
+                            <Button
+                                android:id="@+id/optionReport"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:background="@color/errorColor"
+                                android:text="Report"
+                                android:textColor="@color/whiteColor"
+                                android:textStyle="bold" />
+
+                            <Button
+                                android:id="@+id/optionSave"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:background="@color/appFGColor"
+                                android:text="Save Meme"
+                                android:textColor="@color/whiteColor"
+                                android:textStyle="bold" />
+
+                            <Button
+                                android:id="@+id/optionUnmatch"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:background="@color/appDateFGColor"
+                                android:text="Unmatch"
+                                android:textColor="@color/whiteColor"
+                                android:textStyle="bold" />
+
+                            <Button
+                                android:id="@+id/optionCancel"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:background="@color/transparent"
+                                android:text="Cancel"
+                                android:textColor="@color/whiteColor" />
+                        </LinearLayout>
+                    </androidx.constraintlayout.widget.ConstraintLayout>
+                </androidx.cardview.widget.CardView>
+
+            </androidx.constraintlayout.widget.ConstraintLayout>
+
+        </androidx.cardview.widget.CardView>
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 

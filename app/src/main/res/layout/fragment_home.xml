@@ -44,6 +44,7 @@
                 android:gravity="center"
                 android:text="@string/dating"
                 android:textColor="@android:color/white" />
+
         </RadioGroup>
     </LinearLayout>
 

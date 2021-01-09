@@ -1,6 +1,5 @@
 package com.kratsapps.memedom.adapters
 
-import android.app.Activity
 import android.content.Context
 import android.content.Intent
 import android.content.res.ColorStateList
@@ -9,12 +8,10 @@ import android.graphics.Color
 import android.graphics.drawable.BitmapDrawable
 import android.net.Uri
 import android.os.Build
-import android.os.Environment
 import android.provider.MediaStore
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
-import android.widget.*
 import android.view.ViewGroup
 import android.widget.Button
 import android.widget.ImageButton
@@ -27,6 +24,10 @@ import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.google.android.gms.ads.AdRequest
 import com.google.firebase.firestore.FieldValue
+import com.irozon.alertview.AlertActionStyle
+import com.irozon.alertview.AlertStyle
+import com.irozon.alertview.AlertView
+import com.irozon.alertview.objects.AlertAction
 import com.kratsapps.memedom.*
 import com.kratsapps.memedom.firebaseutils.FirestoreHandler
 import com.kratsapps.memedom.models.Memes
@@ -163,23 +164,69 @@ class FeedAdapter(private var feedList: MutableList<Memes>, private val activity
             holder.nsfwView.visibility = View.GONE
         }
 
-        holder.reportButton.setOnClickListener {
-            if(mainUser != null) { holder.linearReport.visibility = View.VISIBLE }
+        //OptionsView
+        if (mainUser != null) {
+            if (mainUser!!.matches.contains(currentItem.postUserUID)) {
+                holder.unmatchBtn.visibility = View.VISIBLE
+            } else {
+                holder.unmatchBtn.visibility = View.GONE
+            }
+        } else {
+            holder.unmatchBtn.visibility = View.GONE
         }
 
-        holder.cancelBtn.setOnClickListener {
-            holder.linearReport.visibility = View.GONE
+        holder.optionButton.setOnClickListener {
+            if(mainUser != null) { holder.optionView.visibility = View.VISIBLE } else {activity.showToastAlert("You must be logged in!")}
         }
 
         holder.reportBtn.setOnClickListener {
             if (mainUser != null) {
                 holder.card_view.setBackgroundResource(R.color.errorColor)
-                holder.linearReport.visibility = View.GONE
+                holder.optionView.visibility = View.GONE
                 DatabaseManager(feedAdapterContext).convertUserObject(mainUser!!, {})
             } else {
-                activity.showStrangerAlert()
+                activity.showToastAlert("You must be logged in!")
             }
         }
+
+        holder.saveBtn.setOnClickListener {
+            if (mainUser != null) {
+                DatabaseManager(activity).converMemeObject(currentItem, {
+                    mainUser.memes += currentItem.postImageURL
+                    mainUser.seenOldMemes += it
+                    DatabaseManager(activity).convertUserObject(mainUser!!, {
+                        holder.optionView.visibility = View.GONE
+                        activity.showToastAlert("Meme has been stolen, I mean saved!")
+                    })
+                })
+            } else {
+                activity.showToastAlert("You must be logged in!")
+            }
+        }
+
+        holder.unmatchBtn.setOnClickListener {
+            if (mainUser != null) {
+                val alert = AlertView("Are you sure?", "", AlertStyle.IOS)
+                alert.addAction(AlertAction("Unmatch", AlertActionStyle.DEFAULT, {
+                    mainUser!!.matches -= currentItem.postUserUID
+                    DatabaseManager(activity).convertUserObject(mainUser!!, {})
+                    FirestoreHandler().unmatchUserWithID(currentItem.postUserUID, mainUserID!!, {
+                        activity.showToastAlert("Unmatched with ${currentItem.postUsername}")
+                    })
+                }))
+                alert.addAction(AlertAction("Cancel", AlertActionStyle.DEFAULT, {
+                    holder.optionView.visibility = View.GONE
+                }))
+                alert.show(activity)
+            } else {
+                activity.showToastAlert("You must be logged in!")
+            }
+        }
+
+        holder.cancelBtn.setOnClickListener {
+            holder.optionView.visibility = View.GONE
+        }
+        //Options
 
         holder.postProfilePic.setOnClickListener {
             if (mainUser != null) {
@@ -192,7 +239,7 @@ class FeedAdapter(private var feedList: MutableList<Memes>, private val activity
                    navigateToLargeImage(currentItem.postProfileURL)
                 }
             } else {
-                activity.showStrangerAlert()
+                activity.showToastAlert("You must be logged in to like")
             }
         }
 
@@ -272,7 +319,7 @@ class FeedAdapter(private var feedList: MutableList<Memes>, private val activity
                 holder.likeBtn.text = "${currentItem.postLikers.count()}"
                 holder.postUserInfo.visibility = View.VISIBLE
             } else {
-                activity.showStrangerAlert()
+                activity.showToastAlert("You must be logged in!")
             }
         }
 
@@ -333,18 +380,6 @@ class FeedAdapter(private var feedList: MutableList<Memes>, private val activity
         activity.startActivity(Intent.createChooser(share, "Expand Memedom"))
     }
 
-    fun getImageUriFromBitmap(context: Context, bitmap: Bitmap): Uri{
-        val bytes = ByteArrayOutputStream()
-        bitmap.compress(Bitmap.CompressFormat.JPEG, 100, bytes)
-        val path = MediaStore.Images.Media.insertImage(
-            context.contentResolver,
-            bitmap,
-            "Title",
-            null
-        )
-        return Uri.parse(path.toString())
-    }
-
     private fun alreadyLiked(holder: FeedViewHolder, color: Int) {
         if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.M) {
             holder.likeBtn.setCompoundDrawableTintList(ColorStateList.valueOf(color))
@@ -355,6 +390,8 @@ class FeedAdapter(private var feedList: MutableList<Memes>, private val activity
         holder.likeBtn.setTextColor(color)
         holder.shareBtn.setTextColor(color)
         holder.commentsBtn.setTextColor(color)
+
+        holder.postUserInfo.visibility = View.VISIBLE
     }
 
     @RequiresApi(Build.VERSION_CODES.M)
@@ -405,10 +442,12 @@ class FeedAdapter(private var feedList: MutableList<Memes>, private val activity
 
         val likeImageView = itemView.likeImageView
 
-        val linearReport = itemView.linearReport
-        val reportButton = itemView.reportButton
-        val reportBtn = itemView.reportBtn
-        val cancelBtn = itemView.cancelBtn
+        val optionView = itemView.optionsView
+        val optionButton = itemView.optionButton
+        val reportBtn = itemView.optionReport
+        val cancelBtn = itemView.optionCancel
+        val saveBtn = itemView.optionSave
+        val unmatchBtn = itemView.optionUnmatch
 
         val card_view = itemView.card_view
         val mAdView = itemView.adView

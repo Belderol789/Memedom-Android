@@ -112,7 +112,7 @@
                                 android:textSize="12sp" />
 
                             <ImageButton
-                                android:id="@+id/reportButton"
+                                android:id="@+id/optionButton"
                                 android:layout_width="30dp"
                                 android:layout_height="25dp"
                                 android:background="@color/transparent"

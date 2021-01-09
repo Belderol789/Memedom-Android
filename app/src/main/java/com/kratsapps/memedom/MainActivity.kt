@@ -467,8 +467,8 @@ class MainActivity : AppCompatActivity() {
         return super.dispatchTouchEvent(event)
     }
 
-    fun showStrangerAlert() {
-        Toast.makeText(baseContext, "You must be logged in to like", Toast.LENGTH_SHORT).show()
+    fun showToastAlert(message: String) {
+        Toast.makeText(baseContext, message, Toast.LENGTH_SHORT).show()
     }
 
 }
