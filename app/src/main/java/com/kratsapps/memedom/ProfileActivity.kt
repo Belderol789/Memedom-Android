@@ -115,6 +115,10 @@ class ProfileActivity : AppCompatActivity() {
             didReject()
         }
 
+        profilePhoto.setOnClickListener {
+            navigateToLargeImage(memeDomUser.profilePhoto)
+        }
+
         matchBtn.setOnClickListener {
             if (matchUser != null) {
                 val data = hashMapOf<String, Any>(
@@ -139,6 +143,16 @@ class ProfileActivity : AppCompatActivity() {
             FirestoreHandler().sendToMatchUser(memeDomUser!!, this)
             onBackPressed()
         }
+    }
+
+    private fun navigateToLargeImage(imageURI: String) {
+        val intent: Intent = Intent(this, ImageActivity::class.java)
+        intent.putExtra("EnlargeImageURL", imageURI)
+        this.startActivity(intent)
+        this.overridePendingTransition(
+            R.anim.enter_activity,
+            R.anim.enter_activity
+        )
     }
 
     private fun setupUserData() {

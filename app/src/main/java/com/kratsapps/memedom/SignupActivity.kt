@@ -26,6 +26,7 @@ import com.facebook.CallbackManager
 import com.facebook.FacebookCallback
 import com.facebook.FacebookException
 import com.facebook.GraphRequest
+import com.facebook.login.LoginManager
 import com.facebook.login.LoginResult
 import com.google.firebase.auth.FacebookAuthProvider
 import com.google.firebase.auth.FirebaseAuth
@@ -54,6 +55,11 @@ class SignupActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_signup)
         auth = FirebaseAuth.getInstance()
+
+        DatabaseManager(this).saveToPrefsBoolean("TutorialKey", false)
+        DatabaseManager(this).convertUserObject(null,  {})
+        LoginManager.getInstance().logOut()
+        FirebaseAuth.getInstance().signOut()
 
         Log.i("Navigation", "Navigated to Signup")
         setupUI()

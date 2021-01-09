@@ -14,6 +14,7 @@ import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import com.bumptech.glide.Glide
 import com.facebook.*
+import com.facebook.login.LoginManager
 import com.facebook.login.LoginResult
 import com.facebook.login.widget.LoginButton
 import com.google.firebase.auth.FacebookAuthProvider
@@ -38,6 +39,11 @@ class LoginActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_login)
         auth = FirebaseAuth.getInstance()
+
+        DatabaseManager(this).saveToPrefsBoolean("TutorialKey", false)
+        DatabaseManager(this).convertUserObject(null,  {})
+        LoginManager.getInstance().logOut()
+        FirebaseAuth.getInstance().signOut()
 
         Glide.with(this)
             .asGif()

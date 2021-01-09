@@ -59,7 +59,7 @@
                     android:layout_weight="1"
                     android:background="@drawable/soft_button"
                     android:backgroundTint="@color/appDateFGColor"
-                    android:text="Match"
+                    android:text="Ask Out"
                     android:textColor="@color/whiteColor"
                     android:textStyle="bold" />
             </LinearLayout>

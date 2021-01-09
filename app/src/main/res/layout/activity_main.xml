@@ -70,7 +70,7 @@
                         android:layout_width="250dp"
                         android:layout_height="wrap_content"
                         android:layout_marginTop="16dp"
-                        android:text="Wow! You've liked {username} \nmemes 10 times!"
+                        android:text="You've liked {username}'s memes 10 times!"
                         android:textAlignment="center"
                         android:textColor="@color/whiteColor"
                         android:textSize="20sp"
@@ -103,8 +103,9 @@
                             android:layout_height="wrap_content"
                             android:layout_weight="1"
                             android:background="@color/appDateFGColor"
-                            android:text="Match!"
+                            android:text="Ask Out"
                             android:textColor="@color/whiteColor" />
+
                     </LinearLayout>
 
                     <ImageView

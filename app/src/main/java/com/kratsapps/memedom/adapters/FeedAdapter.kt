@@ -182,11 +182,15 @@ class FeedAdapter(private var feedList: MutableList<Memes>, private val activity
         }
 
         holder.postProfilePic.setOnClickListener {
-            if (isMemeDom && mainUser != null) {
-                val intent: Intent = Intent(activity, ProfileActivity::class.java)
-                intent.putExtra("MatchID", currentItem.postUserUID)
-                intent.putExtra("isMatching", false)
-                activity.startActivity(intent)
+            if (mainUser != null) {
+                if (isMemeDom || mainUser!!.matches.contains(currentItem.postUserUID)) {
+                    val intent: Intent = Intent(activity, ProfileActivity::class.java)
+                    intent.putExtra("MatchID", currentItem.postUserUID)
+                    intent.putExtra("isMatching", false)
+                    activity.startActivity(intent)
+                } else if (!isMemeDom) {
+                   navigateToLargeImage(currentItem.postProfileURL)
+                }
             } else {
                 activity.showStrangerAlert()
             }
