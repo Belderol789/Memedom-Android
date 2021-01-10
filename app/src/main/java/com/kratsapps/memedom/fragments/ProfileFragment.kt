@@ -37,6 +37,7 @@ import com.kratsapps.memedom.firebaseutils.FirestoreHandler
 import com.kratsapps.memedom.models.MemeDomUser
 import com.kratsapps.memedom.models.Memes
 import com.kratsapps.memedom.utils.*
+import kotlinx.android.synthetic.main.fragment_profile.*
 
 
 class ProfileFragment : Fragment() {
@@ -59,14 +60,17 @@ class ProfileFragment : Fragment() {
     lateinit var galleryAdapter: ImageAdapter
     lateinit var galleryRecyclerView: RecyclerView
 
+    lateinit var savedAdapter: ImageAdapter
+    lateinit var savedRecyclerView: RecyclerView
+
     lateinit var mainActivity: MainActivity
 
     private var mainUser: MemeDomUser? = null
     private var mainUserID: String? = null
 
     var memeItemIDs: MutableList<String> = mutableListOf()
-    var userMemes: MutableList<String> = mutableListOf()
     var profileMemes: MutableList<Memes> = mutableListOf()
+    var savedMemes: MutableList<Memes> = mutableListOf()
 
     var galleryItems: MutableList<String> = mutableListOf()
     var profilePhotoSelected: Boolean = true
@@ -97,6 +101,7 @@ class ProfileFragment : Fragment() {
         setupActionUI()
         getAllUserMemes()
         setupGallery()
+        getAllSavedMemes()
         return rootView
     }
 
@@ -113,7 +118,6 @@ class ProfileFragment : Fragment() {
                 if (!memeItemIDs.contains(profileMeme.postID)) {
                     memeItemIDs.add(profileMeme.postID)
                     profileMemes.add(profileMeme)
-                    userMemes.add(profileMeme.postImageURL)
                 }
 
                 var crown: Int = 0
@@ -125,13 +129,33 @@ class ProfileFragment : Fragment() {
                 postCount.setText("${profileMemes.count()}")
                 crownCount.setText("$crown")
 
-                feedAdapter = ImageAdapter(userMemes, profileMemes, mainActivity, this, true)
+                val profileMemeUrls = profileMemes.map { it.postImageURL }.toMutableList()
+                feedAdapter = ImageAdapter(profileMemeUrls, profileMemes, mainActivity, this, true)
                 val galleryManager: GridLayoutManager =
                     GridLayoutManager(mainActivity, 3, GridLayoutManager.VERTICAL, false)
                 profileRecyclerView.adapter = feedAdapter
                 profileRecyclerView.layoutManager = galleryManager
                 profileRecyclerView.itemAnimator?.removeDuration
             }
+        }
+    }
+
+    private fun getAllSavedMemes() {
+        val userSavedMemes = DatabaseManager(profileContext).retrieveSavedUser()?.seenOldMemes
+        savedMemes.clear()
+        Log.d("SavedMemes", "User saved memes ${userSavedMemes?.count()}")
+        if (userSavedMemes != null) {
+            for (savedMeme in userSavedMemes) {
+               val meme = DatabaseManager(profileContext).retrieveMemeObject(savedMeme)
+               savedMemes.add(meme)
+            }
+            val savedMemeUrls = savedMemes.map { it.postImageURL }.toMutableList()
+            savedAdapter = ImageAdapter(savedMemeUrls, savedMemes, mainActivity, this, true)
+            val galleryManager: GridLayoutManager =
+                GridLayoutManager(mainActivity, 3, GridLayoutManager.VERTICAL, false)
+            savedRecyclerView.adapter = savedAdapter
+            savedRecyclerView.layoutManager = galleryManager
+            savedRecyclerView.itemAnimator?.removeDuration
         }
     }
 
@@ -148,6 +172,7 @@ class ProfileFragment : Fragment() {
 
         profileRecyclerView = rootView.findViewById(R.id.profileRecycler)
         galleryRecyclerView = rootView.findViewById(R.id.galleryRecycler)
+        savedRecyclerView = rootView.findViewById(R.id.savedRecycler)
 
         profileView = rootView.findViewById<CardView>(R.id.profile_cardView)
         progressCardView = rootView.findViewById<CardView>(R.id.profileLoadingView)
@@ -167,6 +192,9 @@ class ProfileFragment : Fragment() {
 
             galleryRecyclerView.layoutParams.width = width
             galleryRecyclerView.layoutParams.height = height
+
+            savedRecyclerView.layoutParams.width = width
+            savedRecyclerView.layoutParams.height = height
         })
 
         if (mainUser != null) {
@@ -255,25 +283,42 @@ class ProfileFragment : Fragment() {
 
         val memeSegment = rootView.findViewById<AppCompatRadioButton>(R.id.memeSegment)
         val gallerySegment = rootView.findViewById<AppCompatRadioButton>(R.id.gallerySegment)
+        val savedSegment = rootView.findViewById<AppCompatRadioButton>(R.id.savedSegment)
         val screenWidth = ScreenSize().getScreenWidth()
 
         memeSegment.setOnClickListener {
             memeSegment.isChecked = true
             gallerySegment.isChecked = false
+            savedSegment.isChecked = false
 
             memeSegment.setTextColor(Color.WHITE)
             gallerySegment.setTextColor(Color.parseColor("#58BADC"))
+            savedSegment.setTextColor(Color.parseColor("#58BADC"))
             photosScrollView.smoothScrollTo(0, 0)
         }
 
         gallerySegment.setOnClickListener {
             gallerySegment.isChecked = true
             memeSegment.isChecked = false
+            savedSegment.isChecked = false
 
             gallerySegment.setTextColor(Color.WHITE)
             memeSegment.setTextColor(Color.parseColor("#58BADC"))
+            savedSegment.setTextColor(Color.parseColor("#58BADC"))
             photosScrollView.smoothScrollTo(screenWidth, 0)
         }
+
+        savedSegment.setOnClickListener {
+            savedSegment.isChecked = true
+            gallerySegment.isChecked = false
+            memeSegment.isChecked = false
+
+            savedSegment.setTextColor(Color.WHITE)
+            memeSegment.setTextColor(Color.parseColor("#58BADC"))
+            gallerySegment.setTextColor(Color.parseColor("#58BADC"))
+            photosScrollView.smoothScrollTo(screenWidth * 2, 0)
+        }
+
     }
 
     private fun prepOpenImageGallery() {

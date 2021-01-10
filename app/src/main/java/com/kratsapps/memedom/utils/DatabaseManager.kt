@@ -51,6 +51,11 @@ class DatabaseManager(context: Context) {
         completed(jsonString)
     }
 
+    fun retrieveMemeObject(json: String): Memes {
+        var meme = gson.fromJson(json, Memes::class.java)
+        return meme
+    }
+
     fun convertUserObject(user: MemeDomUser?, completed: () -> Unit) {
         Log.d("Database", "Main Activity Saving Json $user")
         var jsonString = gson.toJson(user)

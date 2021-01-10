@@ -81,7 +81,7 @@
                         android:id="@+id/textView5"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:text="Followers"
+                        android:text="Admirers"
                         android:textAlignment="center"
                         android:textColor="@color/appFGColor"
                         android:textSize="16sp" />
@@ -199,8 +199,8 @@
                         android:layout_width="match_parent"
                         android:layout_height="match_parent"
                         android:divider="@drawable/divider_vertical"
-                        android:showDividers="middle"
-                        android:orientation="vertical">
+                        android:orientation="vertical"
+                        android:showDividers="middle">
 
                         <TextView
                             android:id="@+id/textView3"
@@ -224,6 +224,11 @@
                         android:layout_width="200dp"
                         android:layout_height="match_parent"
                         android:background="@color/transparent" />
+
+                    <androidx.recyclerview.widget.RecyclerView
+                        android:id="@+id/savedRecycler"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent" />
 
                 </LinearLayout>
             </HorizontalScrollView>
@@ -262,7 +267,7 @@
                         android:layout_height="wrap_content"
                         android:background="@drawable/round_button"
                         android:src="@drawable/ic_action_down_camera"
-                        android:tint="@color/appBGColor"
+                        android:tint="@color/whiteColor"
                         app:layout_constraintBottom_toBottomOf="parent"
                         app:layout_constraintEnd_toEndOf="parent" />
 
@@ -309,7 +314,17 @@
                         android:text="Me's"
                         android:textColor="@color/appFGColor" />
 
-
+                    <androidx.appcompat.widget.AppCompatRadioButton
+                        android:id="@+id/savedSegment"
+                        android:layout_width="0dp"
+                        android:layout_height="50dp"
+                        android:layout_weight="1"
+                        android:background="@drawable/radio_button_selector_fill"
+                        android:button="@android:color/transparent"
+                        android:checked="false"
+                        android:gravity="center"
+                        android:text="Saved"
+                        android:textColor="@color/appFGColor" />
 
                 </RadioGroup>
             </LinearLayout>
