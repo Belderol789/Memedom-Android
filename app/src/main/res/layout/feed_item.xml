@@ -348,6 +348,15 @@
                                 android:textStyle="bold" />
 
                             <Button
+                                android:id="@+id/optionDelete"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:background="@color/appDateFGColor"
+                                android:text="Delete"
+                                android:textColor="@color/whiteColor"
+                                android:textStyle="bold" />
+
+                            <Button
                                 android:id="@+id/optionSave"
                                 android:layout_width="match_parent"
                                 android:layout_height="wrap_content"

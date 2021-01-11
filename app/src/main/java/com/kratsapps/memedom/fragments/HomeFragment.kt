@@ -222,4 +222,9 @@ class HomeFragment : Fragment() {
             feedAdapter!!.addItems(filteredMemems, isMemedom)
         }
     }
+
+    fun deleteItemAt(position: Int) {
+
+    }
+
 }

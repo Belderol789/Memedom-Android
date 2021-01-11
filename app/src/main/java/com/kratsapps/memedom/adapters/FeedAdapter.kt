@@ -171,6 +171,15 @@ class FeedAdapter(private var feedList: MutableList<Memes>, private val activity
             } else {
                 holder.unmatchBtn.visibility = View.GONE
             }
+
+            if (mainUser!!.uid == currentItem.postUserUID) {
+                holder.reportBtn.visibility = View.GONE
+                holder.deleteBtn.visibility = View.VISIBLE
+            } else {
+                holder.reportBtn.visibility = View.VISIBLE
+                holder.deleteBtn.visibility = View.GONE
+            }
+
         } else {
             holder.unmatchBtn.visibility = View.GONE
         }
@@ -184,6 +193,25 @@ class FeedAdapter(private var feedList: MutableList<Memes>, private val activity
                 holder.card_view.setBackgroundResource(R.color.errorColor)
                 holder.optionView.visibility = View.GONE
                 DatabaseManager(feedAdapterContext).convertUserObject(mainUser!!, {})
+            } else {
+                activity.showToastAlert("You must be logged in!")
+            }
+        }
+
+        holder.deleteBtn.setOnClickListener {
+            if (mainUser != null) {
+                val alert = AlertView("Remove Meme from the Internet?", "", AlertStyle.IOS)
+                alert.addAction(AlertAction("Yes", AlertActionStyle.DEFAULT, {
+                    FirestoreHandler().deleteDataFromFirestore("Memes", currentItem.postID, {
+                        filteredFeedList.removeAt(position)
+                        notifyItemRemoved(position)
+                        notifyItemRangeChanged(position, filteredFeedList.count())
+                    })
+                }))
+                alert.addAction(AlertAction("No", AlertActionStyle.DEFAULT, {
+                    holder.optionView.visibility = View.GONE
+                }))
+                alert.show(activity)
             } else {
                 activity.showToastAlert("You must be logged in!")
             }
@@ -448,6 +476,7 @@ class FeedAdapter(private var feedList: MutableList<Memes>, private val activity
         val cancelBtn = itemView.optionCancel
         val saveBtn = itemView.optionSave
         val unmatchBtn = itemView.optionUnmatch
+        val deleteBtn = itemView.optionDelete
 
         val card_view = itemView.card_view
         val mAdView = itemView.adView

@@ -80,6 +80,19 @@ class FirestoreHandler {
             }
     }
 
+    fun deleteDataFromFirestore(
+        path: String,
+        document: String,
+        success: () -> Unit) {
+        firestoreDB
+            .collection(path)
+            .document(document)
+            .delete()
+            .addOnSuccessListener {
+                success()
+            }
+    }
+
     fun addArrayInFirestore(path: String, document: String, addString: HashMap<String, Any>) {
         firestoreDB
             .collection(path)
