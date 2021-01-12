@@ -5,6 +5,7 @@ import android.app.Activity
 import android.content.Context
 import android.content.Intent
 import android.graphics.Color
+import android.net.Uri
 import android.os.Build
 import android.os.Bundle
 import android.provider.MediaStore
@@ -331,19 +332,20 @@ class ProfileFragment : Fragment() {
     private fun setupGallery() {
         val context = this.context
         val activity = this.activity
+        galleryItems.clear()
 
         var savedImages = DatabaseManager(profileContext).retrieveSavedUser()?.gallery
         val addImageURL = "https://firebasestorage.googleapis.com/v0/b/memedom-fb37b.appspot.com/o/AppSettings%2FImage%20with%20button.png?alt=media&token=3e5b2b01-c555-4f16-b871-8f7b3a8c9082"
         //"https://firebasestorage.googleapis.com/v0/b/memedom-fb37b.appspot.com/o/AppSettings%2Fplus.png?alt=media&token=c4e6af5c-d0ea-4570-ab19-655997bfac29"
-        var images = listOf<String>(addImageURL)
+        var images = mutableListOf<String>(addImageURL)
         if (savedImages != null) {
-            images += savedImages
+            images.addAll(savedImages)
         }
         val galleryManager: GridLayoutManager = GridLayoutManager(activity, 3, GridLayoutManager.VERTICAL, false)
 
         if (context != null && activity != null) {
             Log.d("UserGallery", "User photos $images")
-            galleryItems = images.toMutableList()
+            galleryItems = images
             galleryAdapter = ImageAdapter(galleryItems, null, activity, this, false)
             galleryRecyclerView.adapter = galleryAdapter
             galleryRecyclerView.layoutManager = galleryManager
@@ -372,7 +374,7 @@ class ProfileFragment : Fragment() {
         if (resultCode == Activity.RESULT_OK && mainUser != null) {
             if (requestCode == IMAGE_GALLERY_REQUEST_CODE && data != null && data.data != null) {
                 saveBtn.visibility = View.VISIBLE
-                val imageData = data.data
+                val imageData: Uri? = data.data
                 progressCardView.visibility = View.VISIBLE
                 if (profilePhotoSelected && imageData != null) {
                     FireStorageHandler().uploadPhotoData(userID!!, imageData, profileContext, {
@@ -384,7 +386,7 @@ class ProfileFragment : Fragment() {
                             .into(profilePhoto)
                     })
                 } else if (userID != null && imageData != null) {
-                    FireStorageHandler().uploadGallery(userID, imageData, this.context!!, {
+                    FireStorageHandler().uploadGallery(mainUser!!, imageData, this.context!!, {
                         progressCardView.visibility = View.INVISIBLE
                         galleryItems.add(it)
                         galleryRecyclerView.adapter?.notifyDataSetChanged()

@@ -121,7 +121,7 @@ class FireStorageHandler {
         }
     }
 
-    fun uploadGallery(mainUserID: String, imageUri: Uri, context: Context, success: (String) -> Unit) {
+    fun uploadGallery(mainUser: MemeDomUser, imageUri: Uri, context: Context, success: (String) -> Unit) {
 
         val bitmap = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
             ImageDecoder.decodeBitmap(ImageDecoder.createSource(context.contentResolver, imageUri))
@@ -135,7 +135,7 @@ class FireStorageHandler {
 
         val uniquePhotoID = generateRandomString()
 
-        val photoRef = galleryPhotoRef.child(mainUserID).child(uniquePhotoID)
+        val photoRef = galleryPhotoRef.child(mainUser.uid).child(uniquePhotoID)
         var uploadTask = photoRef.putBytes(data)
 
         val urlTask = uploadTask.addOnFailureListener{ e ->
@@ -143,8 +143,11 @@ class FireStorageHandler {
         }.addOnSuccessListener { taskSnapshot ->
             photoRef.downloadUrl.addOnSuccessListener {
                 val downloadURI = it.toString()
-                Log.d("Storage", "Gallery saved ${it.toString()}")
-                success(downloadURI)
+                mainUser.gallery += downloadURI
+                DatabaseManager(context).convertUserObject(mainUser, {
+                    Log.d("Storage", "Gallery saved ${it.toString()}")
+                    success(downloadURI)
+                })
             }
         }
     }

@@ -14,10 +14,7 @@ import android.view.Display
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.Button
-import android.widget.EditText
-import android.widget.ImageButton
-import android.widget.ImageView
+import android.widget.*
 import androidx.annotation.RequiresApi
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.widget.AppCompatRadioButton
@@ -51,9 +48,12 @@ class CreateFragment : Fragment() {
 
     lateinit var mainActivity: MainActivity
 
+    var postIsMeme: Boolean = true
     var postNSFW: Boolean = false
     var postType: String = "Friends"
     var imageHeight: Int = 0
+
+    var imageData: Uri? = null
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -66,9 +66,9 @@ class CreateFragment : Fragment() {
     }
 
     override fun onAttach(context: Context) {
+        Log.d("OnCreateView", "Called Attached")
         super.onAttach(context)
         createContext = context
-        Log.d("OnCreateView", "Called Attached")
     }
 
     override fun onDestroy() {
@@ -80,7 +80,6 @@ class CreateFragment : Fragment() {
     private fun setupUI() {
         createLoadingView = rootView.findViewById(R.id.createLoadingView) as CardView
         val loadingImageView = rootView.findViewById(R.id.loadingImageView) as ImageView
-
         Glide.with(this)
             .asGif()
             .load(R.raw.loader)
@@ -95,6 +94,7 @@ class CreateFragment : Fragment() {
         removeImageBtn.visibility = View.INVISIBLE
 
         resetValues()
+        restartCreateView()
 
         imageViewMeme.setImageDrawable(null)
 
@@ -103,6 +103,7 @@ class CreateFragment : Fragment() {
             removeImageBtn.visibility = View.INVISIBLE
             imageViewMeme.setImageDrawable(null)
         }
+
         addImageButton.setOnClickListener {
             prepOpenImageGallery()
         }
@@ -113,14 +114,65 @@ class CreateFragment : Fragment() {
                 Log.d("Create", "Has Image from gallery")
                 createLoadingView.visibility = View.VISIBLE
                 it.visibility = View.INVISIBLE
-                sendPostToFirestore(savedUser)
+                if (postIsMeme) {
+                    sendPostToFirestore(savedUser)
+                } else {
+                    addPhotoToGallery(savedUser)
+                }
             } else {
-                setupAlertDialog("Meme is missing!")
+                setupAlertDialog("Post Error","Meme is missing!")
             }
+        }
+
+        val memesBtn = rootView.findViewById<Button>(R.id.memesBtn)
+        val mesBtn = rootView.findViewById<Button>(R.id.mesBtn)
+
+        memesBtn.setOnClickListener {
+            postIsMeme = true
+            optionsView.visibility = View.GONE
+        }
+
+        mesBtn.setOnClickListener {
+            setupMes()
         }
 
         setupTypeSelection()
         setupNSFWSelection()
+    }
+
+    private fun addPhotoToGallery(savedUser: MemeDomUser) {
+        if (imageData != null) {
+            FireStorageHandler().uploadGallery(savedUser, imageData!!, createContext, {
+                createLoadingView.visibility = View.INVISIBLE
+                setupAlertDialog("Success!","Photo has been added to your profile")
+                resetValues()
+                restartCreateView()
+            })
+        }
+    }
+
+    private fun setupMes() {
+        postIsMeme = false
+        optionsView.visibility = View.GONE
+        editTextTitle.visibility = View.INVISIBLE
+        datingLayout.visibility = View.INVISIBLE
+        nsfwLayout.visibility = View.INVISIBLE
+        buttonPost.text = "Post to Profile Gallery"
+        setButtonColor(R.color.specialColor)
+    }
+
+    private fun restartCreateView() {
+        val optionsView = rootView.findViewById<CardView>(R.id.optionsView)
+        val datingLayout = rootView.findViewById<LinearLayout>(R.id.datingLayout)
+        val nsfwLayout = rootView.findViewById<LinearLayout>(R.id.nsfwLayout)
+        val editTextTitle = rootView.findViewById<EditText>(R.id.editTextTitle)
+
+        optionsView.visibility = View.VISIBLE
+        datingLayout.visibility = View.VISIBLE
+        editTextTitle.visibility = View.VISIBLE
+        nsfwLayout.visibility = View.VISIBLE
+        buttonPost.text = "Post Meme!"
+        setButtonColor(R.color.appFGColor)
     }
 
     fun setupNSFWSelection() {
@@ -207,7 +259,7 @@ class CreateFragment : Fragment() {
                         buttonPost.visibility = View.VISIBLE
                         createLoadingView.visibility = View.INVISIBLE
                         if (it != null) {
-                            setupAlertDialog(it)
+                            setupAlertDialog("Post Error", it)
                         } else {
 
                             resetValues()
@@ -233,7 +285,7 @@ class CreateFragment : Fragment() {
                     })
                 } else {
                     // show alert
-                    setupAlertDialog("Ooops, we failed to share your amazing meme :(")
+                    setupAlertDialog("Post Error","Ooops, we failed to share your amazing meme :(")
                 }
             })
     }
@@ -256,11 +308,11 @@ class CreateFragment : Fragment() {
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
         if (resultCode == RESULT_OK) {
-            val imageData = data?.data
+            imageData = data?.data
             if (requestCode == IMAGE_GALLERY_REQUEST_CODE && data != null && imageData != null) {
                 val postButton = rootView.findViewById(R.id.buttonPost) as Button
                 postButton.alpha = 1.0f
-                getImageDimension(imageData)
+                getImageDimension(imageData!!)
                 Glide.with(this)
                     .load(imageData)
                     .into(imageViewMeme)
@@ -287,10 +339,10 @@ class CreateFragment : Fragment() {
         postTitle.setText(null)
     }
 
-    private fun setupAlertDialog(message: String?) {
+    private fun setupAlertDialog(title: String, message: String?) {
         createLoadingView.visibility = View.INVISIBLE
         val builder = AlertDialog.Builder(createContext)
-        builder.setTitle("Post Error")
+        builder.setTitle(title)
         builder.setMessage(message)
 
         builder.setPositiveButton(android.R.string.yes) { dialog, which -> }

@@ -32,7 +32,7 @@
             android:layout_marginTop="8dp"
             android:background="@color/appBGColor"
             android:contentDescription="Feed ImageView"
-            android:src="@drawable/ic_action_home"
+            android:src="@drawable/ic_action_memedom"
             app:layout_constraintBottom_toTopOf="@+id/feedActionLayout"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintHorizontal_bias="1.0"

@@ -33,6 +33,7 @@ import com.kratsapps.memedom.utils.DatabaseManager
 import com.kratsapps.memedom.firebaseutils.FirestoreHandler
 import com.kratsapps.memedom.utils.hideKeyboard
 import kotlinx.android.synthetic.main.activity_comments.*
+import kotlinx.android.synthetic.main.fragment_create.*
 
 
 class CommentsActivity : AppCompatActivity() {
@@ -256,6 +257,14 @@ class CommentsActivity : AppCompatActivity() {
 
             override fun afterTextChanged(s: Editable?) {}
         })
+
+        mesBtn.setOnClickListener {
+
+        }
+
+        memesBtn.setOnClickListener {
+
+        }
 
         sendButton.setOnClickListener {
 

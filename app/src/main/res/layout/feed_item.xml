@@ -32,7 +32,7 @@
             android:layout_marginTop="8dp"
             android:background="@color/appBGColor"
             android:contentDescription="Feed ImageView"
-            android:src="@drawable/ic_action_home"
+            android:src="@drawable/ic_action_memedom"
             app:layout_constraintBottom_toTopOf="@+id/feedActionLayout"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintHorizontal_bias="1.0"
@@ -351,7 +351,7 @@
                                 android:id="@+id/optionDelete"
                                 android:layout_width="match_parent"
                                 android:layout_height="wrap_content"
-                                android:background="@color/appDateFGColor"
+                                android:background="@color/errorColor"
                                 android:text="Delete"
                                 android:textColor="@color/whiteColor"
                                 android:textStyle="bold" />

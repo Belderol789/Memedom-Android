@@ -71,7 +71,7 @@
                         android:layout_marginTop="12dp"
                         android:background="@color/appBGColor"
                         android:contentDescription="Feed ImageView"
-                        android:src="@drawable/ic_action_home"
+                        android:src="@drawable/ic_action_memedom"
                         app:layout_constraintBottom_toTopOf="@+id/commentActionLayout"
                         app:layout_constraintEnd_toEndOf="parent"
                         app:layout_constraintHorizontal_bias="1.0"
@@ -80,15 +80,13 @@
 
                     <LinearLayout
                         android:id="@+id/userInfoLinear"
-                        android:layout_width="0dp"
+                        android:layout_width="200dp"
                         android:layout_height="wrap_content"
                         android:layout_marginStart="16dp"
                         android:layout_marginTop="10dp"
-                        android:layout_marginEnd="16dp"
                         android:divider="@drawable/divider_vertical"
                         android:orientation="vertical"
                         android:showDividers="middle"
-                        app:layout_constraintEnd_toEndOf="parent"
                         app:layout_constraintStart_toStartOf="parent"
                         app:layout_constraintTop_toTopOf="parent">
 
