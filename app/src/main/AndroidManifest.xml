@@ -12,19 +12,19 @@
         android:roundIcon="@mipmap/ic_launcher_memedom"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
+        <activity android:name=".EditActivity"></activity>
 
         <provider
-            android:authorities="com.kratsapps.memedom.provider"
             android:name="androidx.core.content.FileProvider"
+            android:authorities="com.kratsapps.memedom.provider"
             android:exported="false"
             android:grantUriPermissions="true">
             <meta-data
                 android:name="android.support.FILE_PROVIDER_PATHS"
-                android:resource="@xml/file_paths">
-            </meta-data>
+                android:resource="@xml/file_paths"></meta-data>
         </provider>
 
-        <activity android:name=".ImageActivity"></activity>
+        <activity android:name=".ImageActivity" />
         <activity android:name=".CredentialActivity" />
         <activity android:name=".MemedomActivity" />
         <activity android:name=".ChatActivity" />
@@ -66,4 +66,5 @@
             </intent-filter>
         </activity>
     </application>
+
 </manifest>

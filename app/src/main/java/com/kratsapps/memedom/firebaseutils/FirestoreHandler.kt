@@ -219,9 +219,11 @@ class FirestoreHandler {
         Log.d("Firestore-Liked", "Updating $postUserID to $mainuserID")
     }
 
-    fun updateDatabaseObject(path: String,
-                             document: String,
-                             hashMap: HashMap<String, Any>) {
+    fun updateDatabaseObject(
+        path: String,
+        document: String,
+        hashMap: HashMap<String, Any>
+    ) {
         firestoreDB
             .collection(path)
             .document(document)

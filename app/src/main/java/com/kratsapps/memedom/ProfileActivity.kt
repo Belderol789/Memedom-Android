@@ -1,29 +1,20 @@
 package com.kratsapps.memedom
 
-import DefaultItemDecorator
 import android.app.Activity
 import android.content.Intent
 import android.graphics.Color
-import android.graphics.Point
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.util.Log
-import android.view.Display
 import android.view.View
-import android.widget.ImageView
-import android.widget.TextView
-import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.recyclerview.widget.GridLayoutManager
-import androidx.recyclerview.widget.LinearLayoutManager
 import com.bumptech.glide.Glide
 import com.kratsapps.memedom.models.MemeDomUser
-import com.kratsapps.memedom.adapters.FeedAdapter
 import com.kratsapps.memedom.firebaseutils.FirestoreHandler
 import com.kratsapps.memedom.adapters.ImageAdapter
 import com.kratsapps.memedom.models.Matches
 import com.kratsapps.memedom.models.Memes
 import com.kratsapps.memedom.utils.AndroidUtils
-import com.kratsapps.memedom.utils.DatabaseManager
 import com.kratsapps.memedom.utils.ScreenSize
 import kotlinx.android.synthetic.main.activity_profile.*
 
@@ -158,7 +149,7 @@ class ProfileActivity : AppCompatActivity() {
     private fun setupUserData() {
         congratsText.setText("Congrats on connecting! You'll be able to chat with ${memeDomUser!!.name} if they accept your invitation")
         username.setText(memeDomUser!!.name)
-        gender.setText(memeDomUser!!.gender)
+        genderText.setText(memeDomUser!!.gender)
 
         if(memeDomUser!!.bio.isBlank()) {
             bioText.setText("No Bio Available")

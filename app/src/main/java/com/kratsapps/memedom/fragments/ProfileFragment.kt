@@ -1,39 +1,23 @@
 package com.kratsapps.memedom.fragments
 
-import DefaultItemDecorator
-import android.app.Activity
 import android.content.Context
 import android.content.Intent
 import android.graphics.Color
-import android.net.Uri
-import android.os.Build
 import android.os.Bundle
-import android.provider.MediaStore
-import android.text.Editable
-import android.text.TextWatcher
-import android.util.DisplayMetrics
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.*
-import androidx.annotation.RequiresApi
 import androidx.appcompat.widget.AppCompatRadioButton
 import androidx.cardview.widget.CardView
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.GridLayoutManager
-import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
-import com.facebook.internal.Mutable
-import com.kratsapps.memedom.ImageActivity
-import com.kratsapps.memedom.MainActivity
-import com.kratsapps.memedom.R
-import com.kratsapps.memedom.adapters.FeedAdapter
+import com.kratsapps.memedom.*
 import com.kratsapps.memedom.adapters.ImageAdapter
-import com.kratsapps.memedom.adapters.MatchAdapter
-import com.kratsapps.memedom.firebaseutils.FireStorageHandler
 import com.kratsapps.memedom.firebaseutils.FirestoreHandler
 import com.kratsapps.memedom.models.MemeDomUser
 import com.kratsapps.memedom.models.Memes
@@ -42,6 +26,9 @@ import kotlinx.android.synthetic.main.fragment_profile.*
 
 
 class ProfileFragment : Fragment() {
+    companion object {
+        const val START_EDIT_REQUEST_CODE = 3001
+    }
 
     lateinit var profileContext: Context
     lateinit var profileView: CardView
@@ -50,10 +37,9 @@ class ProfileFragment : Fragment() {
     lateinit var username: TextView
     lateinit var gender: TextView
     lateinit var profilePhoto: ImageButton
-    lateinit var bioText: EditText
+    lateinit var bioText: TextView
     lateinit var photosScrollView: HorizontalScrollView
-    lateinit var saveBtn: Button
-    lateinit var cameraBtn: ImageButton
+    lateinit var editBtn: Button
 
     var feedAdapter: ImageAdapter? = null
 
@@ -74,10 +60,6 @@ class ProfileFragment : Fragment() {
     var savedMemes: MutableList<Memes> = mutableListOf()
 
     var galleryItems: MutableList<String> = mutableListOf()
-    var profilePhotoSelected: Boolean = true
-    var updatedProfilePhotoString: String = ""
-
-    private val IMAGE_GALLERY_REQUEST_CODE: Int = 2001
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -163,13 +145,12 @@ class ProfileFragment : Fragment() {
     private fun setupUI() {
 
         username = rootView.findViewById<TextView>(R.id.username)
-        gender = rootView.findViewById<TextView>(R.id.gender)
+        gender = rootView.findViewById<TextView>(R.id.genderText)
         profilePhoto = rootView.findViewById<ImageButton>(R.id.profilePhoto)
-        bioText = rootView.findViewById<EditText>(R.id.bioText)
+        bioText = rootView.findViewById<TextView>(R.id.bioText)
         photosScrollView = rootView.findViewById<HorizontalScrollView>(R.id.photosScrollView)
 
-        saveBtn = rootView.findViewById(R.id.saveBtn)
-        saveBtn.visibility = View.GONE
+        editBtn = rootView.findViewById(R.id.editBtn)
 
         profileRecyclerView = rootView.findViewById(R.id.profileRecycler)
         galleryRecyclerView = rootView.findViewById(R.id.galleryRecycler)
@@ -178,8 +159,6 @@ class ProfileFragment : Fragment() {
         profileView = rootView.findViewById<CardView>(R.id.profile_cardView)
         progressCardView = rootView.findViewById<CardView>(R.id.profileLoadingView)
         progressCardView.visibility = View.INVISIBLE
-
-        cameraBtn = rootView.findViewById(R.id.cameraBtn)
 
         val loadingImageView = rootView.findViewById(R.id.loadingImageView) as ImageView
         Glide.with(this)
@@ -199,13 +178,12 @@ class ProfileFragment : Fragment() {
         })
 
         if (mainUser != null) {
-            updatedProfilePhotoString = mainUser!!.profilePhoto
             username.setText(mainUser!!.name)
             gender.setText(mainUser!!.gender)
             if (!mainUser!!.bio.equals("")) {
                 bioText.setText(mainUser!!.bio)
             } else {
-                bioText.setHint("Write About Yourself")
+                bioText.setHint("No Bio.")
             }
 
             Log.d("ProfileURL", "ProfilePhotoItem ${mainUser!!.profilePhoto}")
@@ -218,70 +196,35 @@ class ProfileFragment : Fragment() {
         }
 
         profilePhoto.setOnClickListener {
-            profilePhotoSelected = true
-            openImageGallery()
+            navigateToEditPage()
         }
 
-        saveBtn.setOnClickListener {
-            saveProfileEdits()
-        }
-
-        cameraBtn.setOnClickListener {
-            profilePhotoSelected = true
-            openImageGallery()
-        }
-
-        bioText.addTextChangedListener(object : TextWatcher {
-
-            override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
-
-            @RequiresApi(Build.VERSION_CODES.LOLLIPOP)
-            override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
-                saveBtn.visibility = View.VISIBLE
-            }
-
-            override fun afterTextChanged(s: Editable?) {}
-        })
-
-    }
-
-    fun saveProfileEdits() {
-        if (mainUser != null) {
-            val currentBio = mainUser!!.bio
-            val currentProfilePhoto = mainUser!!.profilePhoto
-            val currentGalleryList = mainUser!!.gallery
-
-            if (currentBio != bioText.text.toString() || currentProfilePhoto != updatedProfilePhotoString || currentGalleryList.containsAll(galleryItems)) {
-                mainUser?.bio = bioText.text.toString()
-                mainUser?.profilePhoto = updatedProfilePhotoString
-                mainUser?.gallery = galleryItems
-                DatabaseManager(this.context!!).convertUserObject(mainUser!!,  {})
-
-                mainActivity.saveProfileEdits(
-                    hashMapOf(
-                        "bio" to bioText.text.toString(),
-                        "profilePhoto" to updatedProfilePhotoString,
-                        "gallery" to galleryItems
-                    )
-                )
-            }
-            saveBtn.visibility = View.GONE
+        editBtn.setOnClickListener {
+            navigateToEditPage()
         }
     }
 
-    fun openImageGallery() {
-        Intent(Intent.ACTION_PICK, MediaStore.Images.Media.EXTERNAL_CONTENT_URI).apply {
-            type = "image/*"
-            startActivityForResult(this, IMAGE_GALLERY_REQUEST_CODE)
-        }
+    fun reloadProfile() {
+        val mainUser = DatabaseManager(profileContext).retrieveSavedUser()
+        bioText.setText(mainUser!!.bio)
+        gender.setText(mainUser!!.gender)
+        Glide.with(mainActivity)
+            .load(mainUser!!.profilePhoto)
+            .error(ContextCompat.getDrawable(this.context!!, R.drawable.ic_action_name))
+            .circleCrop()
+            .into(profilePhoto)
+    }
+
+    private fun navigateToEditPage() {
+        val intent: Intent = Intent(mainActivity, EditActivity::class.java)
+        mainActivity.startActivityForResult(intent, ProfileFragment.START_EDIT_REQUEST_CODE)
+        mainActivity.overridePendingTransition(
+            R.anim.enter_activity,
+            R.anim.enter_activity
+        )
     }
 
     private fun setupActionUI() {
-        profilePhoto.setOnClickListener {
-            profilePhotoSelected = true
-            prepOpenImageGallery()
-        }
-
         val memeSegment = rootView.findViewById<AppCompatRadioButton>(R.id.memeSegment)
         val gallerySegment = rootView.findViewById<AppCompatRadioButton>(R.id.gallerySegment)
         val savedSegment = rootView.findViewById<AppCompatRadioButton>(R.id.savedSegment)
@@ -322,22 +265,13 @@ class ProfileFragment : Fragment() {
 
     }
 
-    private fun prepOpenImageGallery() {
-        Intent(Intent.ACTION_PICK, MediaStore.Images.Media.EXTERNAL_CONTENT_URI).apply {
-            type = "image/*"
-            startActivityForResult(this, IMAGE_GALLERY_REQUEST_CODE)
-        }
-    }
-
     private fun setupGallery() {
         val context = this.context
         val activity = this.activity
         galleryItems.clear()
 
         var savedImages = DatabaseManager(profileContext).retrieveSavedUser()?.gallery
-        val addImageURL = "https://firebasestorage.googleapis.com/v0/b/memedom-fb37b.appspot.com/o/AppSettings%2FImage%20with%20button.png?alt=media&token=3e5b2b01-c555-4f16-b871-8f7b3a8c9082"
-        //"https://firebasestorage.googleapis.com/v0/b/memedom-fb37b.appspot.com/o/AppSettings%2Fplus.png?alt=media&token=c4e6af5c-d0ea-4570-ab19-655997bfac29"
-        var images = mutableListOf<String>(addImageURL)
+        var images = mutableListOf<String>()
         if (savedImages != null) {
             images.addAll(savedImages)
         }
@@ -362,37 +296,5 @@ class ProfileFragment : Fragment() {
         }
         FirestoreHandler().deleteArrayInFirestore("User", mainUser!!.uid, removedURL)
         Log.d("URLToRemove", "Removed $removedURL")
-    }
-
-    @RequiresApi(Build.VERSION_CODES.P)
-    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
-        super.onActivityResult(requestCode, resultCode, data)
-
-        val profilePhoto = rootView.findViewById<ImageView>(R.id.profilePhoto)
-        val userID = DatabaseManager(this.context!!).getMainUserID()
-
-        if (resultCode == Activity.RESULT_OK && mainUser != null) {
-            if (requestCode == IMAGE_GALLERY_REQUEST_CODE && data != null && data.data != null) {
-                saveBtn.visibility = View.VISIBLE
-                val imageData: Uri? = data.data
-                progressCardView.visibility = View.VISIBLE
-                if (profilePhotoSelected && imageData != null) {
-                    FireStorageHandler().uploadPhotoData(userID!!, imageData, profileContext, {
-                        updatedProfilePhotoString = it
-                        progressCardView.visibility = View.INVISIBLE
-                        Glide.with(this)
-                            .load(it)
-                            .circleCrop()
-                            .into(profilePhoto)
-                    })
-                } else if (userID != null && imageData != null) {
-                    FireStorageHandler().uploadGallery(mainUser!!, imageData, this.context!!, {
-                        progressCardView.visibility = View.INVISIBLE
-                        galleryItems.add(it)
-                        galleryRecyclerView.adapter?.notifyDataSetChanged()
-                    })
-                }
-            }
-        }
     }
 }

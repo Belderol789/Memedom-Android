@@ -52,22 +52,15 @@ class ImageAdapter(private var imageList: MutableList<String>, private var memeL
                 Log.d("ProfileActivity", "IsMemes $isMeme")
                 if (isMeme && memeList != null) {
                     navigateToComments(memeList!![position])
-                } else if (!isMeme && position != 0) {
+                } else if (!isMeme) {
                     navigateToLargeImage(imageList[position])
-                } else if (position == 0 && fragment != null) {
-                    fragment.profilePhotoSelected = false
-                    fragment.openImageGallery()
                 }
             }
             if (!isMeme) {
                 Log.d("ProfileActivity", "Position $position")
-                if (position == 0) {
-                    holder.imageCell.setColorFilter(Color.parseColor("#58BADC"))
-                } else {
-                    holder.deleteBtn.visibility = View.VISIBLE
-                    holder.deleteBtn.setOnClickListener {
-                        removeAt(position)
-                    }
+                holder.deleteBtn.visibility = View.VISIBLE
+                holder.deleteBtn.setOnClickListener {
+                    removeAt(position)
                 }
             }
         } else if (activity is MemedomActivity) {

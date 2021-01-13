@@ -52,7 +52,7 @@ class MainActivity : AppCompatActivity() {
 
     val profileFragment = ProfileFragment()
     val homeFragment = HomeFragment()
-    val notifFragment = SettingsFragment()
+    val notifFragment = NotifFragment()
     val msgFragment = MessagesFragment()
     val createFragment = CreateFragment()
 
@@ -141,11 +141,6 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
-    fun saveProfileEdits(hashMap: HashMap<String, Any>) {
-        Log.d("Saving", "Updating user data")
-        FirestoreHandler().updateDatabaseObject("User", mainUser!!.uid, hashMap)
-    }
-
     //MessagesFragment
     fun getAllMatches(completed: (Matches) -> Unit) {
         FirestoreHandler().checkNewMatch(this, { matches ->
@@ -204,7 +199,7 @@ class MainActivity : AppCompatActivity() {
                 R.id.ic_home -> makeCurrentFragment(homeFragment)
                 R.id.ic_profile -> makeCurrentFragment(profileFragment)
                 R.id.ic_create -> makeCurrentFragment(createFragment)
-                R.id.ic_settings -> makeCurrentFragment(notifFragment)
+                R.id.ic_notifs -> makeCurrentFragment(notifFragment)
                 R.id.ic_chat -> makeCurrentFragment(msgFragment)
             }
             true
@@ -427,6 +422,8 @@ class MainActivity : AppCompatActivity() {
                 Log.d("UserChat", "Sending the latest chat $chatData")
 
                 FirestoreHandler().updateMatch(currentChatUID!!, chatData, this, {})
+            } else if (requestCode == 3001) {
+                profileFragment.reloadProfile()
             }
         }
     }

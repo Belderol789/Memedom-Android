@@ -10,13 +10,10 @@ import android.net.Uri
 import android.os.Build
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
-import android.os.Message
 import android.provider.MediaStore
 import android.util.Log
 import android.view.View
 import android.webkit.URLUtil
-import android.widget.Button
-import android.widget.ImageView
 import android.widget.Toast
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.bumptech.glide.Glide
@@ -25,22 +22,15 @@ import com.irozon.alertview.AlertStyle
 import com.irozon.alertview.AlertView
 import com.irozon.alertview.objects.AlertAction
 import com.kratsapps.memedom.adapters.ChatAdapter
-import com.kratsapps.memedom.adapters.CommentsAdapter
-import com.kratsapps.memedom.adapters.MatchAdapter
 import com.kratsapps.memedom.firebaseutils.FireStorageHandler
 import com.kratsapps.memedom.firebaseutils.FirestoreHandler
 import com.kratsapps.memedom.models.Chat
 import com.kratsapps.memedom.models.MemeDomUser
 import com.kratsapps.memedom.models.MessageItem
-import com.kratsapps.memedom.utils.AndroidUtils
 import com.kratsapps.memedom.utils.DatabaseManager
 import com.kratsapps.memedom.utils.hideKeyboard
 import kotlinx.android.synthetic.main.activity_chat.*
 import kotlinx.android.synthetic.main.activity_chat.usernameText
-import kotlinx.android.synthetic.main.activity_comments.*
-import kotlinx.android.synthetic.main.fragment_create.*
-import kotlinx.android.synthetic.main.matches_item.*
-import kotlinx.android.synthetic.main.my_message_item.*
 
 class ChatActivity : AppCompatActivity() {
     companion object {

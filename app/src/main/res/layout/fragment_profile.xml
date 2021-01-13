@@ -151,7 +151,7 @@
                     android:textStyle="bold" />
 
                 <TextView
-                    android:id="@+id/gender"
+                    android:id="@+id/genderText"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
@@ -162,22 +162,22 @@
 
             </LinearLayout>
 
-            <EditText
+            <TextView
                 android:id="@+id/bioText"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="16dp"
-                android:layout_marginTop="8dp"
+                android:layout_marginTop="16dp"
                 android:layout_marginEnd="16dp"
                 android:backgroundTint="@color/appFGColor"
-                android:hint="Write About Yourself"
+                android:hint="No Bio"
                 android:maxLength="300"
                 android:textColor="@color/whiteColor"
                 android:textColorHint="@color/appSecondaryColor"
                 android:textSize="12sp"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/saveBtn" />
+                app:layout_constraintTop_toBottomOf="@+id/profilePhoto_card" />
 
             <HorizontalScrollView
                 android:id="@+id/photosScrollView"
@@ -261,16 +261,6 @@
                         app:layout_constraintStart_toStartOf="parent"
                         app:layout_constraintTop_toTopOf="parent" />
 
-                    <ImageButton
-                        android:id="@+id/cameraBtn"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:background="@drawable/round_button"
-                        android:src="@drawable/ic_action_down_camera"
-                        android:tint="@color/whiteColor"
-                        app:layout_constraintBottom_toBottomOf="parent"
-                        app:layout_constraintEnd_toEndOf="parent" />
-
                 </androidx.constraintlayout.widget.ConstraintLayout>
             </androidx.cardview.widget.CardView>
 
@@ -283,7 +273,7 @@
                 android:layout_marginEnd="16dp"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/bioText">
+                app:layout_constraintTop_toBottomOf="@+id/editBtn">
 
                 <RadioGroup
                     android:layout_width="match_parent"
@@ -330,18 +320,18 @@
             </LinearLayout>
 
             <Button
-                android:id="@+id/saveBtn"
+                android:id="@+id/editBtn"
                 android:layout_width="0dp"
                 android:layout_height="40dp"
                 android:layout_marginStart="16dp"
                 android:layout_marginTop="16dp"
                 android:layout_marginEnd="16dp"
                 android:background="@drawable/soft_button"
-                android:text="Save Edits"
+                android:text="Edit Profile"
                 android:textColor="@color/whiteColor"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/profilePhoto_card"
+                app:layout_constraintTop_toBottomOf="@+id/bioText"
                 tools:visibility="visible" />
 
         </androidx.constraintlayout.widget.ConstraintLayout>
