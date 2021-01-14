@@ -10,6 +10,7 @@ import android.os.Bundle
 import android.provider.MediaStore
 import android.util.Log
 import android.view.MotionEvent
+import android.view.View
 import android.view.inputmethod.InputMethodManager
 import android.widget.EditText
 import android.widget.Toast
@@ -23,7 +24,9 @@ import com.kratsapps.memedom.firebaseutils.FirestoreHandler
 import com.kratsapps.memedom.models.MemeDomUser
 import com.kratsapps.memedom.utils.DatabaseManager
 import kotlinx.android.synthetic.main.activity_edit.*
+import kotlinx.android.synthetic.main.activity_edit.loadingImageView
 import kotlinx.android.synthetic.main.activity_main.*
+import kotlinx.android.synthetic.main.activity_signup.*
 
 class EditActivity : AppCompatActivity() {
 
@@ -42,6 +45,12 @@ class EditActivity : AppCompatActivity() {
     }
 
     private fun setupUI() {
+
+        Glide.with(this)
+            .asGif()
+            .load(R.raw.loader)
+            .into(loadingImageView)
+
         val min = if (mainUser != null) mainUser?.minAge else 16
         val max = if (mainUser != null) mainUser?.maxAge else 65
 
@@ -142,6 +151,7 @@ class EditActivity : AppCompatActivity() {
             val currentProfilePhoto = updatedProfilePhotoString
 
             if (currentBio != savedBio || currentProfilePhoto != savedProfilePhotoURL) {
+                editLoadingView.visibility = View.VISIBLE
                 mainUser?.bio = editBioText.text.toString()
                 mainUser?.profilePhoto = updatedProfilePhotoString
                 DatabaseManager(this).convertUserObject(mainUser!!,  {})
@@ -152,7 +162,7 @@ class EditActivity : AppCompatActivity() {
                 )
                 FirestoreHandler().updateDatabaseObject("User", mainUser!!.uid, hashMap)
                 Toast.makeText(baseContext, "Edits Saved!", Toast.LENGTH_SHORT).show()
-                userTappedBack()
+                editLoadingView.visibility = View.INVISIBLE
             }
         }
     }
@@ -274,12 +284,14 @@ class EditActivity : AppCompatActivity() {
         super.onActivityResult(requestCode, resultCode, data)
         val imageData: Uri? = data?.data
         if (imageData != null && mainUser != null && requestCode == IMAGE_GALLERY_REQUEST_CODE) {
+            editLoadingView.visibility = View.VISIBLE
             FireStorageHandler().uploadPhotoData(mainUser!!.uid, imageData, this, {
                 updatedProfilePhotoString = it
                 Glide.with(this)
                     .load(it)
                     .circleCrop()
                     .into(editProfilePhoto)
+                editLoadingView.visibility = View.INVISIBLE
             })
         }
     }
