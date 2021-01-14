@@ -9,6 +9,8 @@ import android.os.Build
 import android.os.Bundle
 import android.provider.MediaStore
 import android.text.InputType
+import android.text.method.HideReturnsTransformationMethod
+import android.text.method.PasswordTransformationMethod
 import android.util.Log
 import android.view.MotionEvent
 import android.view.View
@@ -47,6 +49,8 @@ class SignupActivity : AppCompatActivity() {
     private lateinit var auth: FirebaseAuth
 
     lateinit var callbackManager: CallbackManager
+
+    var passwordIsHidden: Boolean = false
 
     var hasProfilePhoto = false
     var memeDomuser: MemeDomUser = MemeDomUser()
@@ -124,6 +128,17 @@ class SignupActivity : AppCompatActivity() {
                     birthDoneBtn.visibility = View.INVISIBLE
                 }
             }
+        }
+
+        passStateBtn.setOnClickListener {
+            if (passwordIsHidden) {
+                passStateBtn.setImageResource(R.drawable.ic_action_password_hide)
+                editTextSignupnPassword.transformationMethod = PasswordTransformationMethod.getInstance()
+            } else {
+                passStateBtn.setImageResource(R.drawable.ic_action_password_show)
+                editTextSignupnPassword.transformationMethod = HideReturnsTransformationMethod.getInstance()
+            }
+            passwordIsHidden = !passwordIsHidden
         }
 
         editTextSignupBirthday.setOnClickListener {

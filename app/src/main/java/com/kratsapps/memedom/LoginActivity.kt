@@ -4,6 +4,8 @@ import android.content.Context
 import android.content.Intent
 import android.graphics.Rect
 import android.os.Bundle
+import android.text.method.HideReturnsTransformationMethod
+import android.text.method.PasswordTransformationMethod
 import android.util.Log
 import android.view.MotionEvent
 import android.view.View
@@ -26,6 +28,8 @@ import com.kratsapps.memedom.models.MemeDomUser
 import com.kratsapps.memedom.utils.DatabaseManager
 import com.kratsapps.memedom.utils.hideKeyboard
 import kotlinx.android.synthetic.main.activity_login.*
+import kotlinx.android.synthetic.main.activity_login.loadingImageView
+import kotlinx.android.synthetic.main.activity_signup.*
 import org.json.JSONException
 
 class LoginActivity : AppCompatActivity() {
@@ -34,6 +38,7 @@ class LoginActivity : AppCompatActivity() {
     lateinit var callbackManager: CallbackManager
 
     var memeDomUser: MemeDomUser = MemeDomUser()
+    var passwordIsHidden: Boolean = false
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -56,6 +61,17 @@ class LoginActivity : AppCompatActivity() {
 
          buttonNextLoginAuth.setOnClickListener {
             checkIfFieldsHaveValues()
+        }
+
+        loginPassStateBtn.setOnClickListener {
+            if (passwordIsHidden) {
+                loginPassStateBtn.setImageResource(R.drawable.ic_action_password_hide)
+                editTextLoginPassword.transformationMethod = PasswordTransformationMethod.getInstance()
+            } else {
+                loginPassStateBtn.setImageResource(R.drawable.ic_action_password_show)
+                editTextLoginPassword.transformationMethod = HideReturnsTransformationMethod.getInstance()
+            }
+            passwordIsHidden = !passwordIsHidden
         }
 
         forgotBtn.setOnClickListener {
