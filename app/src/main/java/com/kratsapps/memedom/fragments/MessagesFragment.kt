@@ -181,7 +181,7 @@ class MessagesFragment : Fragment() {
             Log.d("Matching-Fragment", "Setting up recyclerView with $filteredMatches")
 
             val mainUser = DatabaseManager(msgContext).retrieveSavedUser()
-            matchAdapter = MatchAdapter(filteredMatches, activity, mainUser!!)
+            matchAdapter = MatchAdapter(filteredMatches, activity)
 
             matchRecycler = rootView.findViewById<RecyclerView>(R.id.matchesRecycler)
             matchRecycler.adapter = matchAdapter

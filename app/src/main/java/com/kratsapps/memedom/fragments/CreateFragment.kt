@@ -265,7 +265,6 @@ class CreateFragment : Fragment() {
                             resetValues()
                             mainActivity.allMemes.clear()
                             mainActivity.datingMemes.clear()
-                            mainActivity.profileMemes.isEmpty()
 
                             val meme = Memes()
                             meme.postID = postID

@@ -258,14 +258,6 @@ class CommentsActivity : AppCompatActivity() {
             override fun afterTextChanged(s: Editable?) {}
         })
 
-        mesBtn.setOnClickListener {
-
-        }
-
-        memesBtn.setOnClickListener {
-
-        }
-
         sendButton.setOnClickListener {
 
             val mainUser = DatabaseManager(this).retrieveSavedUser()

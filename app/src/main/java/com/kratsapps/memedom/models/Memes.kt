@@ -29,7 +29,7 @@ class Memes : Serializable {
     var postNSFW: Boolean = false
 
     fun getPostLikeCount(): Int {
-        return postLikers.size
+        return postLikers.count()
     }
 
     fun postDateString(): String {

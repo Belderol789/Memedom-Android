@@ -21,6 +21,7 @@ import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.GridLayoutManager
 import com.bumptech.glide.Glide
 import com.facebook.FacebookSdk
+import com.facebook.internal.Mutable
 import com.google.android.gms.ads.MobileAds
 import com.google.firebase.FirebaseApp
 import com.google.firebase.analytics.FirebaseAnalytics
@@ -34,11 +35,8 @@ import com.irozon.alertview.AlertView
 import com.irozon.alertview.objects.AlertAction
 import com.kratsapps.memedom.adapters.TutorialAdapter
 import com.kratsapps.memedom.fragments.*
-import com.kratsapps.memedom.models.MemeDomUser
 import com.kratsapps.memedom.firebaseutils.FirestoreHandler
-import com.kratsapps.memedom.models.Matches
-import com.kratsapps.memedom.models.Memes
-import com.kratsapps.memedom.models.TutorialModel
+import com.kratsapps.memedom.models.*
 import com.kratsapps.memedom.utils.DatabaseManager
 import kotlinx.android.synthetic.main.activity_main.*
 import kotlinx.android.synthetic.main.activity_main.view.*
@@ -64,11 +62,10 @@ class MainActivity : AppCompatActivity() {
     //HomeFragment
     var datingMemes = mutableListOf<Memes>()
     var allMemes = mutableListOf<Memes>()
-    //ProfileFragment
-    var profileMemes = mutableListOf<Memes>()
-    var profileMemeIDs = mutableListOf<String>()
     //MessagesFragment
     var userMatches = mutableListOf<Matches>()
+    //NotificationFragment
+    var notifications = mutableListOf<Notification>()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -84,6 +81,7 @@ class MainActivity : AppCompatActivity() {
         setupBottomNavigation()
         setupTutorialView()
         checkLoginStatus()
+        getAllUserNotifications()
         activateOnline(true)
         MobileAds.initialize(this)
         activateFacebook()
@@ -162,6 +160,23 @@ class MainActivity : AppCompatActivity() {
                 }
             })
         })
+    }
+
+    //NotificationFragment
+    fun getAllUserNotifications() {
+        val mainUserID = DatabaseManager(this).getMainUserID()
+        notifications.clear()
+        if (mainUserID != null) {
+            FirestoreHandler().getAllUserNotifications(mainUserID!!, {
+                val notificationIDs = notifications.map { it.notifContentID }
+                if (!notificationIDs.contains(it.notifContentID)) {
+                    notifications.add(it)
+                } else {
+                    notifications = (notifications.filter { s -> s.notifContentID != it.notifContentID }).toMutableList()
+                }
+                Toast.makeText(baseContext, "You have new Notifications!", Toast.LENGTH_SHORT).show()
+            })
+        }
     }
 
     private fun showPendingView(text: String) {

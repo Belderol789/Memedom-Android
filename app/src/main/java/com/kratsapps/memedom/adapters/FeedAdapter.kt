@@ -318,6 +318,9 @@ class FeedAdapter(private var feedList: MutableList<Memes>, private val activity
                     DatabaseManager(feedAdapterContext).convertUserObject(
                         mainUser!!,
                         {})
+
+                    FirestoreHandler().updateUserNotification(feedAdapterContext, currentItem.postUserUID, currentItem.postID, true, currentItem.getPostLikeCount())
+
                 } else {
                     fieldValue = FieldValue.arrayRemove(mainUser.uid)
                     currentItem.postLikers -= mainUserID

@@ -21,7 +21,6 @@ class FirestoreHandler {
     private val firestoreDB = Firebase.firestore
     private val POPULAR_POINTS = "PopularPoints"
     private val MEMES_PATH = "Memes"
-    private val REPLIES_PATH = "Replies"
     private val COMMENTS_PATH = "Comments"
     private val USERS_PATH = "User"
     private val APP_SETTINGS = "AppSettings"
@@ -30,6 +29,7 @@ class FirestoreHandler {
     private val MATCH_LIMIT = "matchLimit"
     private val MATCHED = "Matched"
     private val CHAT_PATH = "Chats"
+    private val NOTIF_PATH = "Notifications"
 
     private val DESCENDING = Query.Direction.DESCENDING
     private val ASCENDING = Query.Direction.ASCENDING
@@ -700,6 +700,79 @@ class FirestoreHandler {
             }
     }
 
+    fun getAllUserNotifications(userID: String, notif: (Notification) -> Unit) {
+        firestoreDB
+            .collection(NOTIF_PATH)
+            .document(userID)
+            .collection(NOTIF_PATH)
+            .addSnapshotListener { snapshot, error ->
+                if (error != null) {
+                    Log.w("Firestore-matching", "listen failed $error")
+                    return@addSnapshotListener
+                }
+
+                if (snapshot != null && !snapshot.documents.isEmpty()) {
+                    for (document in snapshot.documents) {
+                        val notification = document.toObject(Notification::class.java)
+                        if (notification != null) {
+                            notif(notification)
+                        }
+                    }
+                }
+            }
+    }
+
+    fun updateUserNotification(context: Context, userID: String, contentID: String, isLike: Boolean, number: Int) {
+        val mainUser = DatabaseManager(context).retrieveSavedUser()
+        var notifTitle: String = ""
+        var notifText: String = ""
+
+        if (mainUser != null && userID != mainUser.uid) {
+            if (isLike) {
+                if (number == 2) {
+                    notifTitle = "${mainUser.name} has liked your meme!"
+                    notifText = "Could this be the start of something new?"
+                } else if (number % 10 == 0) {
+                    notifTitle = "You're rich! (with internet points)"
+                    notifText = "$number people have liked your meme!"
+                }
+            } else {
+                if (number == 1) {
+                    notifTitle = "${mainUser.name} commented on your meme"
+                    notifText = "Remember to be nice and respectful"
+                } else if (number % 10 == 0) {
+                    notifTitle = "Grab some popcorn"
+                    notifText = "$number people have commented on your meme"
+                }
+            }
+
+
+            if ((number == 1 && !isLike) || (number == 2 && isLike) || (number % 10 == 0)) {
+                val newNotif = Notification()
+                newNotif.notifPhotoURL = mainUser.profilePhoto
+                newNotif.notifTitle = notifTitle
+                newNotif.notifText = notifText
+                newNotif.notifContentID = contentID
+                newNotif.notifDateLong = System.currentTimeMillis()
+
+                val notifHash = hashMapOf<String, Any>(
+                    "notifContentID" to newNotif.notifContentID,
+                    "notifTitle" to newNotif.notifTitle,
+                    "notifText" to newNotif.notifText,
+                    "notifPhotoURL" to newNotif.notifPhotoURL,
+                    "notifDateLong" to newNotif.notifDateLong
+                )
+
+                firestoreDB
+                    .collection(NOTIF_PATH)
+                    .document(userID)
+                    .collection(NOTIF_PATH)
+                    .document(newNotif.notifContentID)
+                    .set(notifHash)
+            }
+        }
+    }
+
     // Extras
     fun convertLongToTime(time: Long): String {
         val date = Date(time)
@@ -712,4 +785,12 @@ class FirestoreHandler {
         repeat(decimals) { multiplier *= 10 }
         return (round(this * multiplier) / multiplier).toLong()
     }
+
+    private fun generateRandomString(): String {
+        val charset = ('a'..'z') + ('A'..'Z') + ('0'..'9')
+        return (1..10)
+            .map { charset.random() }
+            .joinToString("")
+    }
+
 }

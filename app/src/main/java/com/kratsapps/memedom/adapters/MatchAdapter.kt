@@ -23,8 +23,7 @@ import java.util.*
 
 class MatchAdapter(
     private val matchList: MutableList<Matches>,
-    private val activity: MainActivity,
-    private val mainUser: MemeDomUser
+    private val activity: MainActivity
 ) : RecyclerView.Adapter<MatchAdapter.MatchViewHolder>(),
     Filterable {
     companion object {
