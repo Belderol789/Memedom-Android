@@ -365,7 +365,7 @@ class FirestoreHandler {
             .collection(COMMENTS_PATH)
             .document(postID)
             .collection(COMMENTS_PATH)
-            .orderBy("commentRepliesCount", DESCENDING)
+            .orderBy("commentDate", DESCENDING)
             .get()
             .addOnSuccessListener {
                 var comments: List<Comments> = listOf()
@@ -727,6 +727,8 @@ class FirestoreHandler {
         var notifTitle: String = ""
         var notifText: String = ""
 
+        Log.d("Notification", "Notif Number $number isLike $isLike")
+
         if (mainUser != null && userID != mainUser.uid) {
             if (isLike) {
                 if (number == 2) {
@@ -746,8 +748,10 @@ class FirestoreHandler {
                 }
             }
 
-
             if ((number == 1 && !isLike) || (number == 2 && isLike) || (number % 10 == 0)) {
+
+                Log.d("Notifications", "New Notif with number $number")
+
                 val newNotif = Notification()
                 newNotif.notifPhotoURL = mainUser.profilePhoto
                 newNotif.notifTitle = notifTitle
@@ -760,7 +764,8 @@ class FirestoreHandler {
                     "notifTitle" to newNotif.notifTitle,
                     "notifText" to newNotif.notifText,
                     "notifPhotoURL" to newNotif.notifPhotoURL,
-                    "notifDateLong" to newNotif.notifDateLong
+                    "notifDateLong" to newNotif.notifDateLong,
+                    "notifTapped" to newNotif.notifTapped
                 )
 
                 firestoreDB

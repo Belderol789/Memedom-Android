@@ -42,6 +42,7 @@ class NotifAdapter(
             .circleCrop()
             .into(holder.notifProfilePhoto)
         holder.notifBtn.setOnClickListener {
+
         }
     }
 
@@ -61,7 +62,7 @@ class NotifAdapter(
     }
 
     fun addItems(notifs: MutableList<Notification>) {
-        notifFilterList = notifs
+        notifFilterList.addAll(notifs)
         notifyDataSetChanged()
     }
 

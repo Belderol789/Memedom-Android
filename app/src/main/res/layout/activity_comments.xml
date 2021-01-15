@@ -58,7 +58,7 @@
                     <androidx.cardview.widget.CardView
                         android:id="@+id/cardView3"
                         android:layout_width="match_parent"
-                        android:layout_height="8dp"
+                        android:layout_height="4dp"
                         app:cardBackgroundColor="@color/appBGColor"
                         app:layout_constraintBottom_toBottomOf="parent"
                         app:layout_constraintEnd_toEndOf="parent"
@@ -67,7 +67,7 @@
                     <ImageView
                         android:id="@+id/commentsImage"
                         android:layout_width="0dp"
-                        android:layout_height="350dp"
+                        android:layout_height="300dp"
                         android:layout_marginTop="12dp"
                         android:background="@color/appBGColor"
                         android:contentDescription="Feed ImageView"
@@ -80,13 +80,15 @@
 
                     <LinearLayout
                         android:id="@+id/userInfoLinear"
-                        android:layout_width="200dp"
+                        android:layout_width="0dp"
                         android:layout_height="wrap_content"
                         android:layout_marginStart="16dp"
                         android:layout_marginTop="10dp"
+                        android:layout_marginEnd="16dp"
                         android:divider="@drawable/divider_vertical"
                         android:orientation="vertical"
                         android:showDividers="middle"
+                        app:layout_constraintEnd_toEndOf="parent"
                         app:layout_constraintStart_toStartOf="parent"
                         app:layout_constraintTop_toTopOf="parent">
 
@@ -106,7 +108,8 @@
                                 android:textAlignment="viewStart"
                                 android:textColor="@android:color/white"
                                 android:textSize="18sp"
-                                android:textStyle="bold" />
+                                android:textStyle="bold"
+                                android:visibility="gone" />
 
                         </LinearLayout>
 
@@ -159,7 +162,6 @@
                         android:layout_height="wrap_content"
                         android:layout_marginStart="16dp"
                         android:layout_marginEnd="16dp"
-                        android:layout_marginBottom="8dp"
                         android:divider="@drawable/divider_horizontal"
                         android:gravity="center|fill_horizontal"
                         android:orientation="horizontal"
@@ -253,15 +255,13 @@
                         android:layout_height="wrap_content"
                         android:layout_alignParentBottom="true"
                         android:layout_centerHorizontal="true"
-                        android:layout_marginTop="8dp"
                         app:adSize="BANNER"
                         app:adUnitId="ca-app-pub-8278458623868241/9189981779"
                         app:layout_constraintBottom_toTopOf="@+id/cardView3"
                         app:layout_constraintEnd_toEndOf="parent"
                         app:layout_constraintStart_toStartOf="parent"
                         app:layout_constraintTop_toBottomOf="@+id/commentActionLayout"
-                        tools:visibility="gone">
-                    </com.google.android.gms.ads.AdView>
+                        tools:visibility="gone"></com.google.android.gms.ads.AdView>
 
                     <ImageView
                         android:id="@+id/commentLikeImage"

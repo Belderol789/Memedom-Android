@@ -51,7 +51,7 @@ class CommentsActivity : AppCompatActivity() {
         setupActionUI()
         FirestoreHandler().checkForComments(postMeme.postID, {
             comments = it
-            comments.sortedBy { it.commentDate }
+            comments.sortedByDescending { it.commentDate }
             Log.d("Comments", "Got new comments $comments")
             setupFeedView()
         })
@@ -307,6 +307,7 @@ class CommentsActivity : AppCompatActivity() {
 
                 Log.d("Comment", "Sending comment hash $commentHash")
                 FirestoreHandler().sendUserCommentToFirestore(postMeme.postID, commentID, comments.count(), commentHash)
+                FirestoreHandler().updateUserNotification(this, postMeme.postUserUID, postMeme.postID, false, comments.count())
             } else {
                 Toast.makeText(baseContext, "You must be logged in to like", Toast.LENGTH_SHORT).show()
             }

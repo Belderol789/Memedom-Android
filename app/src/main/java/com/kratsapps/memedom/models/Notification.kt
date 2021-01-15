@@ -10,6 +10,7 @@ class Notification: Serializable {
     var notifPhotoURL: String = ""
     var notifText: String = ""
     var notifDateLong: Long = System.currentTimeMillis()
+    var notifTapped: Boolean = false
 
     fun notifDate(): String {
 

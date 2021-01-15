@@ -171,10 +171,11 @@ class MainActivity : AppCompatActivity() {
                 val notificationIDs = notifications.map { it.notifContentID }
                 if (!notificationIDs.contains(it.notifContentID)) {
                     notifications.add(it)
+                    Toast.makeText(baseContext, "You have a new Notification!", Toast.LENGTH_SHORT).show()
                 } else {
                     notifications = (notifications.filter { s -> s.notifContentID != it.notifContentID }).toMutableList()
                 }
-                Toast.makeText(baseContext, "You have new Notifications!", Toast.LENGTH_SHORT).show()
+                notifications.sortByDescending { it.notifDateLong }
             })
         }
     }
