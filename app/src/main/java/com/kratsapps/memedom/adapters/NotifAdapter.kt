@@ -1,6 +1,7 @@
 package com.kratsapps.memedom.adapters
 
 import android.content.Context
+import android.content.Intent
 import android.os.Build
 import android.view.LayoutInflater
 import android.view.View
@@ -8,9 +9,12 @@ import android.view.ViewGroup
 import androidx.annotation.RequiresApi
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
+import com.kratsapps.memedom.CommentsActivity
 import com.kratsapps.memedom.MainActivity
 import com.kratsapps.memedom.R
+import com.kratsapps.memedom.firebaseutils.FirestoreHandler
 import com.kratsapps.memedom.models.Matches
+import com.kratsapps.memedom.models.Memes
 import com.kratsapps.memedom.models.Notification
 import kotlinx.android.synthetic.main.notification_item.view.*
 
@@ -42,7 +46,9 @@ class NotifAdapter(
             .circleCrop()
             .into(holder.notifProfilePhoto)
         holder.notifBtn.setOnClickListener {
-
+            FirestoreHandler().getCommentFromNotif(notifObject.notifContentID, {
+                navigateToComments(it)
+            })
         }
     }
 
@@ -54,6 +60,17 @@ class NotifAdapter(
         val notifProfilePhoto = itemView.notifProfileImage
         val notifDate = itemView.notifDateText
         val notifBtn = itemView.notifBtn
+    }
+
+    private fun navigateToComments(meme: Memes) {
+        val intent: Intent = Intent(notifAdapterContext, CommentsActivity::class.java)
+        intent.putExtra("CommentMeme", meme)
+        intent.putExtra("isMemeDom", true)
+        notifAdapterContext.startActivity(intent)
+        activity.overridePendingTransition(
+            R.anim.enter_activity,
+            R.anim.enter_activity
+        )
     }
 
     fun clear() {

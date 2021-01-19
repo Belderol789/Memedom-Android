@@ -7,6 +7,8 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Adapter
+import android.widget.ImageView
+import android.widget.LinearLayout
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
@@ -70,9 +72,12 @@ class NotifFragment : Fragment() {
     }
 
     fun getAllUserNotifications() {
+        val notifEmpty = rootView.findViewById<LinearLayout>(R.id.notifEmpty)
         if (mainActivity!!.notifications.isEmpty()) {
             //Show Empty State
+            notifEmpty.visibility = View.VISIBLE
         } else {
+            notifEmpty.visibility = View.GONE
             setupUI()
         }
     }

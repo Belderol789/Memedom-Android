@@ -21,7 +21,6 @@ import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.GridLayoutManager
 import com.bumptech.glide.Glide
 import com.facebook.FacebookSdk
-import com.facebook.internal.Mutable
 import com.google.android.gms.ads.MobileAds
 import com.google.firebase.FirebaseApp
 import com.google.firebase.analytics.FirebaseAnalytics
@@ -29,10 +28,6 @@ import com.google.firebase.analytics.ktx.analytics
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseUser
 import com.google.firebase.ktx.Firebase
-import com.irozon.alertview.AlertActionStyle
-import com.irozon.alertview.AlertStyle
-import com.irozon.alertview.AlertView
-import com.irozon.alertview.objects.AlertAction
 import com.kratsapps.memedom.adapters.TutorialAdapter
 import com.kratsapps.memedom.fragments.*
 import com.kratsapps.memedom.firebaseutils.FirestoreHandler
@@ -322,6 +317,7 @@ class MainActivity : AppCompatActivity() {
             if (user != null) {
                 navigationBottom.visibility = View.VISIBLE
                 DatabaseManager(this).saveToPrefsBoolean("TutorialKey", true)
+                showToastAlert("Like memes or maybe post your own?")
             }
         }
 
@@ -335,6 +331,7 @@ class MainActivity : AppCompatActivity() {
                 if (user != null) {
                     navigationBottom.visibility = View.VISIBLE
                     DatabaseManager(this).saveToPrefsBoolean("TutorialKey", true)
+                    showToastAlert("Like memes or maybe post your own?")
                 }
             }
         }

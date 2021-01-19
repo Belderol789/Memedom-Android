@@ -722,6 +722,19 @@ class FirestoreHandler {
             }
     }
 
+    fun getCommentFromNotif(postID: String, completed: (Memes) -> Unit) {
+        firestoreDB
+            .collection(MEMES_PATH)
+            .document(postID)
+            .get()
+            .addOnSuccessListener {
+                val meme = it.toObject(Memes::class.java)
+                if (meme != null) {
+                    completed(meme)
+                }
+            }
+    }
+
     fun updateUserNotification(context: Context, userID: String, contentID: String, isLike: Boolean, number: Int) {
         val mainUser = DatabaseManager(context).retrieveSavedUser()
         var notifTitle: String = ""
