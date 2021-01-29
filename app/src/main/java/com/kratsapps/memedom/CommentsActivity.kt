@@ -39,14 +39,14 @@ import kotlinx.android.synthetic.main.fragment_create.*
 class CommentsActivity : AppCompatActivity() {
 
     lateinit var postMeme: Memes
-    var isMemeDom: Boolean = true
+    var isMemeDom: Boolean? = true
     var comments: List<Comments> = arrayListOf()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_comments)
         postMeme = intent.extras?.get("CommentMeme") as Memes
-        isMemeDom = intent.extras!!.getBoolean("isMemeDom")
+        isMemeDom = intent.extras?.getBoolean("isMemeDom")
         setupUI()
         setupActionUI()
         FirestoreHandler().checkForComments(postMeme.postID, {
@@ -119,7 +119,7 @@ class CommentsActivity : AppCompatActivity() {
 
         //Memedom
         if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.LOLLIPOP) {
-             if (isMemeDom) {
+             if (isMemeDom != null && isMemeDom == true) {
                 val crownImage = this.baseContext.resources.getDrawable(R.drawable.ic_action_crown, null)
                 commentLikeBtn.setCompoundDrawablesWithIntrinsicBounds(crownImage, null, null, null)
                 commentLikeImage.setImageResource(R.drawable.ic_action_crown)
@@ -143,7 +143,7 @@ class CommentsActivity : AppCompatActivity() {
             if (postMeme.postLikers.contains(mainUser!!.uid)) {
                 if ((mainUser.matches.contains(postMeme.postUserUID))) {
                     alreadyLiked(Color.parseColor("#FACE0D"))
-                } else if (isMemeDom) {
+                } else if (isMemeDom != null && isMemeDom == true) {
                     alreadyLiked(Color.parseColor("#58BADC"))
                 } else {
                     alreadyLiked(Color.parseColor("#FF69B4"))
@@ -166,13 +166,13 @@ class CommentsActivity : AppCompatActivity() {
 
                     if ((mainUser.matches.contains(postMeme.postUserUID))) {
                         didLikePost(Color.parseColor("#FACE0D"))
-                    } else if (isMemeDom) {
+                    } else if (isMemeDom != null && isMemeDom == true)  {
                         didLikePost(Color.parseColor("#58BADC"))
                     } else {
                         didLikePost(Color.parseColor("#FF69B4"))
                     }
 
-                    if (!isMemeDom) {
+                    if (isMemeDom != null && isMemeDom == false) {
                         FirestoreHandler().updateLikeDatabase(mainUser.uid, postMeme.postUserUID, this.applicationContext,1, {})
                     }
                     DatabaseManager(this).convertUserObject(mainUser!!, {})

@@ -70,7 +70,8 @@ class CommentsAdapter(private val commentList: List<Comments>, private val activ
         }
         holder.upvoteBtn.setText("   ${currentComment.getCommentLikeCount()}")
 
-        val mainUserID = DatabaseManager(commentAdapterContext).getMainUserID()
+        val mainUser = DatabaseManager(commentAdapterContext).retrieveSavedUser()
+        val mainUserID = mainUser?.uid
 
         if(mainUserID != null) {
 

@@ -93,11 +93,11 @@ class FirestoreHandler {
             }
     }
 
-    fun addArrayInFirestore(path: String, document: String, addString: HashMap<String, Any>) {
+    fun addArrayInFirestore(mainuserID: String, addString: String) {
         firestoreDB
-            .collection(path)
-            .document(document)
-            .update("gallery", FieldValue.arrayRemove(addString))
+            .collection(USERS_PATH)
+            .document(mainuserID)
+            .update("gallery", FieldValue.arrayUnion(addString))
     }
 
     fun checkUsernameAvailability(username: String, available: (Boolean) -> Unit) {
@@ -378,14 +378,18 @@ class FirestoreHandler {
     }
 
     fun getUsersDataWith(uid: String,
-                        completed: (MemeDomUser) -> Unit) {
+                        completed: (MemeDomUser?) -> Unit) {
         firestoreDB
             .collection(USERS_PATH)
             .document(uid)
             .get()
             .addOnSuccessListener { document ->
-                val mainUser: MemeDomUser = document.toObject(MemeDomUser::class.java)!!
-                completed(mainUser)
+                val mainUser: MemeDomUser? = document.toObject(MemeDomUser::class.java)
+                if (mainUser != null) {
+                    completed(mainUser)
+                } else {
+                    completed(null)
+                }
             }
     }
 
@@ -425,7 +429,9 @@ class FirestoreHandler {
                             && !memeDomuser.pendingMatches.contains(key)
                         ) {
                             getUsersDataWith(key, {
-                                popUpData(it)
+                                if (it != null) {
+                                    popUpData(it)
+                                }
                             })
                         }
                     }

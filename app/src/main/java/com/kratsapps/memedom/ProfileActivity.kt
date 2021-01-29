@@ -7,6 +7,7 @@ import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.util.Log
 import android.view.View
+import android.widget.Toast
 import androidx.recyclerview.widget.GridLayoutManager
 import com.bumptech.glide.Glide
 import com.kratsapps.memedom.models.MemeDomUser
@@ -66,11 +67,16 @@ class ProfileActivity : AppCompatActivity() {
         })
 
         FirestoreHandler().getUsersDataWith(matchUserID, {
-            memeDomUser = it
-            matchUserID = it.uid
-            setupUserData()
-            getAllUserMemes()
-            setupActionButtons(it)
+            if (it != null) {
+                memeDomUser = it
+                matchUserID = it.uid
+                setupUserData()
+                getAllUserMemes()
+                setupActionButtons(it)
+                setupGallery()
+            } else {
+                Toast.makeText(this, "Ooops! This user is gone!", Toast.LENGTH_SHORT).show()
+            }
             profileActivityLoadingView.visibility = View.GONE
         })
 
@@ -147,27 +153,27 @@ class ProfileActivity : AppCompatActivity() {
     }
 
     private fun setupUserData() {
-        congratsText.setText("Congrats on connecting! You'll be able to chat with ${memeDomUser!!.name} if they accept your invitation")
-        username.setText(memeDomUser!!.name)
-        genderText.setText(memeDomUser!!.gender)
+        if (memeDomUser != null) {
+            congratsText.setText("Congrats on connecting! You'll be able to chat with ${memeDomUser!!.name} if they accept your invitation")
+            username.setText(memeDomUser!!.name)
+            genderText.setText(memeDomUser!!.gender)
 
-        if(memeDomUser!!.bio.isBlank()) {
-            bioText.setText("No Bio Available")
-        } else {
-            bioText.setText(memeDomUser!!.bio)
+            if(memeDomUser!!.bio.isBlank()) {
+                bioText.setText("No Bio Available")
+            } else {
+                bioText.setText(memeDomUser!!.bio)
+            }
+
+            Glide.with(this)
+                .load(memeDomUser!!.profilePhoto)
+                .circleCrop()
+                .into(profilePhoto)
         }
-
-        Glide.with(this)
-            .load(memeDomUser!!.profilePhoto)
-            .circleCrop()
-            .into(profilePhoto)
     }
 
     private fun setupGallery() {
-
         var images = memeDomUser!!.gallery
         val galleryManager: GridLayoutManager = GridLayoutManager(this, 3, GridLayoutManager.VERTICAL, false)
-
         if (images != null) {
             Log.d("UserGallery", "User photos $images")
             galleryItems = images.toMutableList()
@@ -204,7 +210,6 @@ class ProfileActivity : AppCompatActivity() {
                 profileRecycler.layoutManager = galleryManager
                 profileRecycler.itemAnimator?.removeDuration
             }
-            setupGallery()
         }
     }
 

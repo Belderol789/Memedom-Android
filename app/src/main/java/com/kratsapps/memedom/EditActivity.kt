@@ -154,15 +154,15 @@ class EditActivity : AppCompatActivity() {
                 editLoadingView.visibility = View.VISIBLE
                 mainUser?.bio = editBioText.text.toString()
                 mainUser?.profilePhoto = updatedProfilePhotoString
-                DatabaseManager(this).convertUserObject(mainUser!!,  {})
-
-                val hashMap: HashMap<String, Any> = hashMapOf(
-                    "bio" to currentBio,
-                    "profilePhoto" to currentProfilePhoto
-                )
-                FirestoreHandler().updateDatabaseObject("User", mainUser!!.uid, hashMap)
-                Toast.makeText(baseContext, "Edits Saved!", Toast.LENGTH_SHORT).show()
-                editLoadingView.visibility = View.INVISIBLE
+                DatabaseManager(this).convertUserObject(mainUser!!,  {
+                    val hashMap: HashMap<String, Any> = hashMapOf(
+                        "bio" to currentBio,
+                        "profilePhoto" to currentProfilePhoto
+                    )
+                    FirestoreHandler().updateDatabaseObject("User", mainUser!!.uid, hashMap)
+                    editLoadingView.visibility = View.INVISIBLE
+                    userTappedBack()
+                })
             }
         }
     }

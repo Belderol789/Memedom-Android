@@ -63,39 +63,41 @@ class ChatActivity : AppCompatActivity() {
 
         setupUI()
 
-        val userIDs = mainUser!!.uid + currentChat!!.uid
+        if (mainUser != null && currentChat != null) {
+            val userIDs = mainUser!!.uid + currentChat!!.uid
 
-        chatUniqueID = userIDs.toCharArray().sorted().joinToString("")
+            chatUniqueID = userIDs.toCharArray().sorted().joinToString("")
 
-        Log.d("ChatUser", "Chat UniqueID $chatUniqueID")
+            Log.d("ChatUser", "Chat UniqueID $chatUniqueID")
 
-        FirestoreHandler().retrieveChats(chatUniqueID, {
+            FirestoreHandler().retrieveChats(chatUniqueID, {
 
-            Log.d("CurrentChat", "Chat ID is ${it.chatID} chatIDs are $allChatsID")
+                Log.d("CurrentChat", "Chat ID is ${it.chatID} chatIDs are $allChatsID")
 
-            if(!allChatsID.contains(it.chatID) && !allChats.contains(it)) {
-                allChatsID.add(it.chatID)
-                allChats.add(it)
-                val sortedChats = allChats.sortedBy { it -> it.chatDate }
-                val mainUser = DatabaseManager(this).getMainUserID()
+                if(!allChatsID.contains(it.chatID) && !allChats.contains(it)) {
+                    allChatsID.add(it.chatID)
+                    allChats.add(it)
+                    val sortedChats = allChats.sortedBy { it -> it.chatDate }
+                    val mainUser = DatabaseManager(this).retrieveSavedUser()
 
-                allMessageItems.clear()
+                    allMessageItems.clear()
 
-                for (chat in sortedChats) {
-                    var chatType: Long = if (mainUser.equals(chat.chatUserID)) 0 else 1
+                    for (chat in sortedChats) {
+                        if (mainUser != null) {
+                            var chatType: Long = if (mainUser.uid.equals(chat.chatUserID)) 0 else 1
+                            Log.d("ChatUser", "Current Chat Type $chatType")
+                            val messageItem = MessageItem(chat.chatID, chat.chatUserID, chatType, chat.commentDateString(), chat.chatContent, currentChat.profilePhoto, chat.chatImageURL)
+                            lastChatDate = chat.chatDate
+                            allMessageItems.add(messageItem)
+                        }
+                    }
 
-                    Log.d("ChatUser", "Current Chat Type $chatType")
+                    Log.d("CurrentChat", "Current Chat Count ${allChats.count()} Chats $allChats")
 
-                    val messageItem = MessageItem(chat.chatID, chat.chatUserID, chatType, chat.commentDateString(), chat.chatContent, currentChat.profilePhoto, chat.chatImageURL)
-                    lastChatDate = chat.chatDate
-                    allMessageItems.add(messageItem)
+                    setupRecyclerView(allMessageItems)
                 }
-
-                Log.d("CurrentChat", "Current Chat Count ${allChats.count()} Chats $allChats")
-
-                setupRecyclerView(allMessageItems)
-            }
-        })
+            })
+        }
     }
 
     override fun finish() {
@@ -215,27 +217,27 @@ class ChatActivity : AppCompatActivity() {
         if (resultCode == Activity.RESULT_OK) {
             //set image captured to image view
             val chatID = generateRandomString()
-            val userID = DatabaseManager(this).getMainUserID()
+            val user = DatabaseManager(this).retrieveSavedUser()
 
             Log.d("MemedomImage", "Got image back with requestCode $requestCode")
 
-            if (userID != null) {
+            if (user != null && !user.uid.isEmpty()) {
                 if (requestCode == IMAGE_GALLERY_REQUEST_CODE && data != null && data.data != null) {
                     progressChatView.visibility = View.VISIBLE
                     val imageData = data.data
-                    FireStorageHandler().uploadChatMeme(chatID, chatUniqueID, imageData!!, 0L, userID, this, {
+                    FireStorageHandler().uploadChatMeme(chatID, chatUniqueID, imageData!!, 0L, user.uid, this, {
                         progressChatView.visibility = View.GONE
                     })
                 } else if (requestCode == START_MEMEDOM_REQUEST_CODE && data != null) {
                     Log.d("MemedomImage", "Got Image $data")
                     val chatImageURL = data?.getStringExtra("SelectedImage")
                     if (chatImageURL != null) {
-                        FirestoreHandler().sendUserChats(chatID, chatUniqueID, chatImageURL, "", 0L, userID)
+                        FirestoreHandler().sendUserChats(chatID, chatUniqueID, chatImageURL, "", 0L, user.uid)
                     }
                 } else {
                     progressChatView.visibility = View.VISIBLE
                     val imageData = image_uri
-                    FireStorageHandler().uploadChatMeme(chatID, chatUniqueID, imageData!!, 0L, userID, this, {
+                    FireStorageHandler().uploadChatMeme(chatID, chatUniqueID, imageData!!, 0L, user.uid, this, {
                         progressChatView.visibility = View.GONE
                     })
                 }

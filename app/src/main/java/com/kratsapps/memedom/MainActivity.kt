@@ -73,6 +73,7 @@ class MainActivity : AppCompatActivity() {
         firebaseAnalytics = Firebase.analytics
         mainUser = DatabaseManager(this).retrieveSavedUser()
         Log.d("Main Activity", "Main Activity is being created again $mainUser")
+        FirestoreHandler().setupFirestore()
         setupBottomNavigation()
         setupTutorialView()
         checkLoginStatus()
@@ -159,7 +160,8 @@ class MainActivity : AppCompatActivity() {
 
     //NotificationFragment
     fun getAllUserNotifications() {
-        val mainUserID = DatabaseManager(this).getMainUserID()
+        val mainUser = DatabaseManager(this).retrieveSavedUser()
+        val mainUserID = mainUser?.uid
         notifications.clear()
         if (mainUserID != null) {
             FirestoreHandler().getAllUserNotifications(mainUserID!!, {

@@ -81,16 +81,4 @@ class DatabaseManager(context: Context) {
         }
         return null
     }
-
-    fun getMainUserID(): String? {
-        val savedJson = dbContext.getSharedPreferences(MAIN_USER, Context.MODE_PRIVATE).getString(
-            MAIN_USER,
-            null
-        )
-        if(savedJson != null) {
-            val memeDomUser = gson.fromJson(savedJson, MemeDomUser::class.java)
-            return memeDomUser.uid
-        }
-        return null
-    }
 }

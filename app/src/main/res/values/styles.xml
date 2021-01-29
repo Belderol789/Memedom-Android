@@ -10,6 +10,7 @@
     <style name="defaultTextEdit" parent="Theme.MaterialComponents.Light.DarkActionBar">
         <!-- Customize your theme here. -->
         <item name="android:textColorHint">@color/appSecondaryColor</item>
+        <item name="android:textColor">@color/darkerGray</item>
         <item name="android:textSize">20sp</item>
         <item name="colorAccent">@color/appFGColor</item>
         <item name="colorControlNormal">@color/whiteColor</item>

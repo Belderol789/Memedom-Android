@@ -76,7 +76,7 @@ class ReplyActivity : AppCompatActivity() {
         replyUsername.text = commentReply.userName
         Glide.with(this)
             .load(commentReply.userPhotoURL)
-            .centerCrop()
+            .circleCrop()
             .into(profileButton)
         replyDate.text = commentReply.commentDateString()
         replysTextView.text = commentReply.commentText
@@ -87,10 +87,12 @@ class ReplyActivity : AppCompatActivity() {
             onBackPressed()
         }
 
-        val mainUserUID = DatabaseManager(this).getMainUserID()
-        if (commentReply.commentLikers.contains(mainUserUID) && android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.M) {
-            upvoteBtn.setTextColor(Color.parseColor("#FACE0D"))
-            upvoteBtn.setCompoundDrawableTintList(ColorStateList.valueOf(Color.parseColor("#FACE0D")))
+        val mainUserUID = DatabaseManager(this).retrieveSavedUser()
+        if (mainUserUID != null) {
+            if (commentReply.commentLikers.contains(mainUserUID) && android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.M) {
+                upvoteBtn.setTextColor(Color.parseColor("#FACE0D"))
+                upvoteBtn.setCompoundDrawableTintList(ColorStateList.valueOf(Color.parseColor("#FACE0D")))
+            }
         }
 
         setupRecyclerView()
@@ -121,35 +123,35 @@ class ReplyActivity : AppCompatActivity() {
 
         sendReplyButton.setOnClickListener {
 
-            val mainUserUID = DatabaseManager(this).getMainUserID()
+            val mainUser = DatabaseManager(this).retrieveSavedUser()
             val commentText = replyTextMultiLine.text.toString()
             val today = System.currentTimeMillis()
 
-            if (!commentText.isEmpty() && mainUserUID != null && commentReply.commentID != null) {
+            if (!commentText.isEmpty() && mainUser != null && commentReply.commentID != null) {
 
                 Log.d("Comment", "Comment text $commentText")
-
-                val commentHash: HashMap<String, Any> = hashMapOf(
-                    "commentID" to commentReply.commentID,
-                    "commentText" to commentText,
-                    "postID" to commentReply.postID,
-                    "userName" to commentReply.userName,
-                    "userPhotoURL" to commentReply.userPhotoURL,
-                    "commentDate" to today,
-                    "commentLikers" to arrayListOf<String>(mainUserUID),
-                    "showActions" to false
-                )
 
                 val newComment = Comments()
                 newComment.commentID = commentReply.commentID
                 newComment.commentText = commentText
                 newComment.postID = commentReply.postID
-                newComment.userName = commentReply.userName
-                newComment.userPhotoURL = commentReply.userPhotoURL
+                newComment.userName = mainUser.name
+                newComment.userPhotoURL = mainUser.profilePhoto
                 newComment.commentDate = today
-                newComment.commentLikers = arrayListOf<String>(mainUserUID)
+                newComment.commentLikers = arrayListOf<String>(mainUser.uid)
                 newComment.replies = listOf()
                 newComment.showActions = false
+
+                val commentHash: HashMap<String, Any> = hashMapOf(
+                    "commentID" to newComment.commentID,
+                    "commentText" to newComment.commentText,
+                    "postID" to newComment.postID,
+                    "userName" to newComment.userName,
+                    "userPhotoURL" to newComment.userPhotoURL,
+                    "commentDate" to newComment.commentDate,
+                    "commentLikers" to newComment.commentLikers,
+                    "showActions" to false
+                )
 
                 Log.d("Comments", "Sorted Comments ${replies.count()}")
 

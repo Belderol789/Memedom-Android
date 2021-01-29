@@ -168,13 +168,8 @@ class ProfileFragment : Fragment() {
 
         AndroidUtils().getScreenWidthAndHeight(mainActivity, { width, height ->
             profileRecyclerView.layoutParams.width = width
-            profileRecyclerView.layoutParams.height = height
-
             galleryRecyclerView.layoutParams.width = width
-            galleryRecyclerView.layoutParams.height = height
-
             savedRecyclerView.layoutParams.width = width
-            savedRecyclerView.layoutParams.height = height
         })
 
         if (mainUser != null) {
@@ -216,12 +211,14 @@ class ProfileFragment : Fragment() {
     }
 
     private fun navigateToEditPage() {
-        val intent: Intent = Intent(mainActivity, EditActivity::class.java)
-        mainActivity.startActivityForResult(intent, ProfileFragment.START_EDIT_REQUEST_CODE)
-        mainActivity.overridePendingTransition(
-            R.anim.enter_activity,
-            R.anim.enter_activity
-        )
+        if (mainActivity != null) {
+            val intent: Intent = Intent(mainActivity, EditActivity::class.java)
+            mainActivity.startActivityForResult(intent, ProfileFragment.START_EDIT_REQUEST_CODE)
+            mainActivity.overridePendingTransition(
+                R.anim.enter_activity,
+                R.anim.enter_activity
+            )
+        }
     }
 
     private fun setupActionUI() {
