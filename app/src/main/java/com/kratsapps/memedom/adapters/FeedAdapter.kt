@@ -314,7 +314,7 @@ class FeedAdapter(private var feedList: MutableList<Memes>, private val activity
                             mainUserID,
                             currentItem.postUserUID,
                             feedAdapterContext,
-                            1,
+                            5,
                             {})
                     }
                     DatabaseManager(feedAdapterContext).convertUserObject(

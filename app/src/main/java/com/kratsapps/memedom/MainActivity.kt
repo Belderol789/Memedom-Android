@@ -144,15 +144,23 @@ class MainActivity : AppCompatActivity() {
     //MessagesFragment
     fun getAllMatches(completed: (Matches) -> Unit) {
         FirestoreMatchesHandler().checkNewMatch(this, { matches ->
+
             FirestoreHandler().getOnlineStatus(matches, { match ->
+
                 if (mainUser != null) {
+
                     if (!mainUser!!.rejects.contains(match.uid)) {
+
                         Log.d("UserMatches", "Adding current match $match")
                         userMatches.add(match)
                         completed(match)
-                        if (match.matchStatus == false && match.offered.equals(mainUser?.uid)) {
+                        if (match.matchStatus == false && match.offered.equals(mainUser?.uid) && !mainUser!!.pendingMatches.contains(match.uid)) {
                             // Display Pending view
-                            showPendingView("You have PENDING matches!")
+                            mainUser!!.pendingMatches += match.uid
+                            DatabaseManager(this).convertUserObject(mainUser, {
+                                FirestoreHandler().addArrayInFirestore("Test${mainUser!!.uid}", "pendingMatches", match.uid)
+                                showPendingView("You have PENDING matches!")
+                            })
                         } else if (match.matchStatus == true && !mainUser!!.matches.contains(match.uid)) {
                             mainUser!!.matches += match.uid
                             DatabaseManager(this).convertUserObject(mainUser!!, {})

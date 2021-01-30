@@ -144,7 +144,7 @@ class CreateFragment : Fragment() {
         if (imageData != null) {
             FireStorageHandler().uploadGallery(savedUser, imageData!!, createContext, {
                 createLoadingView.visibility = View.INVISIBLE
-                FirestoreHandler().addArrayInFirestore(savedUser.uid, it)
+                FirestoreHandler().addArrayInFirestore(savedUser.uid, "gallery", it)
                 setupAlertDialog("Success!","Photo has been added to your profile")
                 resetValues()
                 restartCreateView()

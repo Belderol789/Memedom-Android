@@ -63,7 +63,7 @@ class FirestoreHandler {
     ) {
         firestoreDB
             .collection(path)
-            .document("Test$document")
+            .document(document)
             .set(hashMap, SetOptions.merge())
             .addOnSuccessListener {
                 Log.d("Firestore", "DocumentSnapshot successfully written for $path $hashMap")
@@ -87,11 +87,11 @@ class FirestoreHandler {
             }
     }
 
-    fun addArrayInFirestore(mainuserID: String, addString: String) {
+    fun addArrayInFirestore(mainuserID: String, field: String, addString: String) {
         firestoreDB
             .collection(USERS_PATH)
             .document(mainuserID)
-            .update("gallery", FieldValue.arrayUnion(addString))
+            .update(field, FieldValue.arrayUnion(addString))
     }
 
     fun checkUsernameAvailability(username: String, available: (Boolean) -> Unit) {

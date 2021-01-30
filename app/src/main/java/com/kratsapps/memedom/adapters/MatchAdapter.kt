@@ -116,9 +116,11 @@ class MatchAdapter(
                 "chatDate" to System.currentTimeMillis(),
                 "onlineDate" to System.currentTimeMillis()
             )
-            FirestoreMatchesHandler().updateMatch(currentMatch.uid, data, matchAdapterContext, {})
+
             FirestoreMatchesHandler().updateUserLiked(currentMatch.uid, matchAdapterContext, {
-                goToChat(currentMatch)
+                FirestoreMatchesHandler().updateMatch(currentMatch.uid, data, matchAdapterContext, {
+                    goToChat(currentMatch)
+                })
             })
         }
     }

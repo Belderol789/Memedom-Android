@@ -2,6 +2,7 @@ package com.kratsapps.memedom.firebaseutils
 
 import android.content.Context
 import android.util.Log
+import androidx.room.Database
 import com.google.firebase.firestore.FieldValue
 import com.google.firebase.firestore.Query
 import com.google.firebase.firestore.SetOptions
@@ -157,9 +158,6 @@ class FirestoreMatchesHandler {
         val messageUniqueID = userIDs.toCharArray().sorted().joinToString("")
         //What if na like na
         if (mainUser != null) {
-            mainUser.pendingMatches += matchUser.uid
-
-            DatabaseManager(context).convertUserObject(mainUser, {})
 
             val data: HashMap<String, Any> = hashMapOf(
                 matchUser.uid to hashMapOf(
@@ -213,13 +211,16 @@ class FirestoreMatchesHandler {
         val messageUniqueID = userIDs.toCharArray().sorted().joinToString("")
 
         if (mainUser != null) {
-            firestoreDB
-                .collection(MATCHED)
-                .document(messageUniqueID)
-                .set(data, SetOptions.merge())
-                .addOnSuccessListener {
-                    completed()
-                }
+            mainUser.matches += matchUseID
+            DatabaseManager(context).convertUserObject(mainUser, {
+                firestoreDB
+                    .collection(MATCHED)
+                    .document(messageUniqueID)
+                    .set(data, SetOptions.merge())
+                    .addOnSuccessListener {
+                        completed()
+                    }
+            })
         }
     }
 

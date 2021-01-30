@@ -7,9 +7,9 @@
 
     <application
         android:allowBackup="true"
-        android:icon="@mipmap/ic_launcher_memedom"
+        android:icon="@mipmap/ic_launcher_memedom_vday"
         android:label="@string/app_name"
-        android:roundIcon="@mipmap/ic_launcher_memedom"
+        android:roundIcon="@mipmap/ic_launcher_memedom_vday"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
         <provider

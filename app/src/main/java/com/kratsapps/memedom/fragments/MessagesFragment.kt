@@ -105,6 +105,7 @@ class MessagesFragment : Fragment() {
                 matchesID.add(match.uid)
             }
         } else if (match.offered.equals(mainUser.uid)) {
+            pending = (pending.filter { s -> s.uid != match.uid }).toMutableList()
             pending.add(match)
         }
 

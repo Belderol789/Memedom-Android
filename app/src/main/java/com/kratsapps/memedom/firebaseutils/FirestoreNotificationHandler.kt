@@ -15,21 +15,38 @@ class FirestoreNotificationHandler {
     private val MEMES_PATH = "Memes"
 
     fun getAllUserNotifications(savedNotifIDs: MutableSet<String>, userID: String, notif: (Notification) -> Unit) {
-        firestoreDB
-            .collection(NOTIF_PATH)
-            .document("Test$userID")
-            .collection(NOTIF_PATH)
-            .whereNotIn("notifID", savedNotifIDs.toMutableList())
-            .limit(10)
-            .get()
-            .addOnSuccessListener {
-                for(document in it.documents) {
-                    val notification = document.toObject(Notification::class.java)
-                    if (notification != null) {
-                        notif(notification)
+        if (savedNotifIDs.isEmpty()) {
+            firestoreDB
+                .collection(NOTIF_PATH)
+                .document(userID)
+                .collection(NOTIF_PATH)
+                .limit(10)
+                .get()
+                .addOnSuccessListener {
+                    for(document in it.documents) {
+                        val notification = document.toObject(Notification::class.java)
+                        if (notification != null) {
+                            notif(notification)
+                        }
                     }
                 }
-            }
+        } else {
+            firestoreDB
+                .collection(NOTIF_PATH)
+                .document(userID)
+                .collection(NOTIF_PATH)
+                .whereNotIn("notifID", savedNotifIDs.toMutableList())
+                .limit(10)
+                .get()
+                .addOnSuccessListener {
+                    for(document in it.documents) {
+                        val notification = document.toObject(Notification::class.java)
+                        if (notification != null) {
+                            notif(notification)
+                        }
+                    }
+                }
+        }
     }
 
     fun getMemeFromNotif(postID: String, completed: (Memes) -> Unit) {
