@@ -28,12 +28,13 @@ import com.google.firebase.firestore.FieldValue
 import com.kratsapps.memedom.models.Comments
 import com.kratsapps.memedom.models.Memes
 import com.kratsapps.memedom.adapters.CommentsAdapter
-import com.kratsapps.memedom.adapters.FeedAdapter
+import com.kratsapps.memedom.firebaseutils.FirestoreCommentsHandler
 import com.kratsapps.memedom.utils.DatabaseManager
 import com.kratsapps.memedom.firebaseutils.FirestoreHandler
+import com.kratsapps.memedom.firebaseutils.FirestoreMatchesHandler
+import com.kratsapps.memedom.firebaseutils.FirestoreNotificationHandler
 import com.kratsapps.memedom.utils.hideKeyboard
 import kotlinx.android.synthetic.main.activity_comments.*
-import kotlinx.android.synthetic.main.fragment_create.*
 
 
 class CommentsActivity : AppCompatActivity() {
@@ -49,7 +50,7 @@ class CommentsActivity : AppCompatActivity() {
         isMemeDom = intent.extras?.getBoolean("isMemeDom")
         setupUI()
         setupActionUI()
-        FirestoreHandler().checkForComments(postMeme.postID, {
+        FirestoreCommentsHandler().checkForComments(postMeme.postID, {
             comments = it
             comments.sortedByDescending { it.commentDate }
             Log.d("Comments", "Got new comments $comments")
@@ -173,7 +174,7 @@ class CommentsActivity : AppCompatActivity() {
                     }
 
                     if (isMemeDom != null && isMemeDom == false) {
-                        FirestoreHandler().updateLikeDatabase(mainUser.uid, postMeme.postUserUID, this.applicationContext,1, {})
+                        FirestoreMatchesHandler().updateLikeDatabase(mainUser.uid, postMeme.postUserUID, this.applicationContext,1, {})
                     }
                     DatabaseManager(this).convertUserObject(mainUser!!, {})
                 } else {
@@ -306,8 +307,8 @@ class CommentsActivity : AppCompatActivity() {
                 }
 
                 Log.d("Comment", "Sending comment hash $commentHash")
-                FirestoreHandler().sendUserCommentToFirestore(postMeme.postID, commentID, comments.count(), commentHash)
-                FirestoreHandler().updateUserNotification(this, postMeme.postUserUID, postMeme.postID, false, comments.count())
+                FirestoreCommentsHandler().sendUserCommentToFirestore(postMeme.postID, commentID, comments.count(), commentHash)
+                FirestoreNotificationHandler().updateUserNotification(this, postMeme.postUserUID, postMeme.postID, false, comments.count())
             } else {
                 Toast.makeText(baseContext, "You must be logged in to like", Toast.LENGTH_SHORT).show()
             }

@@ -29,3 +29,10 @@ class ScreenSize {
         return Resources.getSystem().getDisplayMetrics().heightPixels
     }
 }
+
+fun String.generateRandomString(): String {
+    val charset = ('a'..'z') + ('A'..'Z') + ('0'..'9')
+    return (1..10)
+        .map { charset.random() }
+        .joinToString("")
+}

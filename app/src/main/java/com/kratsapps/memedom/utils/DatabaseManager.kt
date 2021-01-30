@@ -13,6 +13,7 @@ class DatabaseManager(context: Context) {
 
     private val POST_IDS = "PostIDs"
     private val MAIN_USER = "MainUser"
+    private val USER_NOTIFS = "UserNotifications"
     private val dbContext = context
     private val gson = Gson()
 
@@ -46,6 +47,21 @@ class DatabaseManager(context: Context) {
         return savedInt
     }
 
+    fun retrieveNotifications(): MutableSet<String> {
+        val savedNotifIDs = dbContext.getSharedPreferences(USER_NOTIFS, Context.MODE_PRIVATE).getStringSet(USER_NOTIFS, mutableSetOf())
+        return if (savedNotifIDs != null) savedNotifIDs else mutableSetOf<String>()
+    }
+
+    fun saveNotificationID(id: String) {
+        var currentSavedNotifs = retrieveNotifications()
+        currentSavedNotifs.add(id)
+        val sharedPreference = dbContext.getSharedPreferences(USER_NOTIFS, Context.MODE_PRIVATE)
+        var editor = sharedPreference.edit()
+        editor = sharedPreference.edit()
+        editor.putStringSet(USER_NOTIFS, currentSavedNotifs)
+        editor.apply()
+    }
+
     fun converMemeObject(meme: Memes, completed: (String) -> Unit) {
         var jsonString = gson.toJson(meme)
         completed(jsonString)
@@ -59,9 +75,9 @@ class DatabaseManager(context: Context) {
     fun convertUserObject(user: MemeDomUser?, completed: () -> Unit) {
         Log.d("Database", "Main Activity Saving Json $user")
         var jsonString = gson.toJson(user)
-        val sharedPreference = dbContext.getSharedPreferences("MainUser", Context.MODE_PRIVATE)
+        val sharedPreference = dbContext.getSharedPreferences(MAIN_USER, Context.MODE_PRIVATE)
         var editor = sharedPreference.edit()
-        editor.putString("MainUser", jsonString)
+        editor.putString(MAIN_USER, jsonString)
         editor.apply()
         Log.d("Database", "Main Activity Saved Json $jsonString")
         completed()

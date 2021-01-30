@@ -30,6 +30,8 @@ import com.irozon.alertview.AlertView
 import com.irozon.alertview.objects.AlertAction
 import com.kratsapps.memedom.*
 import com.kratsapps.memedom.firebaseutils.FirestoreHandler
+import com.kratsapps.memedom.firebaseutils.FirestoreMatchesHandler
+import com.kratsapps.memedom.firebaseutils.FirestoreNotificationHandler
 import com.kratsapps.memedom.models.Memes
 import com.kratsapps.memedom.utils.DatabaseManager
 import com.kratsapps.memedom.utils.DoubleClickListener
@@ -238,7 +240,7 @@ class FeedAdapter(private var feedList: MutableList<Memes>, private val activity
                 alert.addAction(AlertAction("Unmatch", AlertActionStyle.DEFAULT, {
                     mainUser!!.matches -= currentItem.postUserUID
                     DatabaseManager(activity).convertUserObject(mainUser!!, {})
-                    FirestoreHandler().unmatchUserWithID(currentItem.postUserUID, mainUserID!!, {
+                    FirestoreMatchesHandler().unmatchUserWithID(currentItem.postUserUID, mainUserID!!, {
                         activity.showToastAlert("Unmatched with ${currentItem.postUsername}")
                     })
                 }))
@@ -308,7 +310,7 @@ class FeedAdapter(private var feedList: MutableList<Memes>, private val activity
                     }
 
                     if (!isMemeDom) {
-                        FirestoreHandler().updateLikeDatabase(
+                        FirestoreMatchesHandler().updateLikeDatabase(
                             mainUserID,
                             currentItem.postUserUID,
                             feedAdapterContext,
@@ -319,7 +321,7 @@ class FeedAdapter(private var feedList: MutableList<Memes>, private val activity
                         mainUser!!,
                         {})
 
-                    FirestoreHandler().updateUserNotification(feedAdapterContext, currentItem.postUserUID, currentItem.postID, true, currentItem.getPostLikeCount())
+                    FirestoreNotificationHandler().updateUserNotification(feedAdapterContext, currentItem.postUserUID, currentItem.postID, true, currentItem.getPostLikeCount())
 
                 } else {
                     fieldValue = FieldValue.arrayRemove(mainUser.uid)
@@ -328,7 +330,7 @@ class FeedAdapter(private var feedList: MutableList<Memes>, private val activity
                     Log.d("LikeSystem", "Disliking user")
 
                     if (!isMemeDom) {
-                        FirestoreHandler().updateLikeDatabase(
+                        FirestoreMatchesHandler().updateLikeDatabase(
                             mainUserID,
                             currentItem.postUserUID,
                             feedAdapterContext,

@@ -1,5 +1,6 @@
 package com.kratsapps.memedom
 
+import android.content.ContentProvider
 import android.content.Context
 import android.content.Intent
 import android.graphics.Rect
@@ -17,6 +18,8 @@ import android.widget.ImageView
 import android.widget.Toast
 import androidx.annotation.NonNull
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.content.ContentProviderCompat.requireContext
+import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.GridLayoutManager
 import com.bumptech.glide.Glide
@@ -31,6 +34,9 @@ import com.google.firebase.ktx.Firebase
 import com.kratsapps.memedom.adapters.TutorialAdapter
 import com.kratsapps.memedom.fragments.*
 import com.kratsapps.memedom.firebaseutils.FirestoreHandler
+import com.kratsapps.memedom.firebaseutils.FirestoreMatchesHandler
+import com.kratsapps.memedom.firebaseutils.FirestoreMemesHandler
+import com.kratsapps.memedom.firebaseutils.FirestoreNotificationHandler
 import com.kratsapps.memedom.models.*
 import com.kratsapps.memedom.utils.DatabaseManager
 import kotlinx.android.synthetic.main.activity_main.*
@@ -98,7 +104,7 @@ class MainActivity : AppCompatActivity() {
         FirestoreHandler().getAppSettings() {points, dayLimit, memeLimit, matchLimit ->
             DatabaseManager(this).saveToPrefsInt("matchLimit", matchLimit.toInt())
             checkMatchingStatus(matchLimit)
-            FirestoreHandler().getAllMemes(mainUser, dayLimit, memeLimit) {
+            FirestoreMemesHandler().getAllMemes(mainUser, dayLimit, memeLimit) {
 
                 datingMemes.clear()
                 allMemes.clear()
@@ -121,7 +127,7 @@ class MainActivity : AppCompatActivity() {
     //ProfileFragment
     fun setupProfileFragment(completed: (Memes) -> Unit) {
         if (mainUser?.uid != null) {
-            FirestoreHandler().getAllMemesOfMainUser(mainUser!!.uid) {
+            FirestoreMemesHandler().getAllMemesOfMainUser(mainUser!!.uid) {
                 if (it != null) {
                     completed(it)
                     if (!mainUser!!.memes.contains(it.postImageURL)) {
@@ -137,7 +143,7 @@ class MainActivity : AppCompatActivity() {
 
     //MessagesFragment
     fun getAllMatches(completed: (Matches) -> Unit) {
-        FirestoreHandler().checkNewMatch(this, { matches ->
+        FirestoreMatchesHandler().checkNewMatch(this, { matches ->
             FirestoreHandler().getOnlineStatus(matches, { match ->
                 if (mainUser != null) {
                     if (!mainUser!!.rejects.contains(match.uid)) {
@@ -160,20 +166,29 @@ class MainActivity : AppCompatActivity() {
 
     //NotificationFragment
     fun getAllUserNotifications() {
+        val tappedNotifs = DatabaseManager(this).retrieveNotifications()
+
+        Log.d("NotificationTest", "Tapped Notifs $tappedNotifs")
+
         val mainUser = DatabaseManager(this).retrieveSavedUser()
         val mainUserID = mainUser?.uid
         notifications.clear()
         if (mainUserID != null) {
-            FirestoreHandler().getAllUserNotifications(mainUserID!!, {
+            FirestoreNotificationHandler().getAllUserNotifications(tappedNotifs, mainUserID!!) {
                 val notificationIDs = notifications.map { it.notifContentID }
                 if (!notificationIDs.contains(it.notifContentID)) {
                     notifications.add(it)
-                    Toast.makeText(baseContext, "You have a new Notification!", Toast.LENGTH_SHORT).show()
+                    if (!tappedNotifs.contains(it.notifID)) {
+                        navigationBottom.menu.findItem(R.id.ic_notifs).icon =
+                            ContextCompat.getDrawable(this, R.drawable.ic_action_memedom)
+                        navigationBottom.menu.findItem(R.id.ic_notifs).isVisible = true
+                    }
                 } else {
-                    notifications = (notifications.filter { s -> s.notifContentID != it.notifContentID }).toMutableList()
+                    notifications =
+                        (notifications.filter { s -> s.notifContentID != it.notifContentID }).toMutableList()
                 }
                 notifications.sortByDescending { it.notifDateLong }
-            })
+            }
         }
     }
 
@@ -233,7 +248,7 @@ class MainActivity : AppCompatActivity() {
         val user = FirebaseAuth.getInstance().currentUser
 
         if (user != null) {
-            FirestoreHandler().checkMatchingStatus(this, user.uid, {
+            FirestoreMatchesHandler().checkMatchingStatus(this, user.uid, {
                 currentMatchUser = it
                 matchView.visibility = View.VISIBLE
                 matchView.infoTextView.text = "You've liked ${it.name} \nmemes $matchLimit times!"
@@ -272,7 +287,7 @@ class MainActivity : AppCompatActivity() {
 
         matchView.matchBtn.setOnClickListener {
             if (currentMatchUser != null) {
-                FirestoreHandler().sendToMatchUser(currentMatchUser!!, this.applicationContext)
+                FirestoreMatchesHandler().sendToMatchUser(currentMatchUser!!, this.applicationContext)
                 Toast.makeText(baseContext, "Match Request Sent!", Toast.LENGTH_SHORT).show()
                 restartMatchView()
             }
@@ -436,7 +451,7 @@ class MainActivity : AppCompatActivity() {
 
                 Log.d("UserChat", "Sending the latest chat $chatData")
 
-                FirestoreHandler().updateMatch(currentChatUID!!, chatData, this, {})
+                FirestoreMatchesHandler().updateMatch(currentChatUID!!, chatData, this, {})
             } else if (requestCode == 3001) {
                 profileFragment.reloadProfile()
             }

@@ -1,10 +1,12 @@
 package com.kratsapps.memedom.models
 
 import android.util.Log
+import com.kratsapps.memedom.utils.generateRandomString
 import java.io.Serializable
 import java.util.*
 
 class Notification: Serializable {
+    var notifID: String = "".generateRandomString()
     var notifTitle: String = ""
     var notifContentID: String = ""
     var notifPhotoURL: String = ""

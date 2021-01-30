@@ -13,6 +13,8 @@ import com.bumptech.glide.Glide
 import com.kratsapps.memedom.models.MemeDomUser
 import com.kratsapps.memedom.firebaseutils.FirestoreHandler
 import com.kratsapps.memedom.adapters.ImageAdapter
+import com.kratsapps.memedom.firebaseutils.FirestoreMatchesHandler
+import com.kratsapps.memedom.firebaseutils.FirestoreMemesHandler
 import com.kratsapps.memedom.models.Matches
 import com.kratsapps.memedom.models.Memes
 import com.kratsapps.memedom.utils.AndroidUtils
@@ -108,7 +110,7 @@ class ProfileActivity : AppCompatActivity() {
         }
 
         rejectBtn.setOnClickListener {
-            FirestoreHandler().rejectUser(memeDomUser, this)
+            FirestoreMatchesHandler().rejectUser(memeDomUser, this)
             didReject()
         }
 
@@ -123,8 +125,8 @@ class ProfileActivity : AppCompatActivity() {
                     "chatDate" to System.currentTimeMillis(),
                     "onlineDate" to System.currentTimeMillis()
                 )
-                FirestoreHandler().updateMatch(matchUserID, data, this, {})
-                FirestoreHandler().updateUserLiked(matchUserID, this, {
+                FirestoreMatchesHandler().updateMatch(matchUserID, data, this, {})
+                FirestoreMatchesHandler().updateUserLiked(matchUserID, this, {
                     val intent = Intent().apply {
                         putExtra("ChatMatch", matchUser)
                     }
@@ -137,7 +139,7 @@ class ProfileActivity : AppCompatActivity() {
         }
 
         okBtn.setOnClickListener {
-            FirestoreHandler().sendToMatchUser(memeDomUser!!, this)
+            FirestoreMatchesHandler().sendToMatchUser(memeDomUser!!, this)
             onBackPressed()
         }
     }
@@ -186,7 +188,7 @@ class ProfileActivity : AppCompatActivity() {
 
     private fun getAllUserMemes() {
         matchUserMemes.clear()
-        FirestoreHandler().getAllMemesOfMainUser(memeDomUser!!.uid) {
+        FirestoreMemesHandler().getAllMemesOfMainUser(memeDomUser!!.uid) {
             if (it != null) {
                 matchUserMemes.add(it)
                 var crown: Int = 0

@@ -15,6 +15,7 @@ import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.kratsapps.memedom.*
 import com.kratsapps.memedom.firebaseutils.FirestoreHandler
+import com.kratsapps.memedom.firebaseutils.FirestoreMatchesHandler
 import com.kratsapps.memedom.models.Matches
 import com.kratsapps.memedom.models.MemeDomUser
 import kotlinx.android.synthetic.main.matches_item.view.*
@@ -100,7 +101,7 @@ class MatchAdapter(
         holder.rejectBtn.setOnClickListener {
             val memeDomUser = MemeDomUser()
             memeDomUser.uid = currentMatch.uid
-            FirestoreHandler().rejectUser(memeDomUser, matchAdapterContext)
+            FirestoreMatchesHandler().rejectUser(memeDomUser, matchAdapterContext)
             removeRow(position)
         }
 
@@ -115,8 +116,8 @@ class MatchAdapter(
                 "chatDate" to System.currentTimeMillis(),
                 "onlineDate" to System.currentTimeMillis()
             )
-            FirestoreHandler().updateMatch(currentMatch.uid, data, matchAdapterContext, {})
-            FirestoreHandler().updateUserLiked(currentMatch.uid, matchAdapterContext, {
+            FirestoreMatchesHandler().updateMatch(currentMatch.uid, data, matchAdapterContext, {})
+            FirestoreMatchesHandler().updateUserLiked(currentMatch.uid, matchAdapterContext, {
                 goToChat(currentMatch)
             })
         }

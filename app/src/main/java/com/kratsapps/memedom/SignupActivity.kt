@@ -389,11 +389,10 @@ class SignupActivity : AppCompatActivity() {
                 }
             })
 
-            val randomString = generateRandomString()
             FirestoreHandler().addDataToFirestore(
                 "Username",
-                randomString,
-                hashMapOf("Username" to memeDomuser.uid),
+                memeDomuser.uid,
+                hashMapOf("Username" to memeDomuser.name),
                 {})
 
         } else {

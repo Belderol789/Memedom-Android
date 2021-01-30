@@ -21,6 +21,7 @@ import com.bumptech.glide.Glide
 import com.facebook.internal.Utility
 import com.kratsapps.memedom.models.Comments
 import com.kratsapps.memedom.adapters.CommentsAdapter
+import com.kratsapps.memedom.firebaseutils.FirestoreCommentsHandler
 import com.kratsapps.memedom.utils.DatabaseManager
 import com.kratsapps.memedom.firebaseutils.FirestoreHandler
 import com.kratsapps.memedom.utils.hideKeyboard
@@ -170,7 +171,7 @@ class ReplyActivity : AppCompatActivity() {
 
                 val replyID = Utility.generateRandomString(10)
                 Log.d("Comment", "Sending comment hash $commentHash")
-                FirestoreHandler().sendUserReplyToFirestore(commentReply, commentHash)
+                FirestoreCommentsHandler().sendUserReplyToFirestore(commentReply, commentHash)
             }
         }
     }

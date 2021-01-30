@@ -17,6 +17,7 @@ import com.bumptech.glide.Glide
 import com.kratsapps.memedom.Assets
 import com.kratsapps.memedom.R
 import com.kratsapps.memedom.ReplyActivity
+import com.kratsapps.memedom.firebaseutils.FirestoreCommentsHandler
 import com.kratsapps.memedom.models.Comments
 import com.kratsapps.memedom.utils.DatabaseManager
 import com.kratsapps.memedom.firebaseutils.FirestoreHandler
@@ -99,7 +100,7 @@ class CommentsAdapter(private val commentList: List<Comments>, private val activ
             setLikeBtn(holder, false)
 
             currentComment.commentLikers -= mainUserID
-            FirestoreHandler().removeCommentPoints(mainUserID, currentComment.postID, currentComment.commentID)
+            FirestoreCommentsHandler().removeCommentPoints(mainUserID, currentComment.postID, currentComment.commentID)
         } else {
             val updatedLikes = currentComment.getCommentLikeCount() + 1
             holder.upvoteBtn.setText("   $updatedLikes")

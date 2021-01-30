@@ -24,6 +24,7 @@ import com.irozon.alertview.objects.AlertAction
 import com.kratsapps.memedom.adapters.ChatAdapter
 import com.kratsapps.memedom.firebaseutils.FireStorageHandler
 import com.kratsapps.memedom.firebaseutils.FirestoreHandler
+import com.kratsapps.memedom.firebaseutils.FirestoreMatchesHandler
 import com.kratsapps.memedom.models.Chat
 import com.kratsapps.memedom.models.MemeDomUser
 import com.kratsapps.memedom.models.MessageItem
@@ -153,12 +154,12 @@ class ChatActivity : AppCompatActivity() {
         optionBtn.setOnClickListener {
             val alert = AlertView("Select an Option", "", AlertStyle.IOS)
             alert.addAction(AlertAction("Unmatch", AlertActionStyle.DEFAULT, {
-                FirestoreHandler().unmatchUser(chatUniqueID)
+                FirestoreMatchesHandler().unmatchUser(chatUniqueID)
                 onBackPressed()
             }))
             alert.addAction(AlertAction("Report", AlertActionStyle.NEGATIVE, {
-                FirestoreHandler().unmatchUser(chatUniqueID)
-                FirestoreHandler().rejectUser(currentChat, this)
+                FirestoreMatchesHandler().unmatchUser(chatUniqueID)
+                FirestoreMatchesHandler().rejectUser(currentChat, this)
                 onBackPressed()
             }))
 
