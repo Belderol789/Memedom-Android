@@ -5,6 +5,7 @@
     <color name="colorAccent">#58BADC</color>
     <color name="appFGColor">#58BADC</color>
     <color name="appDateFGColor">#E8518D</color>
+    <color name="appDateFGColorLight">#E183A8</color>
     <color name="appBGColor">#111111</color>
     <color name="appBGColorLight">#202121</color>
     <color name="appSecondaryColor">#C0C0C0</color>

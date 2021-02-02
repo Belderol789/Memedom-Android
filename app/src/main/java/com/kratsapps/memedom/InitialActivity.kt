@@ -7,6 +7,7 @@ import android.util.Base64
 import android.util.Log
 import androidx.appcompat.app.AppCompatActivity
 import com.google.firebase.auth.FirebaseAuth
+import com.kratsapps.memedom.firebaseutils.FirestoreHandler
 import com.kratsapps.memedom.utils.DatabaseManager
 import kotlinx.android.synthetic.main.activity_initial.*
 import java.security.MessageDigest
@@ -17,9 +18,13 @@ class InitialActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_initial)
+        FirestoreHandler().setupFirestore()
 
         val user = FirebaseAuth.getInstance().getCurrentUser()
         val savedUser = DatabaseManager(this).retrieveSavedUser()
+
+        Log.d("LoggingIn", "Firebase $user Local $savedUser")
+
         if (user != null && savedUser != null) {
             val intent: Intent = Intent(this, MainActivity::class.java)
             startActivity(intent)

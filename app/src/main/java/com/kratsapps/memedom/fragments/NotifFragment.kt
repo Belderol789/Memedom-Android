@@ -29,8 +29,6 @@ class NotifFragment : Fragment() {
     lateinit var notifRecycler: RecyclerView
     var notifAdapter: NotifAdapter? = null
 
-    var notifList = mutableListOf<Notification>()
-
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
     }
@@ -48,20 +46,18 @@ class NotifFragment : Fragment() {
     }
 
     private fun setupUI() {
+        var notifList = mutableListOf<Notification>()
         if (mainActivity != null) {
-            notifList.clear()
             notifList.addAll(mainActivity!!.notifications)
-            if (notifAdapter == null) {
-                notifAdapter = NotifAdapter(notifList, mainActivity!!)
-                notifRecycler = rootView.findViewById(R.id.notificationRecycler)
-                notifRecycler.adapter = notifAdapter
-                notifRecycler.layoutManager = LinearLayoutManager(mainActivity)
-                notifRecycler.setHasFixedSize(true)
-                notifRecycler.itemAnimator?.removeDuration
-            } else {
-                notifAdapter!!.clear()
-                notifAdapter!!.addItems(mainActivity!!.notifications)
-            }
+
+            Log.d("NotificationBug", "List $notifList Adapter $notifAdapter")
+
+            notifAdapter = NotifAdapter(notifList, mainActivity!!)
+            notifRecycler = rootView.findViewById(R.id.notificationRecycler)
+            notifRecycler.adapter = notifAdapter
+            notifRecycler.layoutManager = LinearLayoutManager(mainActivity)
+            notifRecycler.setHasFixedSize(true)
+            notifRecycler.itemAnimator?.removeDuration
         }
         val notifSwipe = rootView.findViewById<SwipeRefreshLayout>(R.id.notifSwipe)
         notifSwipe.setOnRefreshListener(SwipeRefreshLayout.OnRefreshListener {
@@ -73,6 +69,7 @@ class NotifFragment : Fragment() {
 
     fun getAllUserNotifications() {
         val notifEmpty = rootView.findViewById<LinearLayout>(R.id.notifEmpty)
+        Log.d("MainActiveNotifs", "Notifs ${mainActivity!!.notifications.count()}")
         if (mainActivity!!.notifications.isEmpty()) {
             //Show Empty State
             notifEmpty.visibility = View.VISIBLE

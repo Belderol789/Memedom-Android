@@ -72,14 +72,8 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
-        Log.d("Main Activity", "Main Activity is being created")
-
-        if (FirebaseApp.getApps(applicationContext).isEmpty()) {
-            FirebaseApp.initializeApp(applicationContext);}
         firebaseAnalytics = Firebase.analytics
         mainUser = DatabaseManager(this).retrieveSavedUser()
-        Log.d("Main Activity", "Main Activity is being created again $mainUser")
-        FirestoreHandler().setupFirestore()
         setupBottomNavigation()
         setupTutorialView()
         checkLoginStatus()
@@ -158,7 +152,7 @@ class MainActivity : AppCompatActivity() {
                             // Display Pending view
                             mainUser!!.pendingMatches += match.uid
                             DatabaseManager(this).convertUserObject(mainUser, {
-                                FirestoreHandler().addArrayInFirestore("Test${mainUser!!.uid}", "pendingMatches", match.uid)
+                                FirestoreHandler().addArrayInFirestore(mainUser!!.uid, "pendingMatches", match.uid)
                                 showPendingView("You have PENDING matches!")
                             })
                         } else if (match.matchStatus == true && !mainUser!!.matches.contains(match.uid)) {
@@ -175,7 +169,6 @@ class MainActivity : AppCompatActivity() {
     //NotificationFragment
     fun getAllUserNotifications() {
         val tappedNotifs = DatabaseManager(this).retrieveNotifications()
-
         Log.d("NotificationTest", "Tapped Notifs $tappedNotifs")
 
         val mainUser = DatabaseManager(this).retrieveSavedUser()
@@ -188,8 +181,11 @@ class MainActivity : AppCompatActivity() {
                     notifications.add(it)
                     if (!tappedNotifs.contains(it.notifID)) {
                         navigationBottom.menu.findItem(R.id.ic_notifs).icon =
-                            ContextCompat.getDrawable(this, R.drawable.ic_action_memedom)
+                            ContextCompat.getDrawable(this, R.drawable.ic_action_notif_active)
                         navigationBottom.menu.findItem(R.id.ic_notifs).isVisible = true
+                    } else {
+                        navigationBottom.menu.findItem(R.id.ic_notifs).icon =
+                            ContextCompat.getDrawable(this, R.drawable.ic_action_name)
                     }
                 } else {
                     notifications =

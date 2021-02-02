@@ -4,5 +4,6 @@
         android:type="linear"
         android:angle="90"
         android:startColor="@color/appDateFGColor"
-        android:endColor="@color/colorAccent" />
+        android:centerColor="@color/appDateFGColorLight"
+        android:endColor="@color/appDateFGColorLight" />
 </shape>
