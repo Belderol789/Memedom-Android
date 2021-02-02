@@ -74,24 +74,24 @@
                 android:layout_width="0dp"
                 android:layout_height="50dp"
                 android:layout_weight="1"
-                android:background="@drawable/radio_button_selector"
+                android:background="@drawable/radio_button_selector_dating"
                 android:button="@android:color/transparent"
                 android:checked="true"
                 android:gravity="center"
                 android:text="Matches"
-                android:textColor="@color/appFGColor" />
+                android:textColor="@color/appDateFGColor" />
 
             <androidx.appcompat.widget.AppCompatRadioButton
                 android:id="@+id/pendingSegment"
                 android:layout_width="0dp"
                 android:layout_height="50dp"
                 android:layout_weight="1"
-                android:background="@drawable/radio_button_selector"
+                android:background="@drawable/radio_button_selector_dating"
                 android:button="@android:color/transparent"
                 android:checked="false"
                 android:gravity="center"
                 android:text="Pending"
-                android:textColor="@color/appFGColor" />
+                android:textColor="@color/appDateFGColor" />
         </RadioGroup>
     </LinearLayout>
 

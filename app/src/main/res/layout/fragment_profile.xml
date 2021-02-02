@@ -55,7 +55,7 @@
                         android:layout_height="wrap_content"
                         android:text="Posts"
                         android:textAlignment="center"
-                        android:textColor="@color/appFGColor"
+                        android:textColor="@color/appDateFGColor"
                         android:textSize="16sp" />
 
                     <TextView
@@ -83,7 +83,7 @@
                         android:layout_height="wrap_content"
                         android:text="Admirers"
                         android:textAlignment="center"
-                        android:textColor="@color/appFGColor"
+                        android:textColor="@color/appDateFGColor"
                         android:textSize="16sp" />
 
                     <TextView
@@ -111,7 +111,7 @@
                         android:layout_height="wrap_content"
                         android:text="Crowns"
                         android:textAlignment="center"
-                        android:textColor="@color/appFGColor"
+                        android:textColor="@color/appDateFGColor"
                         android:textSize="16sp" />
 
                     <TextView
@@ -169,7 +169,7 @@
                 android:layout_marginStart="16dp"
                 android:layout_marginTop="16dp"
                 android:layout_marginEnd="16dp"
-                android:backgroundTint="@color/appFGColor"
+                android:backgroundTint="@color/appDateFGColor"
                 android:hint="No Bio"
                 android:maxLength="300"
                 android:textColor="@color/whiteColor"
@@ -285,7 +285,7 @@
                         android:layout_width="0dp"
                         android:layout_height="50dp"
                         android:layout_weight="1"
-                        android:background="@drawable/radio_button_selector_fill"
+                        android:background="@drawable/radio_button_selector_fill_dating"
                         android:button="@android:color/transparent"
                         android:checked="true"
                         android:gravity="center"
@@ -297,24 +297,24 @@
                         android:layout_width="0dp"
                         android:layout_height="50dp"
                         android:layout_weight="1"
-                        android:background="@drawable/radio_button_selector_fill"
+                        android:background="@drawable/radio_button_selector_fill_dating"
                         android:button="@android:color/transparent"
                         android:checked="false"
                         android:gravity="center"
                         android:text="Me's"
-                        android:textColor="@color/appFGColor" />
+                        android:textColor="@color/appDateFGColor" />
 
                     <androidx.appcompat.widget.AppCompatRadioButton
                         android:id="@+id/savedSegment"
                         android:layout_width="0dp"
                         android:layout_height="50dp"
                         android:layout_weight="1"
-                        android:background="@drawable/radio_button_selector_fill"
+                        android:background="@drawable/radio_button_selector_fill_dating"
                         android:button="@android:color/transparent"
                         android:checked="false"
                         android:gravity="center"
                         android:text="Saved"
-                        android:textColor="@color/appFGColor" />
+                        android:textColor="@color/appDateFGColor" />
 
                 </RadioGroup>
             </LinearLayout>

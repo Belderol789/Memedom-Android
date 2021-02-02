@@ -14,7 +14,6 @@
     <item
         android:id="@+id/ic_create"
         android:icon="@drawable/ic_action_plus"
-        android:iconTint="@color/appFGColor"
         android:title="Create"/>
 
     <item

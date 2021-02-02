@@ -93,7 +93,7 @@ class ChatActivity : AppCompatActivity() {
                         }
                     }
 
-                    Log.d("CurrentChat", "Current Chat Count ${allChats.count()} Chats $allChats")
+                    Log.d("CurrentChat", "Current Chat Count ${allMessageItems.count()}")
 
                     setupRecyclerView(allMessageItems)
                 }
@@ -280,7 +280,6 @@ class ChatActivity : AppCompatActivity() {
         linearLayoutManager.reverseLayout
         linearLayoutManager.setStackFromEnd(true);
 
-        chatRecyclerView.addItemDecoration(DefaultItemDecorator(resources.getDimensionPixelSize(R.dimen.vertical_recyclerView)))
         chatRecyclerView.adapter = chatAdapter
         chatRecyclerView.layoutManager = linearLayoutManager
         chatRecyclerView.setHasFixedSize(true)
