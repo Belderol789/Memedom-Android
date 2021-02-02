@@ -143,6 +143,8 @@ class HomeFragment : Fragment() {
                     filteredMemems.addAll(datingMemes)
                 }
 
+                filteredMemems.shuffle()
+
                 Log.d("MainActivityMemes", "filtered memes $filteredMemems")
 
                 homeSwipe.isRefreshing = false
@@ -222,9 +224,4 @@ class HomeFragment : Fragment() {
             feedAdapter!!.addItems(filteredMemems, isMemedom)
         }
     }
-
-    fun deleteItemAt(position: Int) {
-
-    }
-
 }
