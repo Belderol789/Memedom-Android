@@ -53,6 +53,10 @@ class ProfileActivity : AppCompatActivity() {
     }
 
     private fun setupUI() {
+
+        photosScrollView.isHorizontalScrollBarEnabled = false
+        photosScrollView.setOnTouchListener { v, event -> true }
+
         congratsView.visibility = View.INVISIBLE
         profileActivityLoadingView.visibility = View.VISIBLE
         Glide.with(this)
@@ -89,7 +93,7 @@ class ProfileActivity : AppCompatActivity() {
             gallerySegment.isChecked = false
 
             memeSegment.setTextColor(Color.WHITE)
-            gallerySegment.setTextColor(Color.parseColor("#58BADC"))
+            gallerySegment.setTextColor(Color.parseColor("#E8518D"))
             photosScrollView.smoothScrollTo(0, 0)
         }
 
@@ -98,7 +102,7 @@ class ProfileActivity : AppCompatActivity() {
             memeSegment.isChecked = false
 
             gallerySegment.setTextColor(Color.WHITE)
-            memeSegment.setTextColor(Color.parseColor("#58BADC"))
+            memeSegment.setTextColor(Color.parseColor("#E8518D"))
             photosScrollView.smoothScrollTo(screenWidth, 0)
         }
     }

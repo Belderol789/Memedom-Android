@@ -57,7 +57,6 @@ class DatabaseManager(context: Context) {
         currentSavedNotifs.add(id)
         val sharedPreference = dbContext.getSharedPreferences(USER_NOTIFS, Context.MODE_PRIVATE)
         var editor = sharedPreference.edit()
-        editor = sharedPreference.edit()
         editor.putStringSet(USER_NOTIFS, currentSavedNotifs)
         editor.apply()
     }
